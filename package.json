@@ -1,0 +1,35 @@
+{
+	"name": "project-tbd",
+	"version": "0.1.0",
+	"main": "server/index.js",
+	"scripts": {
+		"start": "concurrently --kill-others-on-fail \"npm run start:server\" \"npm run start:client\"",
+		"build": "cd client && npm run build",
+		"dev": "concurrently --kill-others-on-fail \"npm run start:server\" \"npm run start:client\"",
+		"start:server": "cd client && npm start",
+		"start:client": "nodemon server",
+		"prettier": "prettier --check .",
+		"prettier:fix": "prettier --write .",
+		"postinstall": "cd client && npm install"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/Autsider666/project-tbd.git"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/Autsider666/project-tbd/issues"
+	},
+	"homepage": "https://github.com/Autsider666/project-tbd#readme",
+	"dependencies": {
+		"express": "^4.18.1"
+	},
+	"devDependencies": {
+		"concurrently": "^7.2.2",
+		"nodemon": "^2.0.19",
+		"prettier": "2.7.1",
+		"typescript": "^4.7.4"
+	}
+}
