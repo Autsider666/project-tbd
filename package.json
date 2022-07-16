@@ -1,13 +1,15 @@
 {
 	"name": "project-tbd",
 	"version": "0.1.0",
-	"main": "server/index.ts",
+	"exports": "./server/index.ts",
+	"type": "module",
 	"scripts": {
 		"start": "concurrently --kill-others-on-fail \"npm run start:server\" \"npm run start:client\"",
 		"build": "cd client && npm run build",
 		"dev": "concurrently --kill-others-on-fail \"npm run start:server\" \"npm run start:client\"",
 		"start:client": "cd client && npm start",
-		"start:server": "ts-node-dev server/index.ts",
+		"start:server": "tsc-watch --preserveWatchOutput --onFirstSuccess \"nodemand --node-modules build/index.js\"",
+		"start:server:old": "ts-node-dev -r esm --transpile-only server/index.ts",
 		"prettier": "prettier --check .",
 		"prettier:fix": "prettier --write .",
 		"postinstall": "cd client && npm install"
@@ -24,17 +26,26 @@
 	},
 	"homepage": "https://github.com/Autsider666/project-tbd#readme",
 	"dependencies": {
-		"@types/express": "^4.17.13",
-		"@types/node": "^18.0.4",
-		"@types/socket.io": "^3.0.2",
 		"express": "^4.18.1",
-		"socket.io": "^4.5.1",
-		"ts-node-dev": "^2.0.0"
+		"jsonwebtoken": "^8.5.1",
+		"on-change": "^4.0.1",
+		"socket.io": "^4.5.1"
 	},
 	"devDependencies": {
 		"@socket.io/admin-ui": "^0.4.0",
+		"@types/express": "^4.17.13",
+		"@types/jsonwebtoken": "^8.5.8",
+		"@types/node": "^18.0.5",
+		"@types/socket.io": "^3.0.2",
 		"concurrently": "^7.2.2",
+		"nodemand": "^0.1.11",
 		"prettier": "2.7.1",
+		"ts-node-dev": "^2.0.0",
+		"tsc-watch": "^5.0.3",
+		"type-fest": "^2.16.0",
 		"typescript": "^4.7.4"
+	},
+	"engines": {
+		"node": "^16.0"
 	}
 }

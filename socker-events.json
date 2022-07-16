@@ -1,0 +1,19 @@
+{
+	"event": {
+		"client": {
+			"connection": "connection",
+			"disconnect": "disconnect",
+			"initialize": "initialize",
+			"createCharacter": "create-character",
+			"authenticate": "authenticate",
+			"joinWorld": "join-world"
+		},
+		"server": {
+			"stateUpdate": "state-update",
+			"notification": "notification"
+		}
+	},
+	"room": {
+		"worldSelection": "world-selection"
+	}
+}

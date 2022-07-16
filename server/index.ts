@@ -1,10 +1,10 @@
+import { ServerController } from './ServerController.js';
+import { StatePersister } from './helper/StatePersister.js';
 import { instrument } from '@socket.io/admin-ui';
 import express from 'express';
 import { createServer } from 'http';
 import path from 'path';
-import { socketHandler } from './socket/socketHandler';
 import { Server } from 'socket.io';
-import { version } from './../package.json';
 
 const port = 5000;
 const host = 'localhost';
@@ -21,18 +21,21 @@ const io = new Server(httpServer, {
 	},
 });
 
-app.get('/', (_, res) =>
-	// res.send(`Server is up and running version ${version}`)
-	res.sendFile(path.resolve('./server/test.html'))
-);
+app.get('/', (_, res) => res.sendFile(path.resolve('./server/test.html')));
 
 instrument(io, {
 	auth: false,
 });
 
-httpServer.listen(port, host, () => {
-	console.info(`🚀 Server version ${version} is listening 🚀`);
+httpServer.listen(port, host, async () => {
+	console.info(`🚀 Server is listening 🚀`);
 	console.info(`http://${host}:${port}`);
 
-	socketHandler({ io });
+	const state = await StatePersister.readState();
+
+	const serverController = new ServerController(io, state);
+
+	await serverController.start();
 });
+
+console.log(123);

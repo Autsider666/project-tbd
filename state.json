@@ -1,0 +1,43 @@
+{
+	"WorldRepository": [
+		{
+			"id": 1,
+			"name": "Default",
+			"areas": [1]
+		}
+	],
+	"AreaRepository": [
+		{
+			"id": 1,
+			"name": "Start",
+			"world": 1,
+			"characters": [1],
+			"borders": [1]
+		},
+		{
+			"id": 2,
+			"name": "Next",
+			"world": 1,
+			"characters": [2],
+			"borders": [1]
+		}
+	],
+	"BorderRepository": [
+		{
+			"id": 1,
+			"areas": [1, 2]
+		}
+	],
+	"CharacterRepository": [
+		{
+			"id": 1,
+			"name": "Player 1",
+			"area": 1
+		},
+		{
+			"id": 2,
+			"name": "Player 2",
+			"area": 2
+		}
+	]
+}
