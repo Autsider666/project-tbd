@@ -1,9 +1,11 @@
 import { promises as fsPromises } from 'fs';
 import path, { join } from 'path';
 import { fileURLToPath } from 'url';
+import { Border } from '../entity/Border.js';
 import { AreaRepository } from '../repository/AreaRepository.js';
 import { Area } from '../entity/Area.js';
 import { Character } from '../entity/Character.js';
+import { BorderRepository } from '../repository/BorderRepository.js';
 import { CharacterRepository } from '../repository/CharacterRepository.js';
 import { World } from '../entity/World.js';
 import { ServerState } from '../ServerState.js';
@@ -56,6 +58,12 @@ export class StatePersister {
 			loadedState.AreaRepository ?? []
 		);
 		serverState.registerRepository(Area, areas);
+
+		const borders = new BorderRepository(
+			serverState,
+			loadedState.BorderRepository ?? []
+		);
+		serverState.registerRepository(Border, borders);
 
 		return serverState;
 	}

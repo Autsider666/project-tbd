@@ -27,6 +27,8 @@ export class World extends Entity<WorldId, WorldData> {
 	denormalize(data: WorldData): void {
 		this.id = data.id;
 		this.name = data.name;
+		this.areas.clear();
+		data.areas.forEach((id) => this.areas.set(id, null));
 	}
 
 	normalize(): WorldData {

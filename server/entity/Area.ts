@@ -1,3 +1,4 @@
+import { Border, BorderId } from './Border.js';
 import { World, WorldId } from './World.js';
 import { ServerState } from '../ServerState.js';
 import { Entity } from './Entity.js';
@@ -9,6 +10,7 @@ export type AreaData = {
 	id: AreaId;
 	name: string;
 	characters: CharacterId[];
+	borders: BorderId[];
 	world: WorldId;
 };
 
@@ -16,6 +18,7 @@ export class Area extends Entity<AreaId, AreaData> {
 	id: AreaId;
 	name: string;
 	characters = new Map<CharacterId, Character | null>();
+	borders = new Map<BorderId, Border | null>();
 	world: World | WorldId;
 
 	constructor(protected readonly serverState: ServerState, data: AreaData) {
@@ -23,13 +26,21 @@ export class Area extends Entity<AreaId, AreaData> {
 
 		this.id = data.id;
 		this.name = data.name;
-		data.characters.forEach((id) => this.characters.set(id, null));
 		this.world = data.world;
+
+		data.characters.forEach((id) => this.characters.set(id, null));
+		data.borders.forEach((id) => this.borders.set(id, null));
 	}
 
 	denormalize(data: AreaData): void {
 		this.id = data.id;
 		this.name = data.name;
+
+		this.characters.clear();
+		this.borders.clear();
+
+		data.characters.forEach((id) => this.characters.set(id, null));
+		data.borders.forEach((id) => this.borders.set(id, null));
 	}
 
 	normalize(): AreaData {
@@ -37,6 +48,7 @@ export class Area extends Entity<AreaId, AreaData> {
 			id: this.id,
 			name: this.name,
 			characters: Array.from(this.characters.keys()),
+			borders: Array.from(this.borders.keys()),
 			world:
 				typeof this.world === 'number'
 					? (this.world as WorldId)
