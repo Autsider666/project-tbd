@@ -1,9 +1,9 @@
 import { SocketId } from 'socket.io-adapter';
 import { ClientController } from './ClientController.js';
-import { World } from './game/entity/World.js';
-import { WorldController } from './game/WorldController.js';
+import { World } from '../entity/World.js';
+import { WorldController } from './WorldController.js';
 import { Server, Socket } from 'socket.io';
-import { ServerState } from './ServerState.js';
+import { ServerState } from '../ServerState.js';
 
 const EVENTS = {
 	CLIENT: {
@@ -58,6 +58,9 @@ export class ServerController {
 		let turn = 0;
 		setInterval(() => {
 			console.log('Turn ' + turn++ + ' at ' + Date.now());
+			for (const [key, value] of Object.entries(process.memoryUsage())) {
+				console.log(`Memory usage by ${key}, ${value / 1000000}MB `);
+			}
 
 			this.worldControllers.forEach((world) => world.tick());
 		}, 5000);

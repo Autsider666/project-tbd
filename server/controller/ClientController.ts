@@ -1,7 +1,7 @@
 import { Server, Socket } from 'socket.io';
 import jwt from 'jsonwebtoken';
-import { CharacterId } from './game/entity/Character.js';
-import { WorldId } from './game/entity/World.js';
+import { CharacterId } from '../entity/Character.js';
+import { WorldId } from '../entity/World.js';
 
 const secret = 'CHANGE ME QUICK!'; //TODO I mean it!
 

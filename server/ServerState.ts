@@ -1,6 +1,6 @@
-import { Entity } from './game/entity/Entity';
+import { Entity } from './entity/Entity';
 import { Constructor } from 'type-fest';
-import { Repository } from './game/repository/Repository';
+import { Repository } from './repository/Repository';
 
 export class ServerState {
 	private repositories = new Map<

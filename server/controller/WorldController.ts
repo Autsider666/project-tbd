@@ -1,5 +1,5 @@
 import { Server } from 'socket.io';
-import { World } from './entity/World.js';
+import { World } from '../entity/World.js';
 import { ServerState } from '../ServerState.js';
 
 export class WorldController {

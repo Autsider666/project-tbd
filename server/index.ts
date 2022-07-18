@@ -1,4 +1,4 @@
-import { ServerController } from './ServerController.js';
+import { ServerController } from './controller/ServerController.js';
 import { StatePersister } from './helper/StatePersister.js';
 import { instrument } from '@socket.io/admin-ui';
 import express from 'express';

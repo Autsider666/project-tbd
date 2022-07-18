@@ -1,5 +1,5 @@
 import { Area, AreaId } from './Area.js';
-import { ServerState } from '../../ServerState.js';
+import { ServerState } from '../ServerState.js';
 import { Opaque } from 'type-fest';
 import { Entity } from './Entity.js';
 

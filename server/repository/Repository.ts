@@ -1,5 +1,5 @@
 import onChange, { ApplyData } from 'on-change';
-import { ServerState } from '../../ServerState.js';
+import { ServerState } from '../ServerState.js';
 import { Constructor } from 'type-fest';
 import { Entity } from '../entity/Entity.js';
 

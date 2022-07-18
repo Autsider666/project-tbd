@@ -1,13 +1,13 @@
 import { promises as fsPromises } from 'fs';
 import path, { join } from 'path';
 import { fileURLToPath } from 'url';
-import { AreaRepository } from '../game/repository/AreaRepository.js';
-import { Area } from '../game/entity/Area.js';
-import { Character } from '../game/entity/Character.js';
-import { CharacterRepository } from '../game/repository/CharacterRepository.js';
-import { World } from '../game/entity/World.js';
+import { AreaRepository } from '../repository/AreaRepository.js';
+import { Area } from '../entity/Area.js';
+import { Character } from '../entity/Character.js';
+import { CharacterRepository } from '../repository/CharacterRepository.js';
+import { World } from '../entity/World.js';
 import { ServerState } from '../ServerState.js';
-import { WorldRepository } from '../game/repository/WorldRepository.js';
+import { WorldRepository } from '../repository/WorldRepository.js';
 
 const filename = '../../state.json';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));

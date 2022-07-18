@@ -1,5 +1,5 @@
 import { World, WorldId } from './World.js';
-import { ServerState } from '../../ServerState.js';
+import { ServerState } from '../ServerState.js';
 import { Entity } from './Entity.js';
 import { Character, CharacterId } from './Character.js';
 import { Opaque } from 'type-fest';

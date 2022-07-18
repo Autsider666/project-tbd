@@ -1,4 +1,4 @@
-import { ServerState } from '../../ServerState.js';
+import { ServerState } from '../ServerState.js';
 
 export abstract class Entity<TId extends number, TData extends object> {
 	public abstract id: TId;
