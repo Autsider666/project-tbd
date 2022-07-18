@@ -1,3 +1,4 @@
+import onChange, { ApplyData } from 'on-change';
 import { ServerState } from '../../ServerState.js';
 import { Constructor } from 'type-fest';
 import { Entity } from '../entity/Entity.js';
@@ -9,6 +10,19 @@ export abstract class Repository<
 > {
 	/** The loaded entities */
 	protected entities = new Map<TId, T>();
+
+	private onChangeCallbacks = new Map<
+		TId,
+		{
+			(
+				entity: T,
+				path: string,
+				value: any,
+				previousValue: any,
+				applyData: ApplyData
+			): void;
+		}[]
+	>();
 
 	/** ID counter for new entities */
 	private nextId: TId = 0 as TId;
@@ -36,12 +50,53 @@ export abstract class Repository<
 	}
 
 	protected addEntity(entity: T): void {
-		this.entities.set(entity.id, this.onCreate(entity));
+		this.entities.set(
+			entity.id,
+			onChange(
+				entity,
+				(
+					path: string,
+					value: any,
+					previousValue: any,
+					applyData
+				): void => {
+					this.onChangeCallbacks
+						.get(entity.id)
+						?.forEach((callback) =>
+							callback(
+								entity,
+								path,
+								value,
+								previousValue,
+								applyData
+							)
+						);
+				}
+			)
+		);
 	}
 
-	protected onCreate(entity: T): T {
-		return entity;
+	public registerOnChangeCallback(
+		entity: T,
+		callback: {
+			(
+				entity: T,
+				path: string,
+				value: any,
+				previousValue: any,
+				applyData: ApplyData
+			): void;
+		}
+	) {
+		let callbacks = this.onChangeCallbacks.get(entity.id);
+		if (!callbacks) {
+			callbacks = [];
+			this.onChangeCallbacks.set(entity.id, callbacks);
+		}
+
+		callbacks.push(callback);
 	}
+
 	// protected createEntity(): T {
 	// 	let entity = new T(this.world);
 	// 	entity.id = this.nextId;

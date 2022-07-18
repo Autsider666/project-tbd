@@ -37,5 +37,3 @@ httpServer.listen(port, host, async () => {
 
 	await serverController.start();
 });
-
-console.log(123);

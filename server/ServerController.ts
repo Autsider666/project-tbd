@@ -1,3 +1,5 @@
+import { SocketId } from 'socket.io-adapter';
+import { ClientController } from './ClientController.js';
 import { World } from './game/entity/World.js';
 import { WorldController } from './game/WorldController.js';
 import { Server, Socket } from 'socket.io';
@@ -15,6 +17,7 @@ const EVENTS = {
 
 export class ServerController {
 	private worldControllers: WorldController[] = [];
+	private clientControllers = new Map<SocketId, ClientController>();
 
 	constructor(
 		protected readonly io: Server,
@@ -25,7 +28,10 @@ export class ServerController {
 		console.info(`Sockets enabled`);
 
 		this.io.on(EVENTS.CLIENT.CONNECTION, (socket: Socket) => {
-			console.info(`User connected ${socket.id}`);
+			this.clientControllers.set(
+				socket.id,
+				new ClientController(socket, this.io)
+			);
 
 			socket.on(EVENTS.CLIENT.SEND_MESSAGE, (message: any) => {
 				console.log('Received message:', message);
@@ -34,6 +40,10 @@ export class ServerController {
 
 				socket.broadcast.emit(EVENTS.SERVER.SEND_MESSAGE, message);
 			});
+
+			socket.on('disconnect', () => {
+				this.clientControllers.delete(socket.id);
+			});
 		});
 
 		this.serverState
@@ -41,7 +51,7 @@ export class ServerController {
 			?.getAll()
 			.forEach((world) =>
 				this.worldControllers.push(
-					new WorldController(world, this.serverState)
+					new WorldController(world, this.serverState, this.io)
 				)
 			);
 
