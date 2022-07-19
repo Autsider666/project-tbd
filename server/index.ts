@@ -27,11 +27,11 @@ instrument(io, {
 	auth: false,
 });
 
+const state = await StatePersister.readState();
+
 httpServer.listen(port, host, async () => {
 	console.info(`🚀 Server is listening 🚀`);
 	console.info(`http://${host}:${port}`);
-
-	const state = await StatePersister.readState();
 
 	const serverController = new ServerController(io, state);
 

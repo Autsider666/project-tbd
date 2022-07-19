@@ -65,6 +65,8 @@ export class StatePersister {
 		);
 		serverState.registerRepository(Border, borders);
 
+		console.log(JSON.stringify(serverState));
+
 		return serverState;
 	}
 }

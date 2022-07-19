@@ -23,7 +23,7 @@ export class ClientController {
 
 	private handleSocket(): void {
 		this.socket.on('add-character', (token: string) => {
-			const payload = jwt.decode(token) as CharacterPayload;
+			const payload = jwt.verify(token, secret) as CharacterPayload; //TODO add error handling
 			console.log('add-character', payload);
 
 			this.socket.join('character:' + payload.character);
