@@ -10,7 +10,7 @@
 	<body>
 		<button onClick="sendMsg()">Hit Me</button>
 		<button onClick="createCharacter()">Create Character</button>
-		<button onClick="addCharacter()">Add Character</button>
+		<button onClick="addCharacter()">Initialize Character</button>
 
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.2/socket.io.js"></script>
 		<script>
@@ -28,7 +28,7 @@
 				}
 
 				socket.emit(
-					'create-character',
+					'character:create',
 					{ name: 'from client' },
 					(jwt) => {
 						console.log(jwt);
@@ -42,7 +42,7 @@
 					return alert('Create a character first!');
 				}
 
-				socket.emit('add-character', token);
+				socket.emit('character:init', token);
 			}
 
 			socket.on('message', function (data) {
@@ -51,6 +51,10 @@
 
 			socket.on('initialize', function (data) {
 				console.log('initialize', data);
+			});
+
+			socket.on('entity:update', function (data) {
+				console.log('entity:update', JSON.stringify(data));
 			});
 		</script>
 	</body>

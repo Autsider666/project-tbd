@@ -1,12 +1,13 @@
 import { Opaque } from 'type-fest';
 import { ServerState } from '../ServerState.js';
-import { Area, AreaId } from './Area.js';
+import { Region, RegionId } from './Region.js';
 import { Entity } from './Entity.js';
 
 export type BorderId = Opaque<number, 'BorderId'>;
 export type BorderData = {
 	id: BorderId;
-	areas: AreaId[];
+	entityType: string;
+	regions: RegionId[];
 	type: BorderType;
 };
 
@@ -15,8 +16,7 @@ export enum BorderType {
 }
 
 export class Border extends Entity<BorderId, BorderData> {
-	id: BorderId;
-	areas = new Map<AreaId, Area | null>();
+	regions = new Map<RegionId, Region | null>();
 	type: BorderType;
 
 	constructor(protected readonly serverState: ServerState, data: BorderData) {
@@ -25,22 +25,23 @@ export class Border extends Entity<BorderId, BorderData> {
 		this.id = data.id;
 		this.type = data.type ?? BorderType.default;
 
-		data.areas.forEach((id) => this.areas.set(id, null));
+		data.regions.forEach((id) => this.regions.set(id, null));
 	}
 
 	denormalize(data: BorderData): void {
 		this.id = data.id;
 		this.type = data.type;
 
-		this.areas.clear();
-		data.areas.forEach((id) => this.areas.set(id, null));
+		this.regions.clear();
+		data.regions.forEach((id) => this.regions.set(id, null));
 	}
 
 	normalize(): BorderData {
 		return {
 			id: this.id,
+			entityType: this.entityType,
 			type: this.type,
-			areas: Array.from(this.areas.keys()),
+			regions: Array.from(this.regions.keys()),
 		};
 	}
 }

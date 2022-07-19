@@ -1,20 +1,33 @@
 import { ServerState } from '../ServerState.js';
 
-export abstract class Entity<TId extends number, TData extends object> {
-	public abstract id: TId;
+export abstract class Entity<
+	TId extends number,
+	TData extends { id: TId; entityType: string }
+> {
+	protected id: TId;
+	protected entityType: string;
 
 	protected constructor(
 		protected readonly serverState: ServerState,
 		data: TData
-	) {}
+	) {
+		this.id = data.id;
+		this.entityType = data.entityType;
+	}
 
 	public abstract denormalize(data: TData): void;
 
 	public abstract normalize(): TData;
 
-	public onCreate(): void {}
-
 	public toJSON(): TData {
 		return this.normalize();
+	}
+
+	public getEntityRoomName(): string {
+		return 'entity:' + this.constructor.name.toLowerCase() + ':' + this.id;
+	}
+
+	public getId(): TId {
+		return this.id;
 	}
 }

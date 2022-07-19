@@ -6,7 +6,7 @@ import { Entity } from '../entity/Entity.js';
 export abstract class Repository<
 	T extends Entity<TId, TData>,
 	TId extends number,
-	TData extends object
+	TData extends { id: TId; entityType: string }
 > {
 	/** The loaded entities */
 	protected entities = new Map<TId, T>();
@@ -51,7 +51,7 @@ export abstract class Repository<
 
 	protected addEntity(entity: T): void {
 		this.entities.set(
-			entity.id,
+			entity.getId(),
 			onChange(
 				entity,
 				(
@@ -61,7 +61,7 @@ export abstract class Repository<
 					applyData
 				): void => {
 					this.onChangeCallbacks
-						.get(entity.id)
+						.get(entity.getId())
 						?.forEach((callback) =>
 							callback(
 								entity,
@@ -88,22 +88,21 @@ export abstract class Repository<
 			): void;
 		}
 	) {
-		let callbacks = this.onChangeCallbacks.get(entity.id);
+		let callbacks = this.onChangeCallbacks.get(entity.getId());
 		if (!callbacks) {
 			callbacks = [];
-			this.onChangeCallbacks.set(entity.id, callbacks);
+			this.onChangeCallbacks.set(entity.getId(), callbacks);
 		}
 
 		callbacks.push(callback);
 	}
 
-	// protected createEntity(): T {
-	// 	let entity = new T(this.world);
-	// 	entity.id = this.nextId;
-	// 	this.nextId++;
+	// protected createEntity(data: TData): T {
+	// 	let entity = new T(this.serverState, data);
+	// 	entity.id = this.nextId++;
 	//
 	// 	this.addEntity(entity);
-	// 	entity.onCreate();
+	// 	// entity.onCreate();
 	//
 	// 	return entity;
 	// }
@@ -117,8 +116,8 @@ export abstract class Repository<
 			let entity = new ClassName(this.serverState, entry);
 			this.addEntity(entity);
 
-			if (entity.id >= this.nextId) {
-				this.nextId = (entity.id + 1) as TId;
+			if (entity.getId() >= this.nextId) {
+				this.nextId = (entity.getId() + 1) as TId;
 			}
 		}
 	}

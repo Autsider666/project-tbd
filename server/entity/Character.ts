@@ -1,4 +1,4 @@
-import { Area, AreaId } from './Area.js';
+import { Region, RegionId } from './Region.js';
 import { ServerState } from '../ServerState.js';
 import { Opaque } from 'type-fest';
 import { Entity } from './Entity.js';
@@ -6,14 +6,14 @@ import { Entity } from './Entity.js';
 export type CharacterId = Opaque<number, 'CharacterId'>;
 export type CharacterData = {
 	id: CharacterId;
+	entityType: string;
 	name: string;
-	area: AreaId;
+	region: RegionId;
 };
 
 export class Character extends Entity<CharacterId, CharacterData> {
-	public id: CharacterId;
 	public name: string;
-	public area: Area | AreaId;
+	private region: Region | RegionId;
 
 	constructor(
 		protected readonly serverState: ServerState,
@@ -23,7 +23,7 @@ export class Character extends Entity<CharacterId, CharacterData> {
 
 		this.id = data.id;
 		this.name = data.name;
-		this.area = data.area;
+		this.region = data.region;
 	}
 
 	denormalize(data: CharacterData): void {
@@ -34,12 +34,28 @@ export class Character extends Entity<CharacterId, CharacterData> {
 	normalize(): CharacterData {
 		return {
 			id: this.id,
+			entityType: this.entityType,
 			name: this.name,
-			area:
-				typeof this.area === 'number'
-					? this.area
-					: (this.area as Area).id,
+			region:
+				typeof this.region === 'number'
+					? this.region
+					: (this.region as Region).getId(),
 			// world: typeof this.world === "number" ? this.world as WorldId : (this.world as World).id,
 		};
+	}
+
+	public getRegion(): Region {
+		if (typeof this.region === 'number') {
+			const repository = this.serverState.getRepository(Region);
+
+			const region = repository.get(this.region as RegionId);
+			if (region === null) {
+				throw new Error('.... uhm.....');
+			}
+
+			this.region = region;
+		}
+
+		return this.region as Region;
 	}
 }

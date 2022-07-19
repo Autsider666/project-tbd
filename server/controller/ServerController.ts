@@ -1,50 +1,51 @@
 import { SocketId } from 'socket.io-adapter';
+import { Character } from '../entity/Character.js';
+import { CharacterRepository } from '../repository/CharacterRepository.js';
+import { ClientToServerEvents, ServerToClientEvents } from '../socket.io.js';
 import { ClientController } from './ClientController.js';
 import { World } from '../entity/World.js';
+import { StateSyncController } from './StateSyncController.js';
 import { WorldController } from './WorldController.js';
 import { Server, Socket } from 'socket.io';
 import { ServerState } from '../ServerState.js';
 
-const EVENTS = {
-	CLIENT: {
-		CONNECTION: 'connection',
-		SEND_MESSAGE: 'message',
-	},
-	SERVER: {
-		SEND_MESSAGE: 'message',
-	},
-};
-
 export class ServerController {
 	private worldControllers: WorldController[] = [];
 	private clientControllers = new Map<SocketId, ClientController>();
+	private stateSyncController: StateSyncController;
 
 	constructor(
-		protected readonly io: Server,
+		protected readonly io: Server<
+			ClientToServerEvents,
+			ServerToClientEvents
+		>,
 		protected readonly serverState: ServerState
-	) {}
+	) {
+		this.stateSyncController = new StateSyncController(serverState, io);
+	}
 
 	async start(): Promise<void> {
 		console.info(`Sockets enabled`);
 
-		this.io.on(EVENTS.CLIENT.CONNECTION, (socket: Socket) => {
-			this.clientControllers.set(
-				socket.id,
-				new ClientController(socket, this.io)
-			);
+		this.io.on(
+			'connection',
+			(socket: Socket<ClientToServerEvents, ServerToClientEvents>) => {
+				this.clientControllers.set(
+					socket.id,
+					new ClientController(
+						socket,
+						this.io,
+						this.serverState.getRepository(
+							Character
+						) as CharacterRepository
+					)
+				);
 
-			socket.on(EVENTS.CLIENT.SEND_MESSAGE, (message: any) => {
-				console.log('Received message:', message);
-
-				socket.emit(EVENTS.SERVER.SEND_MESSAGE, 'Message received.');
-
-				socket.broadcast.emit(EVENTS.SERVER.SEND_MESSAGE, message);
-			});
-
-			socket.on('disconnect', () => {
-				this.clientControllers.delete(socket.id);
-			});
-		});
+				socket.on('disconnect', (reason) => {
+					this.clientControllers.delete(socket.id);
+				});
+			}
+		);
 
 		this.serverState
 			.getRepository(World)
@@ -57,10 +58,10 @@ export class ServerController {
 
 		let turn = 0;
 		setInterval(() => {
-			console.log('Turn ' + turn++ + ' at ' + Date.now());
-			for (const [key, value] of Object.entries(process.memoryUsage())) {
-				console.log(`Memory usage by ${key}, ${value / 1000000}MB `);
-			}
+			// console.log('Turn ' + turn++ + ' at ' + Date.now());
+			// for (const [key, value] of Object.entries(process.memoryUsage())) {
+			// 	console.log(`Memory usage by ${key}, ${value / 1000000}MB `);
+			// }
 
 			this.worldControllers.forEach((world) => world.tick());
 		}, 5000);

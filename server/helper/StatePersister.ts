@@ -2,8 +2,8 @@ import { promises as fsPromises } from 'fs';
 import path, { join } from 'path';
 import { fileURLToPath } from 'url';
 import { Border } from '../entity/Border.js';
-import { AreaRepository } from '../repository/AreaRepository.js';
-import { Area } from '../entity/Area.js';
+import { RegionRepository } from '../repository/RegionRepository.js';
+import { Region } from '../entity/Region.js';
 import { Character } from '../entity/Character.js';
 import { BorderRepository } from '../repository/BorderRepository.js';
 import { CharacterRepository } from '../repository/CharacterRepository.js';
@@ -53,11 +53,11 @@ export class StatePersister {
 		);
 		serverState.registerRepository(Character, characters);
 
-		const areas = new AreaRepository(
+		const regions = new RegionRepository(
 			serverState,
-			loadedState.AreaRepository ?? []
+			loadedState.RegionRepository ?? []
 		);
-		serverState.registerRepository(Area, areas);
+		serverState.registerRepository(Region, regions);
 
 		const borders = new BorderRepository(
 			serverState,

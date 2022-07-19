@@ -17,8 +17,19 @@ export class ServerState {
 
 	getRepository<T extends Entity<any, any>>(
 		name: Constructor<T>
-	): Repository<T, any, any> | null {
-		return this.repositories.get(name) ?? null;
+	): Repository<T, any, any> {
+		const repository = this.repositories.get(name);
+		if (!repository) {
+			throw new Error(
+				name + ' has no registered repository in ServerState.'
+			);
+		}
+
+		return repository;
+	}
+
+	getAllRepositories(): Repository<any, any, any>[] {
+		return Array.from(this.repositories.values());
 	}
 
 	toJSON() {

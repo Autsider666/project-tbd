@@ -5,6 +5,7 @@ import express from 'express';
 import { createServer } from 'http';
 import path from 'path';
 import { Server } from 'socket.io';
+import { ClientToServerEvents, ServerToClientEvents } from './socket.io.js';
 
 const port = 5000;
 const host = 'localhost';
@@ -14,7 +15,7 @@ const app = express();
 
 const httpServer = createServer(app);
 
-const io = new Server(httpServer, {
+const io = new Server<ClientToServerEvents, ServerToClientEvents>(httpServer, {
 	cors: {
 		origin: corsOrigin,
 		// credentials: true,

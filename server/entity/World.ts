@@ -1,5 +1,5 @@
 import { ServerState } from '../ServerState.js';
-import { Area, AreaId } from './Area.js';
+import { Region, RegionId } from './Region.js';
 import { Opaque } from 'type-fest';
 import { Entity } from './Entity.js';
 
@@ -7,35 +7,55 @@ export type WorldId = Opaque<number, 'WorldId'>;
 
 export type WorldData = {
 	id: WorldId;
+	entityType: string;
 	name: string;
-	areas: AreaId[];
+	regions: RegionId[];
 };
 
 export class World extends Entity<WorldId, WorldData> {
-	public id: WorldId;
 	public name: string;
-	private areas = new Map<AreaId, Area | null>();
+	private regions = new Map<RegionId, Region | null>();
 
 	constructor(protected readonly serverState: ServerState, data: WorldData) {
 		super(serverState, data);
 
 		this.id = data.id;
 		this.name = data.name;
-		data.areas.forEach((id) => this.areas.set(id, null));
+		data.regions.forEach((id) => this.regions.set(id, null));
 	}
 
 	denormalize(data: WorldData): void {
 		this.id = data.id;
 		this.name = data.name;
-		this.areas.clear();
-		data.areas.forEach((id) => this.areas.set(id, null));
+		this.regions.clear();
+		data.regions.forEach((id) => this.regions.set(id, null));
 	}
 
 	normalize(): WorldData {
 		return {
 			id: this.id,
+			entityType: this.entityType,
 			name: this.name,
-			areas: Array.from(this.areas.keys()),
+			regions: Array.from(this.regions.keys()),
 		};
+	}
+
+	public getRegions(): Region[] {
+		this.regions.forEach((region, id) => {
+			if (region !== null) {
+				return;
+			}
+
+			const lazyLoadedRegion = this.serverState
+				.getRepository(Region)
+				.get(id);
+			if (lazyLoadedRegion === null) {
+				throw new Error('.... uhm.....');
+			}
+
+			this.regions.set(id, lazyLoadedRegion);
+		});
+
+		return Array.from(this.regions.values()) as Region[];
 	}
 }
