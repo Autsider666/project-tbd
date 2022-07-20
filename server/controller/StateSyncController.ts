@@ -5,6 +5,8 @@ import { World } from '../entity/World.js';
 import { ServerState } from '../ServerState.js';
 import { ClientToServerEvents, ServerToClientEvents } from '../socket.io.js';
 
+export type EntityUpdate = { [key: string]: Entity<any, any> | null };
+
 export class StateSyncController {
 	constructor(
 		private readonly serverState: ServerState,
@@ -32,26 +34,26 @@ export class StateSyncController {
 				throw new Error('Tried to initialize a non-existent world');
 			}
 
-			this.initializeAllEntitiesOfWorld(world);
+			this.emitEntityUpdate(world.prepareUpdate());
 		}
 	}
 
-	private initializeAllEntitiesOfWorld(world: World): void {
-		const entities = new Map<string, Entity<any, any>>();
+	private emitEntityUpdate(data: EntityUpdate): void {
+		// const entities: {[key: string]: Entity<any, any>} = {};
+		//
+		// entities[world.getEntityRoomName()] = world;
+		//
+		// const regions = world.getRegions();
+		// regions.forEach((region) => {
+		// 	entities[region.getEntityRoomName()]= region;
+		//
+		// 	region
+		// 		.getBorders()
+		// 		.forEach((border) =>
+		// 			entities[border.getEntityRoomName()] = border
+		// 		);
+		// });
 
-		entities.set(world.getEntityRoomName(), world);
-
-		const regions = world.getRegions();
-		regions.forEach((region) => {
-			entities.set(region.getEntityRoomName(), region);
-
-			region
-				.getBorders()
-				.forEach((border) =>
-					entities.set(border.getEntityRoomName(), border)
-				);
-		});
-
-		this.io.emit('entity:update', Array.from(entities.values()));
+		this.io.emit('entity:update', data);
 	}
 }

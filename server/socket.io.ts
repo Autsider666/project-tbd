@@ -1,7 +1,7 @@
-import { Entity } from './entity/Entity.js';
+import { EntityUpdate } from './controller/StateSyncController.js';
 
 export interface ServerToClientEvents {
-	'entity:update': (entities: Entity<any, any>[]) => void;
+	'entity:update': (entities: EntityUpdate) => void;
 
 	//Default to keep PhpStorm calm
 	[event: string]: (...args: any[]) => void;

@@ -49,6 +49,6 @@ export class WorldController {
 		value: any,
 		previousValue: any
 	): void {
-		console.log(world.name, path, value, previousValue);
+		// console.log(world.name, path, value, previousValue);
 	}
 }

@@ -1,3 +1,4 @@
+import { EntityUpdate } from '../controller/StateSyncController.js';
 import { ServerState } from '../ServerState.js';
 
 export abstract class Entity<
@@ -29,5 +30,13 @@ export abstract class Entity<
 
 	public getId(): TId {
 		return this.id;
+	}
+
+	public prepareUpdate(updateObject: EntityUpdate = {}): EntityUpdate {
+		if (!(this.getEntityRoomName() in updateObject)) {
+			updateObject[this.getEntityRoomName()] = this;
+		}
+
+		return updateObject;
 	}
 }

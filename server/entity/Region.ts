@@ -1,3 +1,4 @@
+import { EntityUpdate } from '../controller/StateSyncController.js';
 import { Border, BorderId } from './Border.js';
 import { World, WorldId } from './World.js';
 import { ServerState } from '../ServerState.js';
@@ -64,6 +65,14 @@ export class Region extends Entity<RegionId, RegionData> {
 					? (this.world as WorldId)
 					: (this.world as World).getId(),
 		};
+	}
+
+	override prepareUpdate(updateObject: EntityUpdate = {}): EntityUpdate {
+		this.getBorders().forEach(
+			(border) => (updateObject = border.prepareUpdate(updateObject))
+		);
+
+		return super.prepareUpdate(updateObject);
 	}
 
 	public getWorld(): World {

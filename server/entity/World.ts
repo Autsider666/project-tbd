@@ -1,3 +1,4 @@
+import { EntityUpdate } from '../controller/StateSyncController.js';
 import { ServerState } from '../ServerState.js';
 import { Region, RegionId } from './Region.js';
 import { Opaque } from 'type-fest';
@@ -38,6 +39,14 @@ export class World extends Entity<WorldId, WorldData> {
 			name: this.name,
 			regions: Array.from(this.regions.keys()),
 		};
+	}
+
+	override prepareUpdate(updateObject: EntityUpdate = {}): EntityUpdate {
+		this.getRegions().forEach((region) => {
+			updateObject = region.prepareUpdate(updateObject);
+		});
+
+		return super.prepareUpdate(updateObject);
 	}
 
 	public getRegions(): Region[] {

@@ -3,6 +3,8 @@ import { ServerState } from '../ServerState.js';
 import { Constructor } from 'type-fest';
 import { Entity } from '../entity/Entity.js';
 
+type Optional<T, TKey extends keyof T> = Partial<Pick<T, TKey>> & Omit<T, TKey>;
+
 export abstract class Repository<
 	T extends Entity<TId, TData>,
 	TId extends number,
@@ -97,15 +99,16 @@ export abstract class Repository<
 		callbacks.push(callback);
 	}
 
-	// protected createEntity(data: TData): T {
-	// 	let entity = new T(this.serverState, data);
-	// 	entity.id = this.nextId++;
-	//
-	// 	this.addEntity(entity);
-	// 	// entity.onCreate();
-	//
-	// 	return entity;
-	// }
+	public createEntity(data: Optional<TData, 'id' | 'entityType'>): T {
+		data.id = this.nextId++ as TId;
+		const ClassName = this.entity();
+		let entity = new ClassName(this.serverState, data as TData);
+
+		this.addEntity(entity);
+		// entity.onCreate();
+
+		return entity;
+	}
 
 	/**
 	 * Loads data into the repository

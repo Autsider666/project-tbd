@@ -1,6 +1,7 @@
 import { Server, Socket } from 'socket.io';
 import jwt from 'jsonwebtoken';
 import { Character, CharacterId } from '../entity/Character.js';
+import { RegionId } from '../entity/Region.js';
 import { WorldId } from '../entity/World.js';
 import { CharacterRepository } from '../repository/CharacterRepository.js';
 import { ClientToServerEvents, ServerToClientEvents } from '../socket.io.js';
@@ -36,7 +37,7 @@ export class ClientController {
 				return; //TODO error handling
 			}
 
-			this.addCharacter(character);
+			this.initializeCharacter(character);
 		});
 
 		this.socket.on(
@@ -44,31 +45,34 @@ export class ClientController {
 			(data: { name: string }, callback: (token: string) => void) => {
 				console.log('create character', data);
 
-				const newCharacter = this.characterRepository.get(
-					1 as CharacterId
-				);
+				const newCharacter = this.characterRepository.createEntity({
+					name: data.name,
+					region: 1 as RegionId,
+				});
 
 				const payload: CharacterPayload = {
-					character: 1 as CharacterId,
-					world: 1 as WorldId,
+					character: newCharacter.getId(),
+					world: newCharacter.getRegion().getWorld().getId(),
 				};
 
 				const token = jwt.sign(payload, secret);
 				callback(token);
 
-				this.addCharacter(newCharacter as Character);
+				this.initializeCharacter(newCharacter as Character);
 			}
 		);
 	}
 
-	private addCharacter(character: Character): void {
+	private initializeCharacter(character: Character): void {
 		if (this.characters.has(character.getId())) {
-			console.log('Not gonna add this character again.');
+			console.log('Not gonna initialize this character again.');
 			return;
 		}
 
 		console.log(
-			`adding character ${character.getId()} to ${this.socket.id}`
+			`adding character "${character.name} (${character.getId()})" to ${
+				this.socket.id
+			}`
 		);
 
 		const region = character.getRegion();
