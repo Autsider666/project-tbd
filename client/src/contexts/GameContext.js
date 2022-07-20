@@ -16,13 +16,36 @@ const GameProvider = ({ children }) => {
 
     const [allEntities, setAllEntities] = useState()
 
+    const [worldRepository, setWorldRepository] = useState({})
+    const [regionRepository, setRegionRepository] = useState({})
+    const [borderRepository, setBorderRepository] = useState({})
+    const [characterRepository, setCharacterRepository] = useState({})
+
     const entityUpdater = entities => {
+        console.log(entities)
         // Does all the pretty work of saving it into the various repositories.
 
-        // temp state for testing
-        setAllEntities(entities)
+        const entitiesFormatted = Object.values(entities).reduce((accum, { id, entityType, ...rest }) => {
+            accum[`${entityType.toLowerCase()}Repository`][id] = { id, ...rest }
+            return accum
+        }, {
+            worldRepository: {},
+            regionRepository: {},
+            borderRepository: {},
+            characterRepository: {},
+        })
+        setWorldRepository(prev => ({ ...prev, ...entitiesFormatted.worldRepository }))
+        setRegionRepository(prev => ({ ...prev, ...entitiesFormatted.regionRepository }))
+        setBorderRepository(prev => ({ ...prev, ...entitiesFormatted.borderRepository }))
+        setCharacterRepository(prev => ({ ...prev, ...entitiesFormatted.characterRepository }))
+
+        setAllEntities(entities) // temp state for testing
         setLoaded(true)
     }
+
+    console.log({
+        worldRepository, regionRepository, borderRepository, characterRepository,
+    })
 
     useEffect(() => {
         !socket.hasListeners('entity:update') && socket.on('entity:update', entityUpdater)
@@ -30,10 +53,6 @@ const GameProvider = ({ children }) => {
         return () => socket.off('entity:update', entityUpdater)
     }, [token])
 
-    // const [world, setWorld] = useState({})
-    // const [regions, setRegions] = useState([])
-    // const [borders, setBorders] = useState([])
-    // const [characters, setCharacters] = useState([])
 
     // // "WorldRepository"
     // useEffect(() => {
@@ -68,7 +87,8 @@ const GameProvider = ({ children }) => {
     const value = {
         allEntities,
         loaded,
-        token
+        token,
+        worldRepository, regionRepository, borderRepository, characterRepository,
     };
 
     console.log(value)

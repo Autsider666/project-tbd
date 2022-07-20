@@ -39,6 +39,7 @@ export default () => {
             <g id="g8">
                {regions.map(region => (
                   <path
+                     key={region.id}
                      className="mapRegion"
                      {...region}
                      onClick={regionHandler(region.id)}

@@ -29,7 +29,6 @@ export class ClientController {
 
 	private handleSocket(): void {
 		this.socket.on('character:init', (token: string) => {
-			console.log({token})
 			const payload = jwt.verify(token, secret) as CharacterPayload; //TODO add error handling
 
 			console.log('entity:character:create', payload);

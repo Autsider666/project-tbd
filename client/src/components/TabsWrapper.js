@@ -48,12 +48,12 @@ const TabsWrapper = ({content = []}) => {
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
         <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
           {content.map(({ label }, index) => (
-            <Tab label={label} {...a11yProps(index)} />
+            <Tab key={index} label={label} {...a11yProps(index)} />
           ))}
         </Tabs>
       </Box>
       {content.map(({ Component }, index) => (
-        <TabPanel value={value} index={index}>
+        <TabPanel key={index} value={value} index={index}>
           <Component />
         </TabPanel>
       ))}

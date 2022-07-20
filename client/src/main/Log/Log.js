@@ -3,9 +3,6 @@ import { useLog } from '../../contexts/LogContext'
 
 const Log = () => {
 
-    const { log } = useLog()
-    console.log({ log })
-
     return (
         <div>Log</div>
     )

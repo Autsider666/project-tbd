@@ -14,9 +14,6 @@ const content = [
 
 const Chat = () => {
 
-    const { chat } = useChat()
-    console.log({ chat })
-
     return (
         <div>
             <TabsWrapper content={content} />

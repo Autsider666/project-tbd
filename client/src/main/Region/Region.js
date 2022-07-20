@@ -3,8 +3,8 @@ import { useGame } from '../../contexts/GameContext'
 
 const Region = () => {
 
-    const { regions } = useGame()
-    console.log({regions})
+    const { regionRepository } = useGame()
+    console.log({regionRepository})
 
     return (
         <div>Region</div>

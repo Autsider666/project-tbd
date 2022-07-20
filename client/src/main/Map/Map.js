@@ -6,16 +6,13 @@ import { useGame } from '../../contexts/GameContext.js'
 
 const Map = () => {
 
-    const { world } = useGame()
-    console.log({ world })
+    const { worldRepository } = useGame()
+    console.log({ worldRepository })
 
     return (
         <>
-
-
             <TestSvg />
             <img style={{ opacity: 0.3 }} src={Water} position="absolute" height="100%" />
-
         </>
     )
 }
