@@ -2,12 +2,14 @@ import { promises as fsPromises } from 'fs';
 import path, { join } from 'path';
 import { fileURLToPath } from 'url';
 import { Border } from '../entity/Border.js';
+import { TravelEvent } from '../entity/TravelEvent.js';
 import { RegionRepository } from '../repository/RegionRepository.js';
 import { Region } from '../entity/Region.js';
 import { Character } from '../entity/Character.js';
 import { BorderRepository } from '../repository/BorderRepository.js';
 import { CharacterRepository } from '../repository/CharacterRepository.js';
 import { World } from '../entity/World.js';
+import { TravelEventRepository } from '../repository/TravelEventRepository.js';
 import { ServerState } from '../ServerState.js';
 import { WorldRepository } from '../repository/WorldRepository.js';
 
@@ -64,6 +66,12 @@ export class StatePersister {
 			loadedState.BorderRepository ?? []
 		);
 		serverState.registerRepository(Border, borders);
+
+		const travelEvents = new TravelEventRepository(
+			serverState,
+			loadedState.TravelEventRepository ?? []
+		);
+		serverState.registerRepository(TravelEvent, travelEvents);
 
 		console.log(JSON.stringify(serverState));
 

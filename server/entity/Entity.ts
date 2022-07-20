@@ -1,9 +1,14 @@
 import { EntityUpdate } from '../controller/StateSyncController.js';
 import { ServerState } from '../ServerState.js';
 
+export type EntityData<TId extends number> = {
+	id: TId;
+	entityType: string;
+};
+
 export abstract class Entity<
 	TId extends number,
-	TData extends { id: TId; entityType: string }
+	TData extends EntityData<TId>
 > {
 	protected id: TId;
 	protected entityType: string;
@@ -16,7 +21,7 @@ export abstract class Entity<
 		this.entityType = data.entityType;
 	}
 
-	public abstract denormalize(data: TData): void;
+	// public abstract denormalize(data: TData): void;
 
 	public abstract normalize(): TData;
 

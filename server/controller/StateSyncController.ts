@@ -1,5 +1,6 @@
 import { Server } from 'socket.io';
 import { SocketId } from 'socket.io-adapter';
+import { Character } from '../entity/Character.js';
 import { Entity } from '../entity/Entity.js';
 import { World } from '../entity/World.js';
 import { ServerState } from '../ServerState.js';
@@ -34,26 +35,19 @@ export class StateSyncController {
 				throw new Error('Tried to initialize a non-existent world');
 			}
 
-			this.emitEntityUpdate(world.prepareUpdate());
+			this.io.to(room).emit('entity:update', world.prepareUpdate());
 		}
-	}
 
-	private emitEntityUpdate(data: EntityUpdate): void {
-		// const entities: {[key: string]: Entity<any, any>} = {};
-		//
-		// entities[world.getEntityRoomName()] = world;
-		//
-		// const regions = world.getRegions();
-		// regions.forEach((region) => {
-		// 	entities[region.getEntityRoomName()]= region;
-		//
-		// 	region
-		// 		.getBorders()
-		// 		.forEach((border) =>
-		// 			entities[border.getEntityRoomName()] = border
-		// 		);
-		// });
+		if (room.startsWith('entity:character:')) {
+			const characterId = parseInt(room.replace('entity:character:', ''));
+			const character = this.serverState
+				.getRepository(Character)
+				.get(characterId);
+			if (character === null || character.constructor !== Character) {
+				throw new Error('Tried to initialize a non-existent character');
+			}
 
-		this.io.emit('entity:update', data);
+			this.io.to(room).emit('entity:update', character.prepareUpdate());
+		}
 	}
 }

@@ -1,6 +1,7 @@
 import { Server, Socket } from 'socket.io';
 import jwt from 'jsonwebtoken';
 import { Character, CharacterId } from '../entity/Character.js';
+import { EventId } from '../entity/Event.js';
 import { RegionId } from '../entity/Region.js';
 import { WorldId } from '../entity/World.js';
 import { CharacterRepository } from '../repository/CharacterRepository.js';
@@ -29,9 +30,11 @@ export class ClientController {
 
 	private handleSocket(): void {
 		this.socket.on('character:init', (token: string) => {
-			const payload = jwt.verify(token, secret) as CharacterPayload; //TODO add error handling
+			if (token.length === 0) {
+				return; //TODO add error handling
+			}
 
-			console.log('entity:character:create', payload);
+			const payload = jwt.verify(token, secret) as CharacterPayload; //TODO add error handling
 
 			const character = this.characterRepository.get(payload.character);
 			if (character === null) {
@@ -49,6 +52,7 @@ export class ClientController {
 				const newCharacter = this.characterRepository.createEntity({
 					name: data.name,
 					region: 1 as RegionId,
+					currentTravelEvent: 1 as EventId,
 				});
 
 				const payload: CharacterPayload = {
@@ -71,7 +75,8 @@ export class ClientController {
 		}
 
 		console.log(
-			`adding character "${character.name} (${character.getId()})" to ${this.socket.id
+			`adding character "${character.name} (${character.getId()})" to ${
+				this.socket.id
 			}`
 		);
 
