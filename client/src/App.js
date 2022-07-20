@@ -19,7 +19,7 @@ const App = () => {
 			<Header />
 			<div id="main">
 				{
-					false ? <Main /> : <SplashPage />
+					loaded ? <Main /> : <SplashPage />
 				}
 			</div>
 		</div>

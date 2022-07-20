@@ -9,17 +9,52 @@
 	</head>
 	<body>
 		<button onClick="sendMsg()">Hit Me</button>
+		<button onClick="createCharacter()">Create Character</button>
+		<button onClick="addCharacter()">Initialize Character</button>
 
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.2/socket.io.js"></script>
 		<script>
 			const socket = io('http://localhost:5000');
 
+			let token = null;
+
 			function sendMsg() {
 				socket.emit('message', 'HELLO WORLD');
 			}
 
+			function createCharacter() {
+				// if (token !== null) {
+				// 	return alert('Already have a character!');
+				// }
+
+				socket.emit(
+					'character:create',
+					{ name: 'from client' },
+					(jwt) => {
+						console.log(jwt);
+						token = jwt;
+					}
+				);
+			}
+
+			function addCharacter() {
+				if (token === null) {
+					return alert('Create a character first!');
+				}
+
+				socket.emit('character:init', token);
+			}
+
 			socket.on('message', function (data) {
 				console.log(data);
+			});
+
+			socket.on('initialize', function (data) {
+				console.log('initialize', data);
+			});
+
+			socket.on('entity:update', function (data) {
+				console.log('entity:update', JSON.stringify(data));
 			});
 		</script>
 	</body>

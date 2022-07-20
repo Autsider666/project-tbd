@@ -1,5 +1,6 @@
 import { useContext, useState, createContext, useEffect } from 'react';
-import { socket, EVENT_NAMES, EMIT_NAMES } from '../functions/SocketAPI';
+import { socket } from '../functions/SocketAPI';
+// import { EVENT_NAMES, EMIT_NAMES} from '../functions/SocketAPI'
 import { useAuth } from './AuthContext';
 
 const GameContext = createContext();
@@ -9,7 +10,7 @@ const useGame = () => useContext(GameContext);
 const GameProvider = ({ children }) => {
 
     const { user } = useAuth()
-    const { token = "" } = user
+    const { token = null } = user
 
     const [loaded, setLoaded] = useState(false)
 
@@ -25,14 +26,14 @@ const GameProvider = ({ children }) => {
 
     useEffect(() => {
         !socket.hasListeners('entity:update') && socket.on('entity:update', entityUpdater)
-        socket.emit('character:init', token, data => console.log(data))
-        return () => socket.off('entity:update', setCharacters)
+        token && socket.emit('character:init', token, data => console.log(data))
+        return () => socket.off('entity:update', entityUpdater)
     }, [token])
 
-    const [world, setWorld] = useState({})
-    const [regions, setRegions] = useState([])
-    const [borders, setBorders] = useState([])
-    const [characters, setCharacters] = useState([])
+    // const [world, setWorld] = useState({})
+    // const [regions, setRegions] = useState([])
+    // const [borders, setBorders] = useState([])
+    // const [characters, setCharacters] = useState([])
 
     // // "WorldRepository"
     // useEffect(() => {

@@ -1,0 +1,49 @@
+{
+	"WorldRepository": [
+		{
+			"id": 1,
+			"entityType": "World",
+			"name": "Default",
+			"regions": [1, 2]
+		}
+	],
+	"RegionRepository": [
+		{
+			"id": 1,
+			"entityType": "Region",
+			"name": "Start",
+			"world": 1,
+			"characters": [1],
+			"borders": [1]
+		},
+		{
+			"id": 2,
+			"entityType": "Region",
+			"name": "Next",
+			"world": 1,
+			"characters": [2],
+			"borders": [1]
+		}
+	],
+	"BorderRepository": [
+		{
+			"id": 1,
+			"entityType": "Border",
+			"regions": [1, 2]
+		}
+	],
+	"CharacterRepository": [
+		{
+			"id": 1,
+			"entityType": "Character",
+			"name": "Player 1",
+			"region": 1
+		},
+		{
+			"id": 2,
+			"entityType": "Character",
+			"name": "Player 2",
+			"region": 2
+		}
+	]
+}
