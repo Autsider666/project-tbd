@@ -1,23 +1,27 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react'
+import Header from './header/Header'
+import Main from './main/Main';
+import SplashPage from './splashPage/SplashPage';
+import './App.css'
+import { useEffect } from 'react';
+import { socket } from './functions/SocketAPI';
+import { useGame } from './contexts/GameContext';
 
-function App() {
+const App = () => {
+	useEffect(() => {
+		socket.emit('message', 'Connected from Frontend Client');
+	}, [])
+
+	const { loaded = false } = useGame()
+
 	return (
-		<div className="App">
-			<header className="App-header">
-				<img src={logo} className="App-logo" alt="logo" />
-				<p>
-					Edit <code>src/App.js</code> and save to reload.
-				</p>
-				<a
-					className="App-link"
-					href="https://reactjs.org"
-					target="_blank"
-					rel="noopener noreferrer"
-				>
-					Learn React
-				</a>
-			</header>
+		<div id="app">
+			<Header />
+			<div id="main">
+				{
+					false ? <Main /> : <SplashPage />
+				}
+			</div>
 		</div>
 	);
 }
