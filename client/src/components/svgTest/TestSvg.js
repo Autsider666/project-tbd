@@ -19,7 +19,7 @@ export default () => {
       console.log(regionId)
    }
    return (
-      <div style={{ position: 'relative', width: "100%" }} >
+      <div style={{ position: 'relative', width: "100%", marginBottom: '-5px' }} >
          {/* <img src={Symbols} position="absolute" width="100%" /> */}
          <img src={Water} position="absolute" width="100%" />
          <img className="mapOverlay" src={Paths} position="absolute" width="100%" />
