@@ -19,17 +19,17 @@ export default () => {
       console.log(regionId)
    }
    return (
-      <div style={{ position: 'relative', height: "100%" }} >
-         {/* <img src={Symbols} position="absolute" height="100%" /> */}
-         <img src={Water} position="absolute" height="100%" />
-         <img className="mapOverlay" src={Paths} position="absolute" height="100%" />
+      <div style={{ position: 'relative', width: "100%" }} >
+         {/* <img src={Symbols} position="absolute" width="100%" /> */}
+         <img src={Water} position="absolute" width="100%" />
+         <img className="mapOverlay" src={Paths} position="absolute" width="100%" />
 
-         {/* <img height="100%" /> */}
+         {/* <img width="100%" /> */}
          <svg
             version="1.1"
             className="mapRegionWrapper"
             id="svg2"
-            height="100%"
+            width="100%"
             // width="1440"
             viewBox="0 0 1440 1080"
 
@@ -48,8 +48,8 @@ export default () => {
             </g>
          </svg>
 
-         <img className="mapOverlay" src={Landmasses} position="absolute" height="100%" />
-         <img id="mapSymbolsLayer" className="mapOverlay" src={Symbols} position="absolute" height="100%" />
+         <img className="mapOverlay" src={Landmasses} position="absolute" width="100%" />
+         <img id="mapSymbolsLayer" className="mapOverlay" src={Symbols} position="absolute" width="100%" />
 
       </div>
    )

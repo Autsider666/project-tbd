@@ -7,7 +7,7 @@ const Region = () => {
     console.log({regionRepository})
 
     return (
-        <div>Region</div>
+        <div>Region abcdasdfasdfasdfasd</div>
     )
 }
 
