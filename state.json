@@ -1,62 +1,62 @@
 {
 	"WorldRepository": [
 		{
-			"id": 1,
+			"id": "a",
 			"entityType": "World",
 			"name": "Default",
-			"regions": [1, 2]
+			"regions": ["a", "b"]
 		}
 	],
 	"RegionRepository": [
 		{
-			"id": 1,
+			"id": "a",
 			"entityType": "Region",
 			"name": "Start",
-			"world": 1,
-			"characters": [1],
-			"borders": [1]
+			"world": "a",
+			"characters": ["a"],
+			"borders": ["a"]
 		},
 		{
-			"id": 2,
+			"id": "b",
 			"entityType": "Region",
 			"name": "Next",
-			"world": 1,
-			"characters": [2],
-			"borders": [1]
+			"world": "a",
+			"characters": ["b"],
+			"borders": ["a"]
 		}
 	],
 	"BorderRepository": [
 		{
-			"id": 1,
+			"id": "a",
 			"entityType": "Border",
-			"regions": [1, 2]
+			"regions": ["a", "b"]
 		}
 	],
 	"CharacterRepository": [
 		{
-			"id": 1,
+			"id": "a",
 			"entityType": "Character",
 			"name": "Player 1",
-			"region": 1
+			"region": "a"
 		},
 		{
-			"id": 2,
+			"id": "b",
 			"entityType": "Character",
 			"name": "Player 2",
-			"region": 2
+			"region": "b"
 		}
 	],
 	"TravelEventRepository": [
 		{
-			"id": 1,
+			"id": "a",
 			"entityType": "TravelEvent",
-			"target": 1,
+			"target": "a",
 			"startTime": "2022-07-20T17:32:33.074Z",
 			"endTime": "2022-07-20T18:32:33.074Z",
 			"canBeStopped": true,
 			"chainEvent": null,
-			"startPoint": 1,
-			"endpoint": 2
+			"startPoint": "a",
+			"endpoint": "b"
 		}
 	]
 }

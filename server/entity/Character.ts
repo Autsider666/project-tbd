@@ -1,67 +1,85 @@
+import { Client } from '../controller/ClientController.js';
 import { EntityUpdate } from '../controller/StateSyncController.js';
+import { Uuid } from '../helper/UuidHelper.js';
 import { EventId } from './Event.js';
 import { Region, RegionId } from './Region.js';
 import { ServerState } from '../ServerState.js';
 import { Opaque } from 'type-fest';
-import { Entity } from './Entity.js';
+import { Entity, EntityClientData, EntityStateData } from './Entity.js';
 import { TravelEvent } from './TravelEvent.js';
 
-export type CharacterId = Opaque<number, 'CharacterId'>;
-export type CharacterData = {
-	id: CharacterId;
-	entityType: string;
+export type CharacterId = Opaque<Uuid, 'CharacterId'>;
+
+export type CharacterStateData = {
 	name: string;
 	region: RegionId;
 	currentTravelEvent: EventId | null;
-};
+} & EntityStateData<CharacterId>;
 
-export class Character extends Entity<CharacterId, CharacterData> {
+export type CharacterClientData = {
+	controllable: boolean;
+} & CharacterStateData &
+	EntityClientData<CharacterId>;
+
+export class Character extends Entity<
+	CharacterId,
+	CharacterStateData,
+	CharacterClientData
+> {
 	public readonly name: string;
 	private currentTravelEvent: EventId | TravelEvent | null;
 	private region: Region | RegionId;
 
 	constructor(
 		protected readonly serverState: ServerState,
-		data: CharacterData
+		data: CharacterStateData
 	) {
 		super(serverState, data);
 
-		this.id = data.id;
 		this.name = data.name;
 		this.region = data.region;
 		this.currentTravelEvent = data.currentTravelEvent ?? null;
 	}
 
-	normalize(): CharacterData {
+	public toJSON(): CharacterStateData {
 		return {
 			id: this.id,
-			entityType: this.entityType,
 			name: this.name,
 			region:
-				typeof this.region === 'number'
+				typeof this.region === 'string'
 					? this.region
 					: (this.region as Region).getId(),
 			currentTravelEvent:
-				typeof this.currentTravelEvent === 'number'
+				typeof this.currentTravelEvent === 'string'
 					? this.currentTravelEvent
 					: (
 							this.currentTravelEvent as TravelEvent | null
 					  )?.getId() ?? null,
-			// world: typeof this.world === "number" ? this.world as WorldId : (this.world as World).id,
 		};
 	}
 
-	override prepareUpdate(updateObject: EntityUpdate = {}): EntityUpdate {
+	public override normalize(forClient?: Client | null): CharacterClientData {
+		return {
+			entityType: this.constructor.name.toLowerCase(),
+			controllable: forClient?.characters.has(this.id) ?? false,
+			...this.toJSON(),
+		};
+	}
+
+	public override prepareUpdate(
+		updateObject: EntityUpdate = {},
+		forClient?: Client | null
+	): EntityUpdate {
 		const event = this.getCurrentTravelEvent();
 		if (event !== null) {
-			updateObject = event.prepareUpdate(updateObject);
+			updateObject = event.prepareUpdate(updateObject, forClient);
 		}
 
-		return super.prepareUpdate(updateObject);
+		return super.prepareUpdate(updateObject, forClient);
 	}
 
 	public getRegion(): Region {
-		if (typeof this.region === 'number') {
+		if (typeof this.region === 'string') {
 			const repository = this.serverState.getRepository(Region);
 
 			const region = repository.get(this.region as RegionId);
@@ -76,7 +94,7 @@ export class Character extends Entity<CharacterId, CharacterData> {
 	}
 
 	public getCurrentTravelEvent(): TravelEvent | null {
-		if (typeof this.currentTravelEvent === 'number') {
+		if (typeof this.currentTravelEvent === 'string') {
 			const repository = this.serverState.getRepository(TravelEvent);
 
 			const event = repository.get(this.currentTravelEvent as EventId);

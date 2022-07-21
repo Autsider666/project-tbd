@@ -1,20 +1,25 @@
+import { Client } from '../controller/ClientController.js';
 import { ServerState } from '../ServerState.js';
 import { Character } from './Character.js';
-import { Event, EventData } from './Event.js';
+import { EntityClientData } from './Entity.js';
+import { Event, EventId, EventStateData } from './Event.js';
 import { Region } from './Region.js';
 
-export type TravelEventData = {
+export type TravelEventStateData = {
 	startPoint: Region;
 	endpoint: Region;
-} & EventData<Character>;
+} & EventStateData<Character>;
 
-export class TravelEvent extends Event<Character, TravelEventData> {
+export type TravelEventClientData = TravelEventStateData &
+	EntityClientData<EventId>;
+
+export class TravelEvent extends Event<Character, TravelEventStateData> {
 	public readonly startPoint: Region;
 	public readonly endpoint: Region;
 
 	constructor(
 		protected readonly serverState: ServerState,
-		data: TravelEventData
+		data: TravelEventStateData
 	) {
 		super(serverState, data);
 
@@ -22,10 +27,9 @@ export class TravelEvent extends Event<Character, TravelEventData> {
 		this.endpoint = data.endpoint;
 	}
 
-	override normalize(): TravelEventData {
+	toJSON(): TravelEventStateData {
 		return {
 			id: this.id,
-			entityType: this.entityType,
 			target: this.target,
 			startTime: this.startTime,
 			endTime: this.endTime,
@@ -33,6 +37,15 @@ export class TravelEvent extends Event<Character, TravelEventData> {
 			chainEvent: this.chainEvent,
 			startPoint: this.startPoint,
 			endpoint: this.endpoint,
+		};
+	}
+
+	public override normalize(
+		forClient?: Client | null
+	): TravelEventClientData {
+		return {
+			entityType: this.getEntityType(),
+			...this.toJSON(),
 		};
 	}
 }

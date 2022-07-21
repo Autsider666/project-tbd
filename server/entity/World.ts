@@ -1,52 +1,58 @@
+import { Client } from '../controller/ClientController.js';
 import { EntityUpdate } from '../controller/StateSyncController.js';
+import { Uuid } from '../helper/UuidHelper.js';
 import { ServerState } from '../ServerState.js';
-import { Region, RegionId } from './Region.js';
+import { Region, RegionId, RegionStateData } from './Region.js';
 import { Opaque } from 'type-fest';
-import { Entity } from './Entity.js';
+import { Entity, EntityClientData, EntityStateData } from './Entity.js';
 
-export type WorldId = Opaque<number, 'WorldId'>;
+export type WorldId = Opaque<Uuid, 'WorldId'>;
 
-export type WorldData = {
-	id: WorldId;
-	entityType: string;
+export type WorldStateData = {
 	name: string;
 	regions: RegionId[];
-};
+} & EntityStateData<WorldId>;
 
-export class World extends Entity<WorldId, WorldData> {
+export type WorldClientData = WorldStateData & EntityClientData<WorldId>;
+
+export class World extends Entity<WorldId, WorldStateData> {
 	public name: string;
 	private regions = new Map<RegionId, Region | null>();
 
-	constructor(protected readonly serverState: ServerState, data: WorldData) {
+	constructor(
+		protected readonly serverState: ServerState,
+		data: WorldStateData
+	) {
 		super(serverState, data);
 
-		this.id = data.id;
 		this.name = data.name;
 		data.regions.forEach((id) => this.regions.set(id, null));
 	}
 
-	denormalize(data: WorldData): void {
-		this.id = data.id;
-		this.name = data.name;
-		this.regions.clear();
-		data.regions.forEach((id) => this.regions.set(id, null));
-	}
-
-	normalize(): WorldData {
+	toJSON(): WorldStateData {
 		return {
 			id: this.id,
-			entityType: this.entityType,
 			name: this.name,
 			regions: Array.from(this.regions.keys()),
 		};
 	}
 
-	override prepareUpdate(updateObject: EntityUpdate = {}): EntityUpdate {
+	public override normalize(forClient?: Client | null): WorldClientData {
+		return {
+			entityType: this.getEntityType(),
+			...this.toJSON(),
+		};
+	}
+
+	override prepareUpdate(
+		updateObject: EntityUpdate = {},
+		forClient?: Client | null
+	): EntityUpdate {
 		this.getRegions().forEach((region) => {
-			updateObject = region.prepareUpdate(updateObject);
+			updateObject = region.prepareUpdate(updateObject, forClient);
 		});
 
-		return super.prepareUpdate(updateObject);
+		return super.prepareUpdate(updateObject, forClient);
 	}
 
 	public getRegions(): Region[] {

@@ -1,19 +1,20 @@
 import { Opaque } from 'type-fest';
+import { Uuid } from '../helper/UuidHelper.js';
 import { ServerState } from '../ServerState.js';
-import { Entity, EntityData } from './Entity.js';
+import { Entity, EntityStateData } from './Entity.js';
 
-export type EventId = Opaque<number, 'EventId'>;
-export type EventData<T extends Entity<any, any>> = {
+export type EventId = Opaque<Uuid, 'EventId'>;
+export type EventStateData<T extends Entity<any, any>> = {
 	target: T;
 	startTime: Date;
 	endTime: Date;
 	canBeStopped: boolean;
 	chainEvent: Event<any, any> | null;
-} & EntityData<EventId>;
+} & EntityStateData<EventId>;
 
 export abstract class Event<
 	T extends Entity<any, any>,
-	TData extends EventData<T>
+	TData extends EventStateData<T>
 > extends Entity<EventId, TData> {
 	public readonly target: T;
 	public readonly startTime: Date;

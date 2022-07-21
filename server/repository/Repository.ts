@@ -1,16 +1,16 @@
 import onChange, { ApplyData } from 'on-change';
+import { generateUUID, Uuid } from '../helper/UuidHelper.js';
 import { ServerState } from '../ServerState.js';
-import { Constructor } from 'type-fest';
-import { Entity } from '../entity/Entity.js';
+import { Constructor, Except } from 'type-fest';
+import { Entity, EntityStateData } from '../entity/Entity.js';
 
 type Optional<T, TKey extends keyof T> = Partial<Pick<T, TKey>> & Omit<T, TKey>;
 
 export abstract class Repository<
-	T extends Entity<TId, TData>,
-	TId extends number,
-	TData extends { id: TId; entityType: string }
+	T extends Entity<TId, TStateData, any>,
+	TId extends Uuid,
+	TStateData extends EntityStateData<TId>
 > {
-	/** The loaded entities */
 	protected entities = new Map<TId, T>();
 
 	private onChangeCallbacks = new Map<
@@ -26,17 +26,13 @@ export abstract class Repository<
 		}[]
 	>();
 
-	/** ID counter for new entities */
-	private nextId: TId = 0 as TId;
-
 	public constructor(
 		protected readonly serverState: ServerState,
-		entities: TData[] = []
+		entities: TStateData[] = []
 	) {
 		this.load(entities);
 	}
 
-	/** The entity class, used to create new entities when loading data */
 	protected abstract entity(): Constructor<T>;
 
 	public get(id: TId): T | null {
@@ -47,35 +43,35 @@ export abstract class Repository<
 		return Array.from<T>(this.entities.values());
 	}
 
-	public delete(id: TId): void {
+	public removeEntity(id: TId): void {
 		this.entities.delete(id);
 	}
 
-	protected addEntity(entity: T): void {
-		this.entities.set(
-			entity.getId(),
-			onChange(
-				entity,
-				(
-					path: string,
-					value: any,
-					previousValue: any,
-					applyData
-				): void => {
-					this.onChangeCallbacks
-						.get(entity.getId())
-						?.forEach((callback) =>
-							callback(
-								entity,
-								path,
-								value,
-								previousValue,
-								applyData
-							)
-						);
-				}
-			)
+	public create(data: Except<TStateData, 'id'>): T {
+		const ClassName = this.entity();
+		const entity = new ClassName(this.serverState, {
+			id: generateUUID(),
+			...data,
+		});
+
+		return this.addEntity(entity);
+	}
+
+	protected addEntity(entity: T): T {
+		const proxy = onChange(
+			entity,
+			(path: string, value: any, previousValue: any, applyData): void => {
+				this.onChangeCallbacks
+					.get(entity.getId())
+					?.forEach((callback) =>
+						callback(entity, path, value, previousValue, applyData)
+					);
+			}
 		);
+
+		this.entities.set(entity.getId(), proxy);
+
+		return proxy;
 	}
 
 	public registerOnChangeCallback(
@@ -99,43 +95,12 @@ export abstract class Repository<
 		callbacks.push(callback);
 	}
 
-	public createEntity(data: Optional<TData, 'id' | 'entityType'>): T {
-		data.id = this.nextId++ as TId;
-		const ClassName = this.entity();
-		let entity = new ClassName(this.serverState, data as TData);
-
-		this.addEntity(entity);
-		// entity.onCreate();
-
-		return entity;
-	}
-
-	/**
-	 * Loads data into the repository
-	 */
-	public load(data: TData[]): void {
-		for (let entry of data) {
+	public load(stateData: TStateData[]): void {
+		for (let entityData of stateData) {
 			const ClassName = this.entity();
-			let entity = new ClassName(this.serverState, entry);
+			const entity = new ClassName(this.serverState, entityData);
 			this.addEntity(entity);
-
-			if (entity.getId() >= this.nextId) {
-				this.nextId = (entity.getId() + 1) as TId;
-			}
 		}
-	}
-
-	/**
-	 * Exports data from the repository for saving
-	 */
-	public save(): TData[] {
-		let data: TData[] = [];
-
-		for (let entity of this.entities.values()) {
-			data.push(entity.normalize());
-		}
-
-		return data;
 	}
 
 	public toJSON(): T[] {

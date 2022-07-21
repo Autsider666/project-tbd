@@ -5,7 +5,11 @@ import { EventId } from '../entity/Event.js';
 import { RegionId } from '../entity/Region.js';
 import { WorldId } from '../entity/World.js';
 import { CharacterRepository } from '../repository/CharacterRepository.js';
-import { ClientToServerEvents, ServerToClientEvents } from '../socket.io.js';
+import {
+	ClientToServerEvents,
+	ServerToClientEvents,
+	SocketData,
+} from '../socket.io.js';
 
 const secret = 'CHANGE ME QUICK!'; //TODO I mean it!
 
@@ -14,17 +18,30 @@ type CharacterPayload = {
 	world: WorldId;
 };
 
+export class Client {
+	public readonly characters = new Map<CharacterId, Character>();
+}
+
 export class ClientController {
-	private characters = new Map<CharacterId, Character>();
+	private readonly client: Client;
 
 	constructor(
 		private readonly socket: Socket<
 			ClientToServerEvents,
-			ServerToClientEvents
+			ServerToClientEvents,
+			any,
+			SocketData
 		>,
-		private readonly io: Server<ClientToServerEvents, ServerToClientEvents>,
+		private readonly io: Server<
+			ClientToServerEvents,
+			ServerToClientEvents,
+			any,
+			SocketData
+		>,
 		private readonly characterRepository: CharacterRepository
 	) {
+		this.client = new Client();
+		socket.data.client = this.client;
 		this.handleSocket();
 	}
 
@@ -49,10 +66,10 @@ export class ClientController {
 			(data: { name: string }, callback: (token: string) => void) => {
 				console.log('create character', data);
 
-				const newCharacter = this.characterRepository.createEntity({
+				const newCharacter = this.characterRepository.create({
 					name: data.name,
-					region: 1 as RegionId,
-					currentTravelEvent: 1 as EventId,
+					region: 'a' as RegionId,
+					currentTravelEvent: 'a' as EventId,
 				});
 
 				const payload: CharacterPayload = {
@@ -69,7 +86,7 @@ export class ClientController {
 	}
 
 	private initializeCharacter(character: Character): void {
-		if (this.characters.has(character.getId())) {
+		if (this.client.characters.has(character.getId())) {
 			console.log('Not gonna initialize this character again.');
 			return;
 		}
@@ -87,6 +104,6 @@ export class ClientController {
 		this.socket.join(region.getEntityRoomName());
 		this.socket.join(world.getEntityRoomName());
 
-		this.characters.set(character.getId(), character);
+		this.client.characters.set(character.getId(), character);
 	}
 }
