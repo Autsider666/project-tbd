@@ -15,8 +15,7 @@ export type EntityClientData<TId extends Uuid> = {
 export abstract class Entity<
 	TId extends Uuid,
 	TStateData extends EntityStateData<TId>,
-	TClientData extends EntityClientData<TId> = TStateData &
-		EntityClientData<TId>
+	TClientData extends EntityClientData<TId>
 > {
 	protected id: TId;
 
@@ -27,7 +26,7 @@ export abstract class Entity<
 		this.id = data.id;
 	}
 
-	public abstract normalize(forClient?: Client | null): TClientData;
+	public abstract normalize(forClient?: Client): TClientData;
 
 	public abstract toJSON(): TStateData;
 
@@ -41,7 +40,7 @@ export abstract class Entity<
 
 	public prepareUpdate(
 		updateObject: EntityUpdate = {},
-		forClient?: Client | null
+		forClient?: Client
 	): EntityUpdate {
 		if (!(this.getEntityRoomName() in updateObject)) {
 			updateObject[this.getEntityRoomName()] = this.normalize(forClient);

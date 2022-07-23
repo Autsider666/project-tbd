@@ -13,7 +13,11 @@ export type TravelEventStateData = {
 export type TravelEventClientData = TravelEventStateData &
 	EntityClientData<EventId>;
 
-export class TravelEvent extends Event<Character, TravelEventStateData> {
+export class TravelEvent extends Event<
+	Character,
+	TravelEventStateData,
+	TravelEventClientData
+> {
 	public readonly startPoint: Region;
 	public readonly endpoint: Region;
 
@@ -34,15 +38,12 @@ export class TravelEvent extends Event<Character, TravelEventStateData> {
 			startTime: this.startTime,
 			endTime: this.endTime,
 			canBeStopped: this.canBeStopped,
-			chainEvent: this.chainEvent,
 			startPoint: this.startPoint,
 			endpoint: this.endpoint,
 		};
 	}
 
-	public override normalize(
-		forClient?: Client | null
-	): TravelEventClientData {
+	public override normalize(forClient?: Client): TravelEventClientData {
 		return {
 			entityType: this.getEntityType(),
 			...this.toJSON(),

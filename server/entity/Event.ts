@@ -1,31 +1,33 @@
 import { Opaque } from 'type-fest';
 import { Uuid } from '../helper/UuidHelper.js';
 import { ServerState } from '../ServerState.js';
-import { Entity, EntityStateData } from './Entity.js';
+import { Entity, EntityClientData, EntityStateData } from './Entity.js';
 
 export type EventId = Opaque<Uuid, 'EventId'>;
-export type EventStateData<T extends Entity<any, any>> = {
+export type EventStateData<T extends Entity<any, any, any>> = {
 	target: T;
 	startTime: Date;
 	endTime: Date;
 	canBeStopped: boolean;
-	chainEvent: Event<any, any> | null;
 } & EntityStateData<EventId>;
 
+export type EventClientData<T extends Entity<any, any, any>> =
+	EventStateData<T> & EntityClientData<EventId>;
+
 export abstract class Event<
-	T extends Entity<any, any>,
-	TData extends EventStateData<T>
-> extends Entity<EventId, TData> {
+	T extends Entity<any, any, any>,
+	TStateData extends EventStateData<T>,
+	TClientData extends EventClientData<T>
+> extends Entity<EventId, TStateData, TClientData> {
 	public readonly target: T;
 	public readonly startTime: Date;
 	public readonly endTime: Date;
 	public readonly canBeStopped: boolean;
 	public readonly eventType: string;
-	public readonly chainEvent: Event<any, any> | null;
 
 	protected constructor(
 		protected readonly serverState: ServerState,
-		data: TData
+		data: TStateData
 	) {
 		super(serverState, data);
 
@@ -34,6 +36,5 @@ export abstract class Event<
 		this.endTime = data.endTime;
 		this.canBeStopped = data.canBeStopped;
 		this.eventType = this.constructor.name;
-		this.chainEvent = data.chainEvent;
 	}
 }

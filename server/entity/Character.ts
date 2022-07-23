@@ -1,6 +1,7 @@
 import { Client } from '../controller/ClientController.js';
 import { EntityUpdate } from '../controller/StateSyncController.js';
 import { Uuid } from '../helper/UuidHelper.js';
+import { RegionProperty } from './CommonProperties/RegionProperty.js';
 import { EventId } from './Event.js';
 import { Region, RegionId } from './Region.js';
 import { ServerState } from '../ServerState.js';
@@ -28,7 +29,7 @@ export class Character extends Entity<
 > {
 	public readonly name: string;
 	private currentTravelEvent: EventId | TravelEvent | null;
-	private region: Region | RegionId;
+	private regionProperty: RegionProperty;
 
 	constructor(
 		protected readonly serverState: ServerState,
@@ -37,7 +38,7 @@ export class Character extends Entity<
 		super(serverState, data);
 
 		this.name = data.name;
-		this.region = data.region;
+		this.regionProperty = new RegionProperty(serverState, data.region);
 		this.currentTravelEvent = data.currentTravelEvent ?? null;
 	}
 
@@ -45,10 +46,7 @@ export class Character extends Entity<
 		return {
 			id: this.id,
 			name: this.name,
-			region:
-				typeof this.region === 'string'
-					? this.region
-					: (this.region as Region).getId(),
+			region: this.regionProperty.toJSON(),
 			currentTravelEvent:
 				typeof this.currentTravelEvent === 'string'
 					? this.currentTravelEvent
@@ -58,7 +56,7 @@ export class Character extends Entity<
 		};
 	}
 
-	public override normalize(forClient?: Client | null): CharacterClientData {
+	public override normalize(forClient?: Client): CharacterClientData {
 		return {
 			entityType: this.constructor.name.toLowerCase(),
 			controllable: forClient?.characters.has(this.id) ?? false,
@@ -68,10 +66,10 @@ export class Character extends Entity<
 
 	public override prepareUpdate(
 		updateObject: EntityUpdate = {},
-		forClient?: Client | null
+		forClient?: Client
 	): EntityUpdate {
 		const event = this.getCurrentTravelEvent();
-		if (event !== null) {
+		if (event != null) {
 			updateObject = event.prepareUpdate(updateObject, forClient);
 		}
 
@@ -79,18 +77,7 @@ export class Character extends Entity<
 	}
 
 	public getRegion(): Region {
-		if (typeof this.region === 'string') {
-			const repository = this.serverState.getRepository(Region);
-
-			const region = repository.get(this.region as RegionId);
-			if (region === null) {
-				throw new Error('.... uhm.....');
-			}
-
-			this.region = region;
-		}
-
-		return this.region as Region;
+		return this.regionProperty.getRegion();
 	}
 
 	public getCurrentTravelEvent(): TravelEvent | null {

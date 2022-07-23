@@ -1,7 +1,7 @@
 import { Server } from 'socket.io';
 import { SocketId } from 'socket.io-adapter';
 import { Character } from '../entity/Character.js';
-import { Entity, EntityClientData } from '../entity/Entity.js';
+import { EntityClientData } from '../entity/Entity.js';
 import { World } from '../entity/World.js';
 import { ServerState } from '../ServerState.js';
 import {

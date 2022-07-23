@@ -2,7 +2,8 @@ import { Client } from '../controller/ClientController.js';
 import { EntityUpdate } from '../controller/StateSyncController.js';
 import { Uuid } from '../helper/UuidHelper.js';
 import { ServerState } from '../ServerState.js';
-import { Region, RegionId, RegionStateData } from './Region.js';
+import { RegionsProperty } from './CommonProperties/RegionsProperty.js';
+import { Region, RegionId } from './Region.js';
 import { Opaque } from 'type-fest';
 import { Entity, EntityClientData, EntityStateData } from './Entity.js';
 
@@ -15,9 +16,9 @@ export type WorldStateData = {
 
 export type WorldClientData = WorldStateData & EntityClientData<WorldId>;
 
-export class World extends Entity<WorldId, WorldStateData> {
+export class World extends Entity<WorldId, WorldStateData, WorldClientData> {
 	public name: string;
-	private regions = new Map<RegionId, Region | null>();
+	private regions: RegionsProperty;
 
 	constructor(
 		protected readonly serverState: ServerState,
@@ -26,18 +27,18 @@ export class World extends Entity<WorldId, WorldStateData> {
 		super(serverState, data);
 
 		this.name = data.name;
-		data.regions.forEach((id) => this.regions.set(id, null));
+		this.regions = new RegionsProperty(serverState, data.regions);
 	}
 
 	toJSON(): WorldStateData {
 		return {
 			id: this.id,
 			name: this.name,
-			regions: Array.from(this.regions.keys()),
+			regions: this.regions.toJSON(),
 		};
 	}
 
-	public override normalize(forClient?: Client | null): WorldClientData {
+	public override normalize(forClient?: Client): WorldClientData {
 		return {
 			entityType: this.getEntityType(),
 			...this.toJSON(),
@@ -46,7 +47,7 @@ export class World extends Entity<WorldId, WorldStateData> {
 
 	override prepareUpdate(
 		updateObject: EntityUpdate = {},
-		forClient?: Client | null
+		forClient?: Client
 	): EntityUpdate {
 		this.getRegions().forEach((region) => {
 			updateObject = region.prepareUpdate(updateObject, forClient);
@@ -56,21 +57,6 @@ export class World extends Entity<WorldId, WorldStateData> {
 	}
 
 	public getRegions(): Region[] {
-		this.regions.forEach((region, id) => {
-			if (region !== null) {
-				return;
-			}
-
-			const lazyLoadedRegion = this.serverState
-				.getRepository(Region)
-				.get(id);
-			if (lazyLoadedRegion === null) {
-				throw new Error('.... uhm.....');
-			}
-
-			this.regions.set(id, lazyLoadedRegion);
-		});
-
-		return Array.from(this.regions.values()) as Region[];
+		return this.regions.getRegions();
 	}
 }

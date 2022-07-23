@@ -2,6 +2,7 @@ import { Opaque } from 'type-fest';
 import { Client } from '../controller/ClientController.js';
 import { Uuid } from '../helper/UuidHelper.js';
 import { ServerState } from '../ServerState.js';
+import { RegionsProperty } from './CommonProperties/RegionsProperty.js';
 import { Region, RegionId } from './Region.js';
 import { Entity, EntityClientData, EntityStateData } from './Entity.js';
 
@@ -17,9 +18,13 @@ export enum BorderType {
 	default = 'default',
 }
 
-export class Border extends Entity<BorderId, BorderStateData> {
-	regions = new Map<RegionId, Region | null>();
-	type: BorderType;
+export class Border extends Entity<
+	BorderId,
+	BorderStateData,
+	BorderClientData
+> {
+	private regions: RegionsProperty;
+	public readonly type: BorderType;
 
 	constructor(
 		protected readonly serverState: ServerState,
@@ -30,21 +35,25 @@ export class Border extends Entity<BorderId, BorderStateData> {
 		this.id = data.id;
 		this.type = data.type ?? BorderType.default;
 
-		data.regions.forEach((id) => this.regions.set(id, null));
+		this.regions = new RegionsProperty(serverState, data.regions);
 	}
 
 	toJSON(): BorderStateData {
 		return {
 			id: this.id,
 			type: this.type,
-			regions: Array.from(this.regions.keys()),
+			regions: this.regions.toJSON(),
 		};
 	}
 
-	public override normalize(forClient?: Client | null): BorderClientData {
+	public override normalize(forClient?: Client): BorderClientData {
 		return {
 			entityType: this.getEntityType(),
 			...this.toJSON(),
 		};
+	}
+
+	public getRegions(): Region[] {
+		return this.regions.getRegions();
 	}
 }

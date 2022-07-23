@@ -2,6 +2,8 @@ import { Client } from '../controller/ClientController.js';
 import { EntityUpdate } from '../controller/StateSyncController.js';
 import { Uuid } from '../helper/UuidHelper.js';
 import { Border, BorderId } from './Border.js';
+import { SettlementProperty } from './CommonProperties/SettlementProperty.js';
+import { Settlement, SettlementId } from './Settlement.js';
 import { World, WorldId } from './World.js';
 import { ServerState } from '../ServerState.js';
 import { Entity, EntityClientData, EntityStateData } from './Entity.js';
@@ -16,6 +18,7 @@ export type RegionStateData = {
 	borders: BorderId[];
 	world: WorldId;
 	type: RegionType;
+	settlement: SettlementId | null;
 } & EntityStateData<RegionId>;
 
 export type RegionClientData = RegionStateData & EntityClientData<RegionId>;
@@ -24,12 +27,17 @@ export enum RegionType {
 	plain = 'plain',
 }
 
-export class Region extends Entity<RegionId, RegionStateData> {
+export class Region extends Entity<
+	RegionId,
+	RegionStateData,
+	RegionClientData
+> {
 	name: string;
 	characters = new Map<CharacterId, Character | null>();
 	private borders = new Map<BorderId, Border | null>();
 	private world: World | WorldId;
 	type: RegionType;
+	private settlementProperty: SettlementProperty | null;
 
 	constructor(
 		protected readonly serverState: ServerState,
@@ -40,6 +48,9 @@ export class Region extends Entity<RegionId, RegionStateData> {
 		this.name = data.name;
 		this.world = data.world;
 		this.type = data.type ?? RegionType.plain;
+		this.settlementProperty = data.settlement
+			? new SettlementProperty(serverState, data.settlement)
+			: null;
 
 		data.characters.forEach((id) => this.characters.set(id, null));
 		data.borders.forEach((id) => this.borders.set(id, null));
@@ -56,10 +67,11 @@ export class Region extends Entity<RegionId, RegionStateData> {
 				typeof this.world === 'string'
 					? (this.world as WorldId)
 					: (this.world as World).getId(),
+			settlement: this.settlementProperty?.toJSON() ?? null,
 		};
 	}
 
-	public override normalize(forClient?: Client | null): RegionClientData {
+	public override normalize(forClient?: Client): RegionClientData {
 		return {
 			entityType: this.getEntityType(),
 			...this.toJSON(),
@@ -68,12 +80,17 @@ export class Region extends Entity<RegionId, RegionStateData> {
 
 	override prepareUpdate(
 		updateObject: EntityUpdate = {},
-		forClient?: Client | null
+		forClient?: Client
 	): EntityUpdate {
 		this.getBorders().forEach(
 			(border) =>
 				(updateObject = border.prepareUpdate(updateObject, forClient))
 		);
+
+		const settlement = this.getSettlement();
+		if (settlement != null) {
+			updateObject = settlement.prepareUpdate(updateObject, forClient);
+		}
 
 		return super.prepareUpdate(updateObject, forClient);
 	}
@@ -95,7 +112,7 @@ export class Region extends Entity<RegionId, RegionStateData> {
 
 	public getBorders(): Border[] {
 		this.borders.forEach((border, id) => {
-			if (border !== null) {
+			if (border != null) {
 				return;
 			}
 
@@ -110,5 +127,9 @@ export class Region extends Entity<RegionId, RegionStateData> {
 		});
 
 		return Array.from(this.borders.values()) as Border[];
+	}
+
+	public getSettlement(): Settlement | null {
+		return this.settlementProperty?.getSettlement() ?? null;
 	}
 }
