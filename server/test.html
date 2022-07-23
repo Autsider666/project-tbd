@@ -9,8 +9,8 @@
 	</head>
 	<body>
 		<button onClick="sendMsg()">Hit Me</button>
-		<button onClick="createCharacter()">Create Character</button>
-		<button onClick="addCharacter()">Initialize Character</button>
+		<button onClick="createParty()">Create Party</button>
+		<button onClick="addParty()">Initialize Party</button>
 
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.2/socket.io.js"></script>
 		<script>
@@ -22,13 +22,13 @@
 				socket.emit('message', 'HELLO WORLD');
 			}
 
-			function createCharacter() {
+			function createParty() {
 				// if (token != null) {
-				// 	return alert('Already have a character!');
+				// 	return alert('Already have a party!');
 				// }
 
 				socket.emit(
-					'character:create',
+					'party:create',
 					{ name: 'from client' },
 					(jwt) => {
 						console.log(jwt);
@@ -37,12 +37,12 @@
 				);
 			}
 
-			function addCharacter() {
+			function addParty() {
 				if (token === null) {
-					return alert('Create a character first!');
+					return alert('Create a party first!');
 				}
 
-				socket.emit('character:init', token);
+				socket.emit('party:init', token);
 			}
 
 			socket.on('message', function (data) {

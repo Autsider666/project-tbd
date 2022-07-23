@@ -9,23 +9,23 @@ import { Opaque } from 'type-fest';
 import { Entity, EntityClientData, EntityStateData } from './Entity.js';
 import { TravelEvent } from './TravelEvent.js';
 
-export type CharacterId = Opaque<Uuid, 'CharacterId'>;
+export type PartyId = Opaque<Uuid, 'PartyId'>;
 
-export type CharacterStateData = {
+export type PartyStateData = {
 	name: string;
 	region: RegionId;
 	currentTravelEvent: EventId | null;
-} & EntityStateData<CharacterId>;
+} & EntityStateData<PartyId>;
 
-export type CharacterClientData = {
+export type PartyClientData = {
 	controllable: boolean;
-} & CharacterStateData &
-	EntityClientData<CharacterId>;
+} & PartyStateData &
+	EntityClientData<PartyId>;
 
-export class Character extends Entity<
-	CharacterId,
-	CharacterStateData,
-	CharacterClientData
+export class Party extends Entity<
+	PartyId,
+	PartyStateData,
+	PartyClientData
 > {
 	public readonly name: string;
 	private currentTravelEvent: EventId | TravelEvent | null;
@@ -33,7 +33,7 @@ export class Character extends Entity<
 
 	constructor(
 		protected readonly serverState: ServerState,
-		data: CharacterStateData
+		data: PartyStateData
 	) {
 		super(serverState, data);
 
@@ -42,7 +42,7 @@ export class Character extends Entity<
 		this.currentTravelEvent = data.currentTravelEvent ?? null;
 	}
 
-	public toJSON(): CharacterStateData {
+	public toJSON(): PartyStateData {
 		return {
 			id: this.id,
 			name: this.name,
@@ -56,10 +56,10 @@ export class Character extends Entity<
 		};
 	}
 
-	public override normalize(forClient?: Client): CharacterClientData {
+	public override normalize(forClient?: Client): PartyClientData {
 		return {
 			entityType: this.constructor.name.toLowerCase(),
-			controllable: forClient?.characters.has(this.id) ?? false,
+			controllable: forClient?.parties.has(this.id) ?? false,
 			...this.toJSON(),
 		};
 	}

@@ -1,6 +1,6 @@
 import { Client } from '../controller/ClientController.js';
 import { ServerState } from '../ServerState.js';
-import { Character } from './Character.js';
+import { Party } from './Party.js';
 import { EntityClientData } from './Entity.js';
 import { Event, EventId, EventStateData } from './Event.js';
 import { Region } from './Region.js';
@@ -8,13 +8,13 @@ import { Region } from './Region.js';
 export type TravelEventStateData = {
 	startPoint: Region;
 	endpoint: Region;
-} & EventStateData<Character>;
+} & EventStateData<Party>;
 
 export type TravelEventClientData = TravelEventStateData &
 	EntityClientData<EventId>;
 
 export class TravelEvent extends Event<
-	Character,
+	Party,
 	TravelEventStateData,
 	TravelEventClientData
 > {

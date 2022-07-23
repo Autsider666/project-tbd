@@ -1,6 +1,6 @@
 import { SocketId } from 'socket.io-adapter';
-import { Character } from '../entity/Character.js';
-import { CharacterRepository } from '../repository/CharacterRepository.js';
+import { Party } from '../entity/Party.js';
+import { PartyRepository } from '../repository/PartyRepository.js';
 import {
 	ClientToServerEvents,
 	ServerToClientEvents,
@@ -47,8 +47,8 @@ export class ServerController {
 						socket,
 						this.io,
 						this.serverState.getRepository(
-							Character
-						) as CharacterRepository
+							Party
+						) as PartyRepository
 					)
 				);
 

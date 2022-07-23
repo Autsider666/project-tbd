@@ -1,6 +1,6 @@
 import { Server } from 'socket.io';
 import { SocketId } from 'socket.io-adapter';
-import { Character } from '../entity/Character.js';
+import { Party } from '../entity/Party.js';
 import { EntityClientData } from '../entity/Entity.js';
 import { World } from '../entity/World.js';
 import { ServerState } from '../ServerState.js';
@@ -56,20 +56,20 @@ export class StateSyncController {
 				);
 		}
 
-		if (room.startsWith('entity:character:')) {
-			const characterId = room.replace('entity:character:', '');
-			const character = this.serverState
-				.getRepository(Character)
-				.get(characterId);
-			if (character === null || character.constructor !== Character) {
-				throw new Error('Tried to initialize a non-existent character');
+		if (room.startsWith('entity:party:')) {
+			const partyId = room.replace('entity:party:', '');
+			const party = this.serverState
+				.getRepository(Party)
+				.get(partyId);
+			if (party === null || party.constructor !== Party) {
+				throw new Error('Tried to initialize a non-existent party');
 			}
 
 			this.io
 				.to(room)
 				.emit(
 					'entity:update',
-					character.prepareUpdate({}, socket.data.client)
+					party.prepareUpdate({}, socket.data.client)
 				);
 		}
 	}

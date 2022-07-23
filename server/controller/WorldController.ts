@@ -32,9 +32,9 @@ export class WorldController {
 	}
 
 	async tick(): Promise<void> {
-		console.log(
-			'Starting tick for ' + this.world.getId() + ' at ' + Date.now()
-		);
+		// console.log(
+		// 	'Starting tick for ' + this.world.getId() + ' at ' + Date.now()
+		// );
 		// const result = await this.resolveAfter2Seconds();
 		// console.log(result);
 	}

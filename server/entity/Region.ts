@@ -7,14 +7,14 @@ import { Settlement, SettlementId } from './Settlement.js';
 import { World, WorldId } from './World.js';
 import { ServerState } from '../ServerState.js';
 import { Entity, EntityClientData, EntityStateData } from './Entity.js';
-import { Character, CharacterId } from './Character.js';
+import { Party, PartyId } from './Party.js';
 import { Opaque } from 'type-fest';
 
 export type RegionId = Opaque<Uuid, 'RegionId'>;
 
 export type RegionStateData = {
 	name: string;
-	characters: CharacterId[];
+	parties: PartyId[];
 	borders: BorderId[];
 	world: WorldId;
 	type: RegionType;
@@ -33,7 +33,7 @@ export class Region extends Entity<
 	RegionClientData
 > {
 	name: string;
-	characters = new Map<CharacterId, Character | null>();
+	parties = new Map<PartyId, Party | null>();
 	private borders = new Map<BorderId, Border | null>();
 	private world: World | WorldId;
 	type: RegionType;
@@ -52,7 +52,7 @@ export class Region extends Entity<
 			? new SettlementProperty(serverState, data.settlement)
 			: null;
 
-		data.characters.forEach((id) => this.characters.set(id, null));
+		data.parties.forEach((id) => this.parties.set(id, null));
 		data.borders.forEach((id) => this.borders.set(id, null));
 	}
 
@@ -61,7 +61,7 @@ export class Region extends Entity<
 			id: this.id,
 			name: this.name,
 			type: this.type,
-			characters: Array.from(this.characters.keys()),
+			parties: Array.from(this.parties.keys()),
 			borders: Array.from(this.borders.keys()),
 			world:
 				typeof this.world === 'string'

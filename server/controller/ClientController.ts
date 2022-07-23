@@ -1,10 +1,10 @@
 import { Server, Socket } from 'socket.io';
 import jwt from 'jsonwebtoken';
-import { Character, CharacterId } from '../entity/Character.js';
+import { Party, PartyId } from '../entity/Party.js';
 import { EventId } from '../entity/Event.js';
 import { RegionId } from '../entity/Region.js';
 import { WorldId } from '../entity/World.js';
-import { CharacterRepository } from '../repository/CharacterRepository.js';
+import { PartyRepository } from '../repository/PartyRepository.js';
 import {
 	ClientToServerEvents,
 	ServerToClientEvents,
@@ -13,13 +13,13 @@ import {
 
 const secret = 'CHANGE ME QUICK!'; //TODO I mean it!
 
-type CharacterPayload = {
-	character: CharacterId;
+type PartyPayload = {
+	party: PartyId;
 	world: WorldId;
 };
 
 export class Client {
-	public readonly characters = new Map<CharacterId, Character>();
+	public readonly parties = new Map<PartyId, Party>();
 }
 
 export class ClientController {
@@ -38,7 +38,7 @@ export class ClientController {
 			any,
 			SocketData
 		>,
-		private readonly characterRepository: CharacterRepository
+		private readonly partyRepository: PartyRepository
 	) {
 		this.client = new Client();
 		socket.data.client = this.client;
@@ -46,64 +46,64 @@ export class ClientController {
 	}
 
 	private handleSocket(): void {
-		this.socket.on('character:init', (token: string) => {
+		this.socket.on('party:init', (token: string) => {
 			if (token.length === 0) {
 				return; //TODO add error handling
 			}
 
-			const payload = jwt.verify(token, secret) as CharacterPayload; //TODO add error handling
+			const payload = jwt.verify(token, secret) as PartyPayload; //TODO add error handling
 
-			const character = this.characterRepository.get(payload.character);
-			if (character === null) {
+			const party = this.partyRepository.get(payload.party);
+			if (party === null) {
 				return; //TODO error handling
 			}
 
-			this.initializeCharacter(character);
+			this.initializeParty(party);
 		});
 
 		this.socket.on(
-			'character:create',
+			'party:create',
 			(data: { name: string }, callback: (token: string) => void) => {
-				console.log('create character', data);
+				console.log('create party', data);
 
-				const newCharacter = this.characterRepository.create({
+				const newParty = this.partyRepository.create({
 					name: data.name,
 					region: 'a' as RegionId,
 					currentTravelEvent: 'a' as EventId,
 				});
 
-				const payload: CharacterPayload = {
-					character: newCharacter.getId(),
-					world: newCharacter.getRegion().getWorld().getId(),
+				const payload: PartyPayload = {
+					party: newParty.getId(),
+					world: newParty.getRegion().getWorld().getId(),
 				};
 
 				const token = jwt.sign(payload, secret);
 				callback(token);
 
-				this.initializeCharacter(newCharacter as Character);
+				this.initializeParty(newParty as Party);
 			}
 		);
 	}
 
-	private initializeCharacter(character: Character): void {
-		if (this.client.characters.has(character.getId())) {
-			console.log('Not gonna initialize this character again.');
+	private initializeParty(party: Party): void {
+		if (this.client.parties.has(party.getId())) {
+			console.log('Not gonna initialize this party again.');
 			return;
 		}
 
 		console.log(
-			`adding character "${character.name} (${character.getId()})" to ${
+			`adding party "${party.name} (${party.getId()})" to ${
 				this.socket.id
 			}`
 		);
 
-		const region = character.getRegion();
+		const region = party.getRegion();
 		const world = region.getWorld();
 
-		this.socket.join(character.getEntityRoomName());
+		this.socket.join(party.getEntityRoomName());
 		this.socket.join(region.getEntityRoomName());
 		this.socket.join(world.getEntityRoomName());
 
-		this.client.characters.set(character.getId(), character);
+		this.client.parties.set(party.getId(), party);
 	}
 }

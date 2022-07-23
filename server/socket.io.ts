@@ -9,8 +9,8 @@ export interface ServerToClientEvents {
 }
 
 export interface ClientToServerEvents {
-	'character:init': (token: string) => void;
-	'character:create': (
+	'party:init': (token: string) => void;
+	'party:create': (
 		data: { name: string },
 		callback: (token: string) => void
 	) => void;

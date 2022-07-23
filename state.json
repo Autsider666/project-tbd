@@ -2,7 +2,6 @@
 	"WorldRepository": [
 		{
 			"id": "a",
-			"entityType": "World",
 			"name": "Default",
 			"regions": ["a", "b"]
 		}
@@ -10,38 +9,33 @@
 	"RegionRepository": [
 		{
 			"id": "a",
-			"entityType": "Region",
 			"name": "Start",
 			"world": "a",
-			"characters": ["a"],
+			"parties": ["a"],
 			"borders": ["a"]
 		},
 		{
 			"id": "b",
-			"entityType": "Region",
 			"name": "Next",
 			"world": "a",
-			"characters": ["b"],
+			"parties": ["b"],
 			"borders": ["a"]
 		}
 	],
 	"BorderRepository": [
 		{
 			"id": "a",
-			"entityType": "Border",
 			"regions": ["a", "b"]
 		}
 	],
-	"CharacterRepository": [
+	"PartyRepository": [
 		{
 			"id": "a",
-			"entityType": "Character",
 			"name": "Player 1",
 			"region": "a"
 		},
 		{
 			"id": "b",
-			"entityType": "Character",
 			"name": "Player 2",
 			"region": "b"
 		}
@@ -49,7 +43,6 @@
 	"TravelEventRepository": [
 		{
 			"id": "a",
-			"entityType": "TravelEvent",
 			"target": "a",
 			"startTime": "2022-07-20T17:32:33.074Z",
 			"endTime": "2022-07-20T18:32:33.074Z",
