@@ -1,3 +1,4 @@
+import { Client } from './controller/ClientController.js';
 import { EntityUpdate } from './controller/StateSyncController.js';
 
 export interface ServerToClientEvents {
@@ -16,4 +17,8 @@ export interface ClientToServerEvents {
 
 	//Default to keep PhpStorm calm
 	[event: string]: (...args: any[]) => void;
+}
+
+export interface SocketData {
+	client: Client;
 }

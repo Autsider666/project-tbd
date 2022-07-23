@@ -1,28 +1,34 @@
+import { Client } from '../controller/ClientController.js';
 import { EntityUpdate } from '../controller/StateSyncController.js';
+import { Uuid } from '../helper/UuidHelper.js';
 import { ServerState } from '../ServerState.js';
 
+export type EntityStateData<TId extends Uuid> = {
+	id: TId;
+};
+
+export type EntityClientData<TId extends Uuid> = {
+	id: TId;
+	entityType: string;
+};
+
 export abstract class Entity<
-	TId extends number,
-	TData extends { id: TId; entityType: string }
+	TId extends Uuid,
+	TStateData extends EntityStateData<TId>,
+	TClientData extends EntityClientData<TId>
 > {
 	protected id: TId;
-	protected entityType: string;
 
 	protected constructor(
 		protected readonly serverState: ServerState,
-		data: TData
+		data: TStateData
 	) {
 		this.id = data.id;
-		this.entityType = data.entityType;
 	}
 
-	public abstract denormalize(data: TData): void;
+	public abstract normalize(forClient?: Client): TClientData;
 
-	public abstract normalize(): TData;
-
-	public toJSON(): TData {
-		return this.normalize();
-	}
+	public abstract toJSON(): TStateData;
 
 	public getEntityRoomName(): string {
 		return 'entity:' + this.constructor.name.toLowerCase() + ':' + this.id;
@@ -32,11 +38,18 @@ export abstract class Entity<
 		return this.id;
 	}
 
-	public prepareUpdate(updateObject: EntityUpdate = {}): EntityUpdate {
+	public prepareUpdate(
+		updateObject: EntityUpdate = {},
+		forClient?: Client
+	): EntityUpdate {
 		if (!(this.getEntityRoomName() in updateObject)) {
-			updateObject[this.getEntityRoomName()] = this;
+			updateObject[this.getEntityRoomName()] = this.normalize(forClient);
 		}
 
 		return updateObject;
+	}
+
+	public getEntityType(): string {
+		return this.constructor.name.toLowerCase();
 	}
 }

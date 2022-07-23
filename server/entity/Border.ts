@@ -1,47 +1,59 @@
 import { Opaque } from 'type-fest';
+import { Client } from '../controller/ClientController.js';
+import { Uuid } from '../helper/UuidHelper.js';
 import { ServerState } from '../ServerState.js';
+import { RegionsProperty } from './CommonProperties/RegionsProperty.js';
 import { Region, RegionId } from './Region.js';
-import { Entity } from './Entity.js';
+import { Entity, EntityClientData, EntityStateData } from './Entity.js';
 
-export type BorderId = Opaque<number, 'BorderId'>;
-export type BorderData = {
-	id: BorderId;
-	entityType: string;
+export type BorderId = Opaque<Uuid, 'BorderId'>;
+export type BorderStateData = {
 	regions: RegionId[];
 	type: BorderType;
-};
+} & EntityStateData<BorderId>;
+
+export type BorderClientData = BorderStateData & EntityClientData<BorderId>;
 
 export enum BorderType {
 	default = 'default',
 }
 
-export class Border extends Entity<BorderId, BorderData> {
-	regions = new Map<RegionId, Region | null>();
-	type: BorderType;
+export class Border extends Entity<
+	BorderId,
+	BorderStateData,
+	BorderClientData
+> {
+	private regions: RegionsProperty;
+	public readonly type: BorderType;
 
-	constructor(protected readonly serverState: ServerState, data: BorderData) {
+	constructor(
+		protected readonly serverState: ServerState,
+		data: BorderStateData
+	) {
 		super(serverState, data);
 
 		this.id = data.id;
 		this.type = data.type ?? BorderType.default;
 
-		data.regions.forEach((id) => this.regions.set(id, null));
+		this.regions = new RegionsProperty(serverState, data.regions);
 	}
 
-	denormalize(data: BorderData): void {
-		this.id = data.id;
-		this.type = data.type;
-
-		this.regions.clear();
-		data.regions.forEach((id) => this.regions.set(id, null));
-	}
-
-	normalize(): BorderData {
+	toJSON(): BorderStateData {
 		return {
 			id: this.id,
-			entityType: this.entityType,
 			type: this.type,
-			regions: Array.from(this.regions.keys()),
+			regions: this.regions.toJSON(),
 		};
+	}
+
+	public override normalize(forClient?: Client): BorderClientData {
+		return {
+			entityType: this.getEntityType(),
+			...this.toJSON(),
+		};
+	}
+
+	public getRegions(): Region[] {
+		return this.regions.getRegions();
 	}
 }

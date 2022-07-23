@@ -4,18 +4,18 @@ import { Repository } from './repository/Repository';
 
 export class ServerState {
 	private repositories = new Map<
-		Constructor<Entity<any, any>>,
+		Constructor<Entity<any, any, any>>,
 		Repository<any, any, any>
 	>();
 
 	registerRepository(
-		name: Constructor<Entity<any, any>>,
+		name: Constructor<Entity<any, any, any>>,
 		repository: Repository<any, any, any>
 	): void {
 		this.repositories.set(name, repository);
 	}
 
-	getRepository<T extends Entity<any, any>>(
+	getRepository<T extends Entity<any, any, any>>(
 		name: Constructor<T>
 	): Repository<T, any, any> {
 		const repository = this.repositories.get(name);

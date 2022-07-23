@@ -1,7 +1,11 @@
 import { SocketId } from 'socket.io-adapter';
 import { Character } from '../entity/Character.js';
 import { CharacterRepository } from '../repository/CharacterRepository.js';
-import { ClientToServerEvents, ServerToClientEvents } from '../socket.io.js';
+import {
+	ClientToServerEvents,
+	ServerToClientEvents,
+	SocketData,
+} from '../socket.io.js';
 import { ClientController } from './ClientController.js';
 import { World } from '../entity/World.js';
 import { StateSyncController } from './StateSyncController.js';
@@ -29,7 +33,14 @@ export class ServerController {
 
 		this.io.on(
 			'connection',
-			(socket: Socket<ClientToServerEvents, ServerToClientEvents>) => {
+			(
+				socket: Socket<
+					ClientToServerEvents,
+					ServerToClientEvents,
+					any,
+					SocketData
+				>
+			) => {
 				this.clientControllers.set(
 					socket.id,
 					new ClientController(

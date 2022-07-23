@@ -1,22 +1,40 @@
 import { promises as fsPromises } from 'fs';
 import path, { join } from 'path';
+import { Constructor } from 'type-fest';
 import { fileURLToPath } from 'url';
 import { Border } from '../entity/Border.js';
+import { Entity } from '../entity/Entity.js';
+import { Settlement } from '../entity/Settlement.js';
+import { TravelEvent } from '../entity/TravelEvent.js';
 import { RegionRepository } from '../repository/RegionRepository.js';
 import { Region } from '../entity/Region.js';
 import { Character } from '../entity/Character.js';
 import { BorderRepository } from '../repository/BorderRepository.js';
 import { CharacterRepository } from '../repository/CharacterRepository.js';
 import { World } from '../entity/World.js';
+import { Repository } from '../repository/Repository.js';
+import { SettlementRepository } from '../repository/SettlementRepository.js';
+import { TravelEventRepository } from '../repository/TravelEventRepository.js';
 import { ServerState } from '../ServerState.js';
 import { WorldRepository } from '../repository/WorldRepository.js';
 
 const filename = '../../state.json';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
+const repositories = new Map<
+	Constructor<Entity<any, any, any>>,
+	Constructor<Repository<any, any, any>>
+>();
+
+repositories.set(World, WorldRepository);
+repositories.set(Character, CharacterRepository);
+repositories.set(Region, RegionRepository);
+repositories.set(Border, BorderRepository);
+repositories.set(Settlement, SettlementRepository);
+repositories.set(TravelEvent, TravelEventRepository);
+
 export class StatePersister {
 	static async writeState(state: ServerState) {
-		console.log('in', state);
 		console.log(JSON.stringify(state));
 
 		try {
@@ -41,31 +59,14 @@ export class StatePersister {
 		const loadedState = JSON.parse(contents);
 		const serverState = new ServerState();
 
-		const worlds = new WorldRepository(
-			serverState,
-			loadedState.WorldRepository ?? []
-		);
-		serverState.registerRepository(World, worlds);
+		repositories.forEach((repositoryClass, entityClass) => {
+			const repository = new repositoryClass(
+				serverState,
+				loadedState[repositoryClass.name ?? []]
+			);
 
-		const characters = new CharacterRepository(
-			serverState,
-			loadedState.CharacterRepository ?? []
-		);
-		serverState.registerRepository(Character, characters);
-
-		const regions = new RegionRepository(
-			serverState,
-			loadedState.RegionRepository ?? []
-		);
-		serverState.registerRepository(Region, regions);
-
-		const borders = new BorderRepository(
-			serverState,
-			loadedState.BorderRepository ?? []
-		);
-		serverState.registerRepository(Border, borders);
-
-		console.log(JSON.stringify(serverState));
+			serverState.registerRepository(entityClass, repository);
+		});
 
 		return serverState;
 	}
