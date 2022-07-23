@@ -12,7 +12,7 @@ const Map = () => {
     return (
         <>
             <TestSvg />
-            {/* <img style={{ opacity: 0.3, marginBottom: '-3px' }} src={Water} position="absolute" width="100%" /> */}
+            <img style={{ opacity: 0.3, marginBottom: '-3px' }} src={Water} position="absolute" width="100%" />
         </>
     )
 }
