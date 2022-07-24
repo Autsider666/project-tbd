@@ -5,6 +5,7 @@ import { Uuid } from '../helper/UuidHelper.js';
 import { ServerState } from '../ServerState.js';
 import { RegionProperty } from './CommonProperties/RegionProperty.js';
 import { Entity, EntityClientData, EntityStateData } from './Entity.js';
+import { Party, PartyId } from './Party.js';
 import { Region, RegionId } from './Region.js';
 
 export type SettlementId = Opaque<Uuid, 'SettlementId'>;
@@ -12,6 +13,7 @@ export type SettlementId = Opaque<Uuid, 'SettlementId'>;
 export type SettlementStateData = {
 	name: string;
 	region: RegionId;
+	parties: PartyId[];
 } & EntityStateData<SettlementId>;
 
 export type SettlementClientData = SettlementStateData &
@@ -23,7 +25,8 @@ export class Settlement extends Entity<
 	SettlementClientData
 > {
 	public name: string;
-	private regionProperty: RegionProperty;
+	private readonly regionProperty: RegionProperty;
+	private readonly parties = new Map<PartyId, Party | null>();
 
 	constructor(
 		protected readonly serverState: ServerState,
@@ -33,6 +36,7 @@ export class Settlement extends Entity<
 
 		this.name = data.name;
 		this.regionProperty = new RegionProperty(serverState, data.region);
+		data.parties.forEach((id) => this.parties.set(id, null));
 	}
 
 	normalize(forClient: Client | undefined): SettlementClientData {
@@ -47,6 +51,7 @@ export class Settlement extends Entity<
 			id: this.id,
 			name: this.name,
 			region: this.regionProperty.toJSON(),
+			parties: Array.from(this.parties.keys()),
 		};
 	}
 

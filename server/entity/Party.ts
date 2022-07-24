@@ -1,20 +1,23 @@
 import { Client } from '../controller/ClientController.js';
 import { EntityUpdate } from '../controller/StateSyncController.js';
 import { Uuid } from '../helper/UuidHelper.js';
-import { RegionProperty } from './CommonProperties/RegionProperty.js';
+import { SettlementProperty } from './CommonProperties/SettlementProperty.js';
+import { SurvivorsProperty } from './CommonProperties/SurvivorsProperty.js';
 import { EventId } from './Event.js';
-import { Region, RegionId } from './Region.js';
+import { Settlement, SettlementId } from './Settlement.js';
 import { ServerState } from '../ServerState.js';
 import { Opaque } from 'type-fest';
 import { Entity, EntityClientData, EntityStateData } from './Entity.js';
+import { Survivor, SurvivorId } from './Survivor.js';
 import { TravelEvent } from './TravelEvent.js';
 
 export type PartyId = Opaque<Uuid, 'PartyId'>;
 
 export type PartyStateData = {
 	name: string;
-	region: RegionId;
+	settlement: SettlementId;
 	currentTravelEvent: EventId | null;
+	survivors: SurvivorId[];
 } & EntityStateData<PartyId>;
 
 export type PartyClientData = {
@@ -22,14 +25,11 @@ export type PartyClientData = {
 } & PartyStateData &
 	EntityClientData<PartyId>;
 
-export class Party extends Entity<
-	PartyId,
-	PartyStateData,
-	PartyClientData
-> {
+export class Party extends Entity<PartyId, PartyStateData, PartyClientData> {
 	public readonly name: string;
 	private currentTravelEvent: EventId | TravelEvent | null;
-	private regionProperty: RegionProperty;
+	private readonly settlementProperty: SettlementProperty;
+	private readonly survivorsProperty: SurvivorsProperty;
 
 	constructor(
 		protected readonly serverState: ServerState,
@@ -38,15 +38,23 @@ export class Party extends Entity<
 		super(serverState, data);
 
 		this.name = data.name;
-		this.regionProperty = new RegionProperty(serverState, data.region);
 		this.currentTravelEvent = data.currentTravelEvent ?? null;
+		this.settlementProperty = new SettlementProperty(
+			serverState,
+			data.settlement
+		);
+		this.survivorsProperty = new SurvivorsProperty(
+			serverState,
+			data.survivors
+		);
 	}
 
 	public toJSON(): PartyStateData {
 		return {
 			id: this.id,
 			name: this.name,
-			region: this.regionProperty.toJSON(),
+			settlement: this.settlementProperty.toJSON(),
+			survivors: this.survivorsProperty.toJSON(),
 			currentTravelEvent:
 				typeof this.currentTravelEvent === 'string'
 					? this.currentTravelEvent
@@ -73,11 +81,24 @@ export class Party extends Entity<
 			updateObject = event.prepareUpdate(updateObject, forClient);
 		}
 
+		this.getSurvivors().forEach((party) => {
+			updateObject = party.prepareUpdate(updateObject, forClient);
+		});
+
 		return super.prepareUpdate(updateObject, forClient);
 	}
 
-	public getRegion(): Region {
-		return this.regionProperty.getRegion();
+	public getSettlement(): Settlement {
+		return this.settlementProperty.getSettlement();
+	}
+
+	public getSurvivors(): Survivor[] {
+		return this.survivorsProperty.getAll();
+	}
+
+	public addSurvivor(survivor: Survivor): void {
+		this.survivorsProperty.add(survivor);
+		survivor.setParty(this);
 	}
 
 	public getCurrentTravelEvent(): TravelEvent | null {

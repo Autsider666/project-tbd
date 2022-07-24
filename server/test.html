@@ -27,14 +27,10 @@
 				// 	return alert('Already have a party!');
 				// }
 
-				socket.emit(
-					'party:create',
-					{ name: 'from client' },
-					(jwt) => {
-						console.log(jwt);
-						token = jwt;
-					}
-				);
+				socket.emit('party:create', { name: 'from client' }, (jwt) => {
+					console.log(jwt);
+					token = jwt;
+				});
 			}
 
 			function addParty() {

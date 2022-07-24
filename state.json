@@ -11,14 +11,14 @@
 			"id": "a",
 			"name": "Start",
 			"world": "a",
-			"parties": ["a"],
+			"settlements": ["a"],
 			"borders": ["a"]
 		},
 		{
 			"id": "b",
 			"name": "Next",
 			"world": "a",
-			"parties": ["b"],
+			"settlements": ["b"],
 			"borders": ["a"]
 		}
 	],
@@ -28,16 +28,36 @@
 			"regions": ["a", "b"]
 		}
 	],
-	"PartyRepository": [
+	"SettlementRepository": [
 		{
 			"id": "a",
-			"name": "Player 1",
-			"region": "a"
+			"name": "Start",
+			"region": "a",
+			"parties": ["a"]
 		},
 		{
 			"id": "b",
-			"name": "Player 2",
-			"region": "b"
+			"name": "Next",
+			"region": "a",
+			"parties": []
+		}
+	],
+	"PartyRepository": [
+		{
+			"id": "a",
+			"name": "Start",
+			"settlement": "a",
+			"survivors": ["a"]
+		}
+	],
+	"SurvivorRepository": [
+		{
+			"id": "a",
+			"name": "God emperor",
+			"party": "a",
+			"hp": 100000,
+			"damage": 100000,
+			"carryCapacity": 100000
 		}
 	],
 	"TravelEventRepository": [

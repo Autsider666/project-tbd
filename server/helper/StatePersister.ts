@@ -29,8 +29,8 @@ const repositories = new Map<
 >();
 
 repositories.set(World, WorldRepository);
-repositories.set(Party, PartyRepository);
 repositories.set(Survivor, SurvivorRepository);
+repositories.set(Party, PartyRepository);
 repositories.set(Region, RegionRepository);
 repositories.set(Border, BorderRepository);
 repositories.set(Settlement, SettlementRepository);

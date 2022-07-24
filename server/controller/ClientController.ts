@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 import { Party, PartyId } from '../entity/Party.js';
 import { EventId } from '../entity/Event.js';
 import { RegionId } from '../entity/Region.js';
+import { SettlementId } from '../entity/Settlement.js';
 import { WorldId } from '../entity/World.js';
 import { PartyRepository } from '../repository/PartyRepository.js';
 import {
@@ -66,15 +67,18 @@ export class ClientController {
 			(data: { name: string }, callback: (token: string) => void) => {
 				console.log('create party', data);
 
-				const newParty = this.partyRepository.create({
-					name: data.name,
-					region: 'a' as RegionId,
-					currentTravelEvent: 'a' as EventId,
-				});
+				const newParty = this.partyRepository.createNew(
+					data.name,
+					'a' as SettlementId
+				);
 
 				const payload: PartyPayload = {
 					party: newParty.getId(),
-					world: newParty.getRegion().getWorld().getId(),
+					world: newParty
+						.getSettlement()
+						.getRegion()
+						.getWorld()
+						.getId(),
 				};
 
 				const token = jwt.sign(payload, secret);
@@ -97,10 +101,12 @@ export class ClientController {
 			}`
 		);
 
-		const region = party.getRegion();
+		const settlement = party.getSettlement();
+		const region = settlement.getRegion();
 		const world = region.getWorld();
 
 		this.socket.join(party.getEntityRoomName());
+		this.socket.join(settlement.getEntityRoomName());
 		this.socket.join(region.getEntityRoomName());
 		this.socket.join(world.getEntityRoomName());
 

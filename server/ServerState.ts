@@ -20,8 +20,11 @@ export class ServerState {
 	): Repository<T, any, any> {
 		const repository = this.repositories.get(name);
 		if (!repository) {
+			console.error(
+				Array.from(this.repositories.keys()).map((name) => name.name)
+			);
 			throw new Error(
-				name + ' has no registered repository in ServerState.'
+				name.name + ' has no registered repository in ServerState.'
 			);
 		}
 

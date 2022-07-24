@@ -46,9 +46,7 @@ export class ServerController {
 					new ClientController(
 						socket,
 						this.io,
-						this.serverState.getRepository(
-							Party
-						) as PartyRepository
+						this.serverState.getRepository(Party) as PartyRepository
 					)
 				);
 

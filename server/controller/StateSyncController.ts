@@ -58,9 +58,7 @@ export class StateSyncController {
 
 		if (room.startsWith('entity:party:')) {
 			const partyId = room.replace('entity:party:', '');
-			const party = this.serverState
-				.getRepository(Party)
-				.get(partyId);
+			const party = this.serverState.getRepository(Party).get(partyId);
 			if (party === null || party.constructor !== Party) {
 				throw new Error('Tried to initialize a non-existent party');
 			}
