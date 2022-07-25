@@ -15,9 +15,10 @@ export type RegionId = Opaque<Uuid, 'RegionId'>;
 
 export type RegionStateData = {
 	name: string;
-	borders: BorderId[];
-	world: WorldId;
 	type: RegionType;
+	dimensions: string;
+	world: WorldId;
+	borders: BorderId[];
 	settlement: SettlementId | null;
 	nodes: ResourceNodeId[];
 } & EntityStateData<RegionId>;
@@ -33,10 +34,11 @@ export class Region extends Entity<
 	RegionStateData,
 	RegionClientData
 > {
-	name: string;
+	public readonly name: string;
+	private readonly dimensions: string;
 	private borders = new Map<BorderId, Border | null>();
 	private world: World | WorldId;
-	type: RegionType;
+	public readonly type: RegionType;
 	private settlementProperty: SettlementProperty | null;
 	private resourceNodesProperty: ResourceNodesProperty;
 
@@ -47,6 +49,7 @@ export class Region extends Entity<
 		super(serverState, data);
 
 		this.name = data.name;
+		this.dimensions = data.dimensions;
 		this.world = data.world;
 		this.type = data.type ?? RegionType.plain;
 		this.settlementProperty = data.settlement
@@ -66,11 +69,12 @@ export class Region extends Entity<
 			id: this.id,
 			name: this.name,
 			type: this.type,
-			borders: Array.from(this.borders.keys()),
+			dimensions: this.dimensions,
 			world:
 				typeof this.world === 'string'
 					? (this.world as WorldId)
 					: (this.world as World).getId(),
+			borders: Array.from(this.borders.keys()),
 			settlement: this.settlementProperty?.toJSON() ?? null,
 			nodes: this.resourceNodesProperty.toJSON(),
 		};
