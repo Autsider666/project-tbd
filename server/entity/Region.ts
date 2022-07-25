@@ -91,17 +91,30 @@ export class Region extends Entity<
 		updateObject: EntityUpdate = {},
 		forClient?: Client
 	): EntityUpdate {
-		this.getBorders().forEach(
-			(border) =>
-				(updateObject = border.prepareUpdate(updateObject, forClient))
-		);
+		const viableRegions: RegionId[] = [];
+		forClient?.parties.forEach((party) => {
+			viableRegions.push(party.getSettlement().getRegion().getId());
+		});
 
-		this.resourceNodesProperty
-			.getAll()
-			.forEach(
-				(node) =>
-					(updateObject = node.prepareUpdate(updateObject, forClient))
+		if (this.getId() in viableRegions) {
+			this.getBorders().forEach(
+				(border) =>
+					(updateObject = border.prepareUpdate(
+						updateObject,
+						forClient
+					))
 			);
+
+			this.resourceNodesProperty
+				.getAll()
+				.forEach(
+					(node) =>
+						(updateObject = node.prepareUpdate(
+							updateObject,
+							forClient
+						))
+				);
+		}
 
 		const settlement = this.getSettlement();
 		if (settlement != null) {
