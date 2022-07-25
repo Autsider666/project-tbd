@@ -23,6 +23,14 @@
     fill: lightgray !important;
     fill-opacity: 0.6 !important;
     cursor: pointer !important;
+    stroke-width: 1px !important;
+    stroke-opacity: 1 !important;
+}
+
+.mapRegion.selected {
+    fill: lightgray !important;
+    fill-opacity: 0.8 !important;
+    cursor: pointer !important;
     stroke-width: 2px !important;
     stroke-opacity: 1 !important;
 }

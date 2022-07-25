@@ -16,6 +16,8 @@ export type BorderClientData = BorderStateData & EntityClientData<BorderId>;
 
 export enum BorderType {
 	default = 'default',
+	mountain = 'mountain',
+	water = 'water'
 }
 
 export class Border extends Entity<

@@ -12,7 +12,7 @@ const AuthProvider = ({ children }) => {
     const [user, setUser] = useState({})
 
     const characterCreate = name => {
-        socket.emit('character:create', { name }, token => setUser({ token }))
+        socket.emit('party:create', { name }, token => setUser({ token }))
     }
 
 

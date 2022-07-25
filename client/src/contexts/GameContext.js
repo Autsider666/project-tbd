@@ -19,7 +19,9 @@ const GameProvider = ({ children }) => {
     const [worldRepository, setWorldRepository] = useState({})
     const [regionRepository, setRegionRepository] = useState({})
     const [borderRepository, setBorderRepository] = useState({})
-    const [characterRepository, setCharacterRepository] = useState({})
+    const [survivorRepository, setSurvivorRepository] = useState({})
+    const [partyRepository, setPartyRepository] = useState({})
+    const [expeditionTargetRepository, setExpeditionTargetRepository] = useState({})
 
     const entityUpdater = entities => {
         console.log(entities)
@@ -32,24 +34,29 @@ const GameProvider = ({ children }) => {
             worldRepository: {},
             regionRepository: {},
             borderRepository: {},
-            characterRepository: {},
+            survivorRepository: {},
+            partyRepository: {},
+            expeditionTargetRepository: {},
         })
         setWorldRepository(prev => ({ ...prev, ...entitiesFormatted.worldRepository }))
         setRegionRepository(prev => ({ ...prev, ...entitiesFormatted.regionRepository }))
         setBorderRepository(prev => ({ ...prev, ...entitiesFormatted.borderRepository }))
-        setCharacterRepository(prev => ({ ...prev, ...entitiesFormatted.characterRepository }))
+        setSurvivorRepository(prev => ({ ...prev, ...entitiesFormatted.survivorRepository }))
+        setPartyRepository(prev => ({ ...prev, ...entitiesFormatted.partyRepository }))
+        setExpeditionTargetRepository(prev => ({ ...prev, ...entitiesFormatted.expeditionTargetRepository }))
+
 
         setAllEntities(entities) // temp state for testing
         setLoaded(true)
     }
 
     console.log({
-        worldRepository, regionRepository, borderRepository, characterRepository,
+        worldRepository, regionRepository, borderRepository, survivorRepository, partyRepository,
     })
 
     useEffect(() => {
         !socket.hasListeners('entity:update') && socket.on('entity:update', entityUpdater)
-        token && socket.emit('character:init', token, data => console.log(data))
+        token && socket.emit('party:init', token, data => console.log(data))
         return () => socket.off('entity:update', entityUpdater)
     }, [token])
 
@@ -82,13 +89,15 @@ const GameProvider = ({ children }) => {
     //     return () => socket.off(EVENT_NAMES.CHARACTERS, setCharacters)
     // }, [jwt])
 
+    const [selectedRegion, setSelectedRegion] = useState(null)
 
 
     const value = {
         allEntities,
         loaded,
         token,
-        worldRepository, regionRepository, borderRepository, characterRepository,
+        worldRepository, regionRepository, borderRepository, survivorRepository, partyRepository,
+        selectedRegion, setSelectedRegion,
     };
 
     console.log(value)
