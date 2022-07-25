@@ -51,10 +51,7 @@ export class Party extends Entity<PartyId, PartyStateData, PartyClientData> {
 			serverState,
 			data.survivors
 		);
-		this.inventory = new ResourcesProperty(
-			serverState,
-			data.inventory ?? []
-		);
+		this.inventory = new ResourcesProperty(serverState, data.inventory);
 	}
 
 	public toJSON(): PartyStateData {

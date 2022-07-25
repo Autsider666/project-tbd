@@ -437,31 +437,36 @@
 			"id": "a",
 			"name": "Feyontussa",
 			"region": "c",
-			"parties": ["a"]
+			"parties": ["a"],
+			"storage": []
 		},
 		{
 			"id": "b",
 			"name": "Bovasis",
 			"region": "e",
-			"parties": []
+			"parties": [],
+			"storage": []
 		},
 		{
 			"id": "c",
 			"name": "Kaln",
 			"region": "o",
-			"parties": []
+			"parties": [],
+			"storage": []
 		},
 		{
 			"id": "d",
 			"name": "Maivora",
 			"region": "s",
-			"parties": []
+			"parties": [],
+			"storage": []
 		},
 		{
 			"id": "e",
 			"name": "Wen",
 			"region": "u",
-			"parties": []
+			"parties": [],
+			"storage": []
 		}
 	],
 	"TravelEventRepository": [],
