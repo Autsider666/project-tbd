@@ -1,5 +1,6 @@
 import { Opaque } from 'type-fest';
 import { Client } from '../controller/ClientController.js';
+import { EntityUpdate } from '../controller/StateSyncController.js';
 import { Uuid } from '../helper/UuidHelper.js';
 import { ServerState } from '../ServerState.js';
 import { RegionProperty } from './CommonProperties/RegionProperty.js';
@@ -64,5 +65,22 @@ export class ResourceNode extends Entity<
 			region: this.regionProperty.toJSON(),
 			resources: this.resourcesProperty.toJSON(),
 		};
+	}
+
+	override prepareUpdate(
+		updateObject: EntityUpdate = {},
+		forClient?: Client
+	): EntityUpdate {
+		this.resourcesProperty
+			.getAll()
+			.forEach(
+				(resource) =>
+					(updateObject = resource.prepareUpdate(
+						updateObject,
+						forClient
+					))
+			);
+
+		return super.prepareUpdate(updateObject, forClient);
 	}
 }

@@ -9,7 +9,7 @@ export type ResourceId = Opaque<Uuid, 'ResourceId'>;
 export enum ResourceType {
 	wood = 'wood',
 	stone = 'stone',
-	iron = 'iron'
+	iron = 'iron',
 }
 
 export type ResourceStateData = {

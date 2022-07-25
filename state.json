@@ -3,29 +3,411 @@
 		{
 			"id": "a",
 			"name": "Default",
-			"regions": ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u"]
+			"regions": [
+				"a",
+				"b",
+				"c",
+				"d",
+				"e",
+				"f",
+				"g",
+				"h",
+				"i",
+				"j",
+				"k",
+				"l",
+				"m",
+				"n",
+				"o",
+				"p",
+				"q",
+				"r",
+				"s",
+				"t",
+				"u"
+			]
+		}
+	],
+	"SurvivorRepository": [
+		{
+			"id": "a",
+			"name": "God emperor",
+			"hp": 100000,
+			"damage": 100000,
+			"carryCapacity": 100000,
+			"party": "a"
+		}
+	],
+	"PartyRepository": [
+		{
+			"id": "a",
+			"name": "Start",
+			"settlement": "a",
+			"survivors": ["a"],
+			"currentTravelEvent": null
 		}
 	],
 	"RegionRepository": [
 		{
 			"id": "a",
-			"name": "Start",
+			"name": "SomeName",
+			"type": "plain",
+			"borders": ["a"],
 			"world": "a",
-			"settlements": ["a"],
-			"borders": ["a"]
+			"settlement": null,
+			"nodes": []
 		},
 		{
 			"id": "b",
-			"name": "Next",
+			"name": "SomeName",
+			"type": "plain",
+			"borders": ["b", "c"],
 			"world": "a",
-			"settlements": ["b"],
-			"borders": ["a"]
+			"settlement": null,
+			"nodes": []
+		},
+		{
+			"id": "c",
+			"name": "SomeName",
+			"type": "plain",
+			"borders": ["a", "b", "d", "e", "j"],
+			"world": "a",
+			"settlement": "a",
+			"nodes": []
+		},
+		{
+			"id": "d",
+			"name": "SomeName",
+			"type": "plain",
+			"borders": ["c", "d", "f", "ag"],
+			"world": "a",
+			"settlement": null,
+			"nodes": []
+		},
+		{
+			"id": "e",
+			"name": "SomeName",
+			"type": "plain",
+			"borders": ["e", "f", "g", "h", "i"],
+			"world": "a",
+			"settlement": "b",
+			"nodes": []
+		},
+		{
+			"id": "f",
+			"name": "SomeName",
+			"type": "plain",
+			"borders": ["g", "j", "k"],
+			"world": "a",
+			"settlement": null,
+			"nodes": []
+		},
+		{
+			"id": "g",
+			"name": "SomeName",
+			"type": "plain",
+			"borders": ["h", "k", "l"],
+			"world": "a",
+			"settlement": null,
+			"nodes": []
+		},
+		{
+			"id": "h",
+			"name": "SomeName",
+			"type": "plain",
+			"borders": ["i", "l", "m"],
+			"world": "a",
+			"settlement": null,
+			"nodes": []
+		},
+		{
+			"id": "i",
+			"name": "SomeName",
+			"type": "plain",
+			"borders": ["ag", "ah"],
+			"world": "a",
+			"settlement": null,
+			"nodes": []
+		},
+		{
+			"id": "j",
+			"name": "SomeName",
+			"type": "plain",
+			"borders": ["m", "n"],
+			"world": "a",
+			"settlement": null,
+			"nodes": []
+		},
+		{
+			"id": "k",
+			"name": "SomeName",
+			"type": "plain",
+			"borders": ["m", "n", "o"],
+			"world": "a",
+			"settlement": null,
+			"nodes": []
+		},
+		{
+			"id": "l",
+			"name": "SomeName",
+			"type": "plain",
+			"borders": ["p", "q", "r", "s"],
+			"world": "a",
+			"settlement": null,
+			"nodes": []
+		},
+		{
+			"id": "m",
+			"name": "SomeName",
+			"type": "plain",
+			"borders": ["r", "t"],
+			"world": "a",
+			"settlement": null,
+			"nodes": []
+		},
+		{
+			"id": "n",
+			"name": "SomeName",
+			"type": "plain",
+			"borders": ["s", "t", "u", "af"],
+			"world": "a",
+			"settlement": null,
+			"nodes": []
+		},
+		{
+			"id": "o",
+			"name": "SomeName",
+			"type": "plain",
+			"borders": ["o", "q", "u", "v", "w", "x"],
+			"world": "a",
+			"settlement": "c",
+			"nodes": []
+		},
+		{
+			"id": "p",
+			"name": "SomeName",
+			"type": "plain",
+			"borders": ["v", "y", "aa"],
+			"world": "a",
+			"settlement": null,
+			"nodes": []
+		},
+		{
+			"id": "q",
+			"name": "SomeName",
+			"type": "plain",
+			"borders": ["w", "y", "z"],
+			"world": "a",
+			"settlement": null,
+			"nodes": []
+		},
+		{
+			"id": "r",
+			"name": "SomeName",
+			"type": "plain",
+			"borders": ["x", "z", "aa", "ab", "ac"],
+			"world": "a",
+			"settlement": null,
+			"nodes": []
+		},
+		{
+			"id": "s",
+			"name": "SomeName",
+			"type": "plain",
+			"borders": ["ab", "ad", "ae"],
+			"world": "a",
+			"settlement": "d",
+			"nodes": []
+		},
+		{
+			"id": "t",
+			"name": "SomeName",
+			"type": "plain",
+			"borders": ["ae", "af"],
+			"world": "a",
+			"settlement": null,
+			"nodes": []
+		},
+		{
+			"id": "u",
+			"name": "SomeName",
+			"type": "plain",
+			"borders": ["ac", "ad", "ah"],
+			"world": "a",
+			"settlement": "e",
+			"nodes": []
 		}
 	],
 	"BorderRepository": [
 		{
 			"id": "a",
-			"regions": ["a", "b"]
+			"type": "default",
+			"regions": ["a", "c"]
+		},
+		{
+			"id": "b",
+			"type": "mountain",
+			"regions": ["b", "c"]
+		},
+		{
+			"id": "c",
+			"type": "mountain",
+			"regions": ["b", "d"]
+		},
+		{
+			"id": "d",
+			"type": "default",
+			"regions": ["c", "d"]
+		},
+		{
+			"id": "e",
+			"type": "default",
+			"regions": ["c", "e"]
+		},
+		{
+			"id": "f",
+			"type": "default",
+			"regions": ["d", "e"]
+		},
+		{
+			"id": "g",
+			"type": "mountain",
+			"regions": ["f", "e"]
+		},
+		{
+			"id": "h",
+			"type": "mountain",
+			"regions": ["g", "e"]
+		},
+		{
+			"id": "i",
+			"type": "default",
+			"regions": ["h", "e"]
+		},
+		{
+			"id": "j",
+			"type": "default",
+			"regions": ["c", "f"]
+		},
+		{
+			"id": "k",
+			"type": "mountain",
+			"regions": ["g", "f"]
+		},
+		{
+			"id": "l",
+			"type": "default",
+			"regions": ["g", "h"]
+		},
+		{
+			"id": "m",
+			"type": "default",
+			"regions": ["h", "j"]
+		},
+		{
+			"id": "n",
+			"type": "default",
+			"regions": ["k", "j"]
+		},
+		{
+			"id": "o",
+			"type": "default",
+			"regions": ["k", "o"]
+		},
+		{
+			"id": "p",
+			"type": "default",
+			"regions": ["k", "l"]
+		},
+		{
+			"id": "q",
+			"type": "default",
+			"regions": ["o", "l"]
+		},
+		{
+			"id": "r",
+			"type": "default",
+			"regions": ["m", "l"]
+		},
+		{
+			"id": "s",
+			"type": "mountain",
+			"regions": ["n", "l"]
+		},
+		{
+			"id": "t",
+			"type": "mountain",
+			"regions": ["n", "m"]
+		},
+		{
+			"id": "u",
+			"type": "default",
+			"regions": ["n", "o"]
+		},
+		{
+			"id": "v",
+			"type": "default",
+			"regions": ["p", "o"]
+		},
+		{
+			"id": "w",
+			"type": "mountain",
+			"regions": ["q", "o"]
+		},
+		{
+			"id": "x",
+			"type": "default",
+			"regions": ["r", "o"]
+		},
+		{
+			"id": "y",
+			"type": "default",
+			"regions": ["p", "q"]
+		},
+		{
+			"id": "z",
+			"type": "default",
+			"regions": ["q", "r"]
+		},
+		{
+			"id": "aa",
+			"type": "mountain",
+			"regions": ["p", "r"]
+		},
+		{
+			"id": "ab",
+			"type": "default",
+			"regions": ["s", "r"]
+		},
+		{
+			"id": "ac",
+			"type": "mountain",
+			"regions": ["u", "r"]
+		},
+		{
+			"id": "ad",
+			"type": "mountain",
+			"regions": ["u", "s"]
+		},
+		{
+			"id": "ae",
+			"type": "default",
+			"regions": ["s", "t"]
+		},
+		{
+			"id": "af",
+			"type": "default",
+			"regions": ["t", "n"]
+		},
+		{
+			"id": "ag",
+			"type": "water",
+			"regions": ["d", "i"]
+		},
+		{
+			"id": "ah",
+			"type": "water",
+			"regions": ["u", "i"]
 		}
 	],
 	"SettlementRepository": [
@@ -60,34 +442,8 @@
 			"parties": []
 		}
 	],
-	"PartyRepository": [
-		{
-			"id": "a",
-			"name": "Start",
-			"settlement": "c",
-			"survivors": ["a"]
-		}
-	],
-	"SurvivorRepository": [
-		{
-			"id": "a",
-			"name": "God emperor",
-			"party": "a",
-			"hp": 100000,
-			"damage": 100000,
-			"carryCapacity": 100000
-		}
-	],
-	"TravelEventRepository": [
-		{
-			"id": "a",
-			"target": "a",
-			"startTime": "2022-07-20T17:32:33.074Z",
-			"endTime": "2022-07-20T18:32:33.074Z",
-			"canBeStopped": true,
-			"chainEvent": null,
-			"startPoint": "a",
-			"endpoint": "b"
-		}
-	]
+	"TravelEventRepository": [],
+	"ExpeditionRepository": [],
+	"ResourceNodeRepository": [],
+	"ResourceRepository": []
 }

@@ -2,7 +2,9 @@ import { Client } from '../controller/ClientController.js';
 import { EntityUpdate } from '../controller/StateSyncController.js';
 import { Uuid } from '../helper/UuidHelper.js';
 import { Border, BorderId } from './Border.js';
+import { ResourceNodesProperty } from './CommonProperties/ResourceNodesProperty.js';
 import { SettlementProperty } from './CommonProperties/SettlementProperty.js';
+import { ResourceNodeId } from './ResourceNode.js';
 import { Settlement, SettlementId } from './Settlement.js';
 import { World, WorldId } from './World.js';
 import { ServerState } from '../ServerState.js';
@@ -17,6 +19,7 @@ export type RegionStateData = {
 	world: WorldId;
 	type: RegionType;
 	settlement: SettlementId | null;
+	nodes: ResourceNodeId[];
 } & EntityStateData<RegionId>;
 
 export type RegionClientData = RegionStateData & EntityClientData<RegionId>;
@@ -35,6 +38,7 @@ export class Region extends Entity<
 	private world: World | WorldId;
 	type: RegionType;
 	private settlementProperty: SettlementProperty | null;
+	private resourceNodesProperty: ResourceNodesProperty;
 
 	constructor(
 		protected readonly serverState: ServerState,
@@ -50,6 +54,11 @@ export class Region extends Entity<
 			: null;
 
 		data.borders.forEach((id) => this.borders.set(id, null));
+
+		this.resourceNodesProperty = new ResourceNodesProperty(
+			serverState,
+			data.nodes
+		);
 	}
 
 	toJSON(): RegionStateData {
@@ -63,6 +72,7 @@ export class Region extends Entity<
 					? (this.world as WorldId)
 					: (this.world as World).getId(),
 			settlement: this.settlementProperty?.toJSON() ?? null,
+			nodes: this.resourceNodesProperty.toJSON(),
 		};
 	}
 
@@ -81,6 +91,13 @@ export class Region extends Entity<
 			(border) =>
 				(updateObject = border.prepareUpdate(updateObject, forClient))
 		);
+
+		this.resourceNodesProperty
+			.getAll()
+			.forEach(
+				(node) =>
+					(updateObject = node.prepareUpdate(updateObject, forClient))
+			);
 
 		const settlement = this.getSettlement();
 		if (settlement != null) {

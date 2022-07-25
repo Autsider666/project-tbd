@@ -80,6 +80,8 @@ export class StatePersister {
 			serverState.registerRepository(entityClass, repository);
 		});
 
+		console.log(JSON.stringify(serverState));
+
 		return serverState;
 	}
 }
