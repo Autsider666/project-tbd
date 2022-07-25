@@ -1,5 +1,5 @@
 import { ServerState } from '../../ServerState.js';
-import { Resource, ResourceId } from '../Resource.js';
+import { ResourceId } from '../Resource.js';
 import { ResourceNode, ResourceNodeId } from '../ResourceNode.js';
 import { MultiCommonProperty } from './MultiCommonProperty.js';
 

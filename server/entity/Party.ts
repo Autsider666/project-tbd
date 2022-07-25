@@ -1,9 +1,11 @@
 import { Client } from '../controller/ClientController.js';
 import { EntityUpdate } from '../controller/StateSyncController.js';
 import { Uuid } from '../helper/UuidHelper.js';
+import { ResourcesProperty } from './CommonProperties/ResourcesProperty.js';
 import { SettlementProperty } from './CommonProperties/SettlementProperty.js';
 import { SurvivorsProperty } from './CommonProperties/SurvivorsProperty.js';
 import { EventId } from './Event.js';
+import { ResourceId } from './Resource.js';
 import { Settlement, SettlementId } from './Settlement.js';
 import { ServerState } from '../ServerState.js';
 import { Opaque } from 'type-fest';
@@ -18,6 +20,7 @@ export type PartyStateData = {
 	settlement: SettlementId;
 	currentTravelEvent: EventId | null;
 	survivors: SurvivorId[];
+	inventory: ResourceId[];
 } & EntityStateData<PartyId>;
 
 export type PartyClientData = {
@@ -30,6 +33,7 @@ export class Party extends Entity<PartyId, PartyStateData, PartyClientData> {
 	private currentTravelEvent: EventId | TravelEvent | null;
 	private readonly settlementProperty: SettlementProperty;
 	private readonly survivorsProperty: SurvivorsProperty;
+	private readonly inventory: ResourcesProperty;
 
 	constructor(
 		protected readonly serverState: ServerState,
@@ -47,6 +51,10 @@ export class Party extends Entity<PartyId, PartyStateData, PartyClientData> {
 			serverState,
 			data.survivors
 		);
+		this.inventory = new ResourcesProperty(
+			serverState,
+			data.inventory ?? []
+		);
 	}
 
 	public toJSON(): PartyStateData {
@@ -55,6 +63,7 @@ export class Party extends Entity<PartyId, PartyStateData, PartyClientData> {
 			name: this.name,
 			settlement: this.settlementProperty.toJSON(),
 			survivors: this.survivorsProperty.toJSON(),
+			inventory: this.inventory.toJSON(),
 			currentTravelEvent:
 				typeof this.currentTravelEvent === 'string'
 					? this.currentTravelEvent

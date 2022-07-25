@@ -6,7 +6,7 @@ import { ServerState } from '../ServerState.js';
 import { PartiesProperty } from './CommonProperties/PartiesProperty.js';
 import { RegionProperty } from './CommonProperties/RegionProperty.js';
 import { Entity, EntityClientData, EntityStateData } from './Entity.js';
-import { Party, PartyId } from './Party.js';
+import { PartyId } from './Party.js';
 import { Region, RegionId } from './Region.js';
 
 export type SettlementId = Opaque<Uuid, 'SettlementId'>;

@@ -15,6 +15,7 @@ export class PartyFactory {
 			name,
 			settlement,
 			survivors: [],
+			inventory: [],
 			currentTravelEvent: null,
 		});
 

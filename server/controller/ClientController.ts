@@ -1,8 +1,6 @@
 import { Server, Socket } from 'socket.io';
 import jwt from 'jsonwebtoken';
 import { Party, PartyId } from '../entity/Party.js';
-import { EventId } from '../entity/Event.js';
-import { RegionId } from '../entity/Region.js';
 import { SettlementId } from '../entity/Settlement.js';
 import { WorldId } from '../entity/World.js';
 import { PartyRepository } from '../repository/PartyRepository.js';
