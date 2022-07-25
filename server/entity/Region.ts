@@ -95,30 +95,17 @@ export class Region extends Entity<
 			return updateObject;
 		}
 
-		const viableRegions: RegionId[] = [];
-		forClient?.parties.forEach((party) => {
-			viableRegions.push(party.getSettlement().getRegion().getId());
-		});
+		this.getBorders().forEach(
+			(border) =>
+				(updateObject = border.prepareUpdate(updateObject, forClient))
+		);
 
-		if (this.getId() in viableRegions || !forClient) {
-			this.getBorders().forEach(
-				(border) =>
-					(updateObject = border.prepareUpdate(
-						updateObject,
-						forClient
-					))
+		this.resourceNodesProperty
+			.getAll()
+			.forEach(
+				(node) =>
+					(updateObject = node.prepareUpdate(updateObject, forClient))
 			);
-
-			this.resourceNodesProperty
-				.getAll()
-				.forEach(
-					(node) =>
-						(updateObject = node.prepareUpdate(
-							updateObject,
-							forClient
-						))
-				);
-		}
 
 		const settlement = this.getSettlement();
 		if (settlement != null) {
