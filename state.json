@@ -31,14 +31,32 @@
 	"SettlementRepository": [
 		{
 			"id": "a",
-			"name": "Start",
-			"region": "a",
+			"name": "Feyontussa",
+			"region": "c",
 			"parties": ["a"]
 		},
 		{
 			"id": "b",
-			"name": "Next",
-			"region": "a",
+			"name": "Bovasis",
+			"region": "e",
+			"parties": []
+		},
+		{
+			"id": "b",
+			"name": "Kaln",
+			"region": "o",
+			"parties": []
+		},
+		{
+			"id": "b",
+			"name": "Maivora",
+			"region": "s",
+			"parties": []
+		},
+		{
+			"id": "b",
+			"name": "Wen",
+			"region": "u",
 			"parties": []
 		}
 	],
