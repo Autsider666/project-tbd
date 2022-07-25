@@ -3,6 +3,7 @@ import { Client } from '../controller/ClientController.js';
 import { EntityUpdate } from '../controller/StateSyncController.js';
 import { Uuid } from '../helper/UuidHelper.js';
 import { ServerState } from '../ServerState.js';
+import { PartiesProperty } from './CommonProperties/PartiesProperty.js';
 import { RegionProperty } from './CommonProperties/RegionProperty.js';
 import { Entity, EntityClientData, EntityStateData } from './Entity.js';
 import { Party, PartyId } from './Party.js';
@@ -26,7 +27,7 @@ export class Settlement extends Entity<
 > {
 	public name: string;
 	private readonly regionProperty: RegionProperty;
-	private readonly parties = new Map<PartyId, Party | null>();
+	private readonly partiesProperty: PartiesProperty;
 
 	constructor(
 		protected readonly serverState: ServerState,
@@ -36,7 +37,7 @@ export class Settlement extends Entity<
 
 		this.name = data.name;
 		this.regionProperty = new RegionProperty(serverState, data.region);
-		data.parties.forEach((id) => this.parties.set(id, null));
+		this.partiesProperty = new PartiesProperty(serverState, data.parties);
 	}
 
 	normalize(forClient: Client | undefined): SettlementClientData {
@@ -51,7 +52,7 @@ export class Settlement extends Entity<
 			id: this.id,
 			name: this.name,
 			region: this.regionProperty.toJSON(),
-			parties: Array.from(this.parties.keys()),
+			parties: this.partiesProperty.toJSON(),
 		};
 	}
 
@@ -64,6 +65,9 @@ export class Settlement extends Entity<
 		}
 
 		// this.getRegion().prepareUpdate(updateObject, forClient);
+		this.partiesProperty.getAll().forEach((party) => {
+			updateObject = party.prepareUpdate(updateObject, forClient);
+		});
 
 		return super.prepareUpdate(updateObject, forClient);
 	}
