@@ -44,8 +44,7 @@
 			"name": "Start",
 			"settlement": "a",
 			"survivors": ["a"],
-			"inventory": [],
-			"currentTravelEvent": null
+			"inventory": []
 		}
 	],
 	"RegionRepository": [
@@ -469,7 +468,6 @@
 			"storage": []
 		}
 	],
-	"TravelEventRepository": [],
 	"ExpeditionRepository": [],
 	"ResourceNodeRepository": [
 		{

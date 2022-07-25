@@ -4,21 +4,18 @@ import { Uuid } from '../helper/UuidHelper.js';
 import { ResourcesProperty } from './CommonProperties/ResourcesProperty.js';
 import { SettlementProperty } from './CommonProperties/SettlementProperty.js';
 import { SurvivorsProperty } from './CommonProperties/SurvivorsProperty.js';
-import { EventId } from './Event.js';
 import { ResourceId } from './Resource.js';
 import { Settlement, SettlementId } from './Settlement.js';
 import { ServerState } from '../ServerState.js';
 import { Opaque } from 'type-fest';
 import { Entity, EntityClientData, EntityStateData } from './Entity.js';
 import { Survivor, SurvivorId } from './Survivor.js';
-import { TravelEvent } from './TravelEvent.js';
 
 export type PartyId = Opaque<Uuid, 'PartyId'>;
 
 export type PartyStateData = {
 	name: string;
 	settlement: SettlementId;
-	currentTravelEvent: EventId | null;
 	survivors: SurvivorId[];
 	inventory: ResourceId[];
 } & EntityStateData<PartyId>;
@@ -30,7 +27,6 @@ export type PartyClientData = {
 
 export class Party extends Entity<PartyId, PartyStateData, PartyClientData> {
 	public readonly name: string;
-	private currentTravelEvent: EventId | TravelEvent | null;
 	private readonly settlementProperty: SettlementProperty;
 	private readonly survivorsProperty: SurvivorsProperty;
 	private readonly inventory: ResourcesProperty;
@@ -42,7 +38,6 @@ export class Party extends Entity<PartyId, PartyStateData, PartyClientData> {
 		super(serverState, data);
 
 		this.name = data.name;
-		this.currentTravelEvent = data.currentTravelEvent ?? null;
 		this.settlementProperty = new SettlementProperty(
 			serverState,
 			data.settlement
@@ -61,12 +56,6 @@ export class Party extends Entity<PartyId, PartyStateData, PartyClientData> {
 			settlement: this.settlementProperty.toJSON(),
 			survivors: this.survivorsProperty.toJSON(),
 			inventory: this.inventory.toJSON(),
-			currentTravelEvent:
-				typeof this.currentTravelEvent === 'string'
-					? this.currentTravelEvent
-					: (
-							this.currentTravelEvent as TravelEvent | null
-					  )?.getId() ?? null,
 		};
 	}
 
@@ -82,11 +71,6 @@ export class Party extends Entity<PartyId, PartyStateData, PartyClientData> {
 		updateObject: EntityUpdate = {},
 		forClient?: Client
 	): EntityUpdate {
-		const event = this.getCurrentTravelEvent();
-		if (event != null) {
-			updateObject = event.prepareUpdate(updateObject, forClient);
-		}
-
 		this.getSurvivors().forEach((party) => {
 			updateObject = party.prepareUpdate(updateObject, forClient);
 		});
@@ -105,20 +89,5 @@ export class Party extends Entity<PartyId, PartyStateData, PartyClientData> {
 	public addSurvivor(survivor: Survivor): void {
 		this.survivorsProperty.add(survivor);
 		survivor.setParty(this);
-	}
-
-	public getCurrentTravelEvent(): TravelEvent | null {
-		if (typeof this.currentTravelEvent === 'string') {
-			const repository = this.serverState.getRepository(TravelEvent);
-
-			const event = repository.get(this.currentTravelEvent as EventId);
-			if (event === null) {
-				throw new Error('.... uhm.....');
-			}
-
-			this.currentTravelEvent = event;
-		}
-
-		return this.currentTravelEvent as TravelEvent | null;
 	}
 }

@@ -16,7 +16,6 @@ export class PartyFactory {
 			settlement: settlement.getId(),
 			survivors: [],
 			inventory: [],
-			currentTravelEvent: null,
 		});
 
 		settlement.addParty(party);
