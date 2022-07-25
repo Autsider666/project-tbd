@@ -91,12 +91,16 @@ export class Region extends Entity<
 		updateObject: EntityUpdate = {},
 		forClient?: Client
 	): EntityUpdate {
+		if (this.getEntityRoomName() in updateObject) {
+			return updateObject;
+		}
+
 		const viableRegions: RegionId[] = [];
 		forClient?.parties.forEach((party) => {
 			viableRegions.push(party.getSettlement().getRegion().getId());
 		});
 
-		if (this.getId() in viableRegions) {
+		if (this.getId() in viableRegions || !forClient) {
 			this.getBorders().forEach(
 				(border) =>
 					(updateObject = border.prepareUpdate(

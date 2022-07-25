@@ -101,6 +101,8 @@ export class ClientController {
 			}`
 		);
 
+		this.client.parties.set(party.getId(), party);
+
 		const settlement = party.getSettlement();
 		const region = settlement.getRegion();
 		const world = region.getWorld();
@@ -109,7 +111,5 @@ export class ClientController {
 		this.socket.join(settlement.getEntityRoomName());
 		this.socket.join(region.getEntityRoomName());
 		this.socket.join(world.getEntityRoomName());
-
-		this.client.parties.set(party.getId(), party);
 	}
 }

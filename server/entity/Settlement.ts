@@ -59,6 +59,10 @@ export class Settlement extends Entity<
 		updateObject: EntityUpdate = {},
 		forClient?: Client
 	): EntityUpdate {
+		if (this.getEntityRoomName() in updateObject) {
+			return updateObject;
+		}
+
 		// this.getRegion().prepareUpdate(updateObject, forClient);
 
 		return super.prepareUpdate(updateObject, forClient);
