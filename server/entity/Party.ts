@@ -89,7 +89,7 @@ export class Party extends Entity<PartyId, PartyStateData, PartyClientData> {
 	}
 
 	public getSettlement(): Settlement {
-		return this.settlementProperty.getSettlement();
+		return this.settlementProperty.get();
 	}
 
 	public getSurvivors(): Survivor[] {

@@ -4,9 +4,14 @@ import { Constructor } from 'type-fest';
 import { fileURLToPath } from 'url';
 import { Border } from '../entity/Border.js';
 import { Entity } from '../entity/Entity.js';
+import { Expedition } from '../entity/Expedition.js';
+import { Resource } from '../entity/Resource.js';
+import { ResourceNode } from '../entity/ResourceNode.js';
 import { Settlement } from '../entity/Settlement.js';
 import { Survivor } from '../entity/Survivor.js';
 import { TravelEvent } from '../entity/TravelEvent.js';
+import { ExpeditionRepository } from '../repository/ExpeditionRepository.js';
+import { ResourceNodeRepository } from '../repository/ResourceNodeRepository.js';
 import { RegionRepository } from '../repository/RegionRepository.js';
 import { Region } from '../entity/Region.js';
 import { Party } from '../entity/Party.js';
@@ -14,6 +19,7 @@ import { BorderRepository } from '../repository/BorderRepository.js';
 import { PartyRepository } from '../repository/PartyRepository.js';
 import { World } from '../entity/World.js';
 import { Repository } from '../repository/Repository.js';
+import { ResourceRepository } from '../repository/ResourceRepository.js';
 import { SettlementRepository } from '../repository/SettlementRepository.js';
 import { SurvivorRepository } from '../repository/SurvivorRepository.js';
 import { TravelEventRepository } from '../repository/TravelEventRepository.js';
@@ -35,6 +41,9 @@ repositories.set(Region, RegionRepository);
 repositories.set(Border, BorderRepository);
 repositories.set(Settlement, SettlementRepository);
 repositories.set(TravelEvent, TravelEventRepository);
+repositories.set(Expedition, ExpeditionRepository);
+repositories.set(ResourceNode, ResourceNodeRepository);
+repositories.set(Resource, ResourceRepository);
 
 export class StatePersister {
 	static async writeState(state: ServerState) {
