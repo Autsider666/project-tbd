@@ -125,6 +125,6 @@ export class Region extends Entity<
 	}
 
 	public getSettlement(): Settlement | null {
-		return this.settlementProperty?.getSettlement() ?? null;
+		return this.settlementProperty?.get() ?? null;
 	}
 }

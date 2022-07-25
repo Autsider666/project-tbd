@@ -65,6 +65,6 @@ export class Settlement extends Entity<
 	}
 
 	public getRegion(): Region {
-		return this.regionProperty.getRegion();
+		return this.regionProperty.get();
 	}
 }

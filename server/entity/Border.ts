@@ -56,6 +56,6 @@ export class Border extends Entity<
 	}
 
 	public getRegions(): Region[] {
-		return this.regions.getRegions();
+		return this.regions.getAll();
 	}
 }
