@@ -22,9 +22,10 @@ const GameProvider = ({ children }) => {
     const [survivorRepository, setSurvivorRepository] = useState({})
     const [partyRepository, setPartyRepository] = useState({})
     const [expeditionTargetRepository, setExpeditionTargetRepository] = useState({})
+    const [settlementRepository, setSettlementRepository] = useState({})
 
     const entityUpdater = entities => {
-        console.log(entities)
+        // console.log(entities)
         // Does all the pretty work of saving it into the various repositories.
 
         const entitiesFormatted = Object.values(entities).reduce((accum, { id, entityType, ...rest }) => {
@@ -37,6 +38,7 @@ const GameProvider = ({ children }) => {
             survivorRepository: {},
             partyRepository: {},
             expeditionTargetRepository: {},
+            settlementRepository: {}
         })
         setWorldRepository(prev => ({ ...prev, ...entitiesFormatted.worldRepository }))
         setRegionRepository(prev => ({ ...prev, ...entitiesFormatted.regionRepository }))
@@ -44,21 +46,22 @@ const GameProvider = ({ children }) => {
         setSurvivorRepository(prev => ({ ...prev, ...entitiesFormatted.survivorRepository }))
         setPartyRepository(prev => ({ ...prev, ...entitiesFormatted.partyRepository }))
         setExpeditionTargetRepository(prev => ({ ...prev, ...entitiesFormatted.expeditionTargetRepository }))
+        setSettlementRepository(prev => ({ ...prev, ...entitiesFormatted.settlementRepository }))
 
 
         setAllEntities(entities) // temp state for testing
         setLoaded(true)
     }
 
-    console.log({
-        worldRepository, regionRepository, borderRepository, survivorRepository, partyRepository,
-    })
+    // console.log({
+    //     worldRepository, regionRepository, borderRepository, survivorRepository, partyRepository,
+    // })
 
     useEffect(() => {
         !socket.hasListeners('entity:update') && socket.on('entity:update', entityUpdater)
-        token && socket.emit('party:init', token, data => console.log(data))
+        // token && socket.emit('party:init', token, data => console.log(data))
         return () => socket.off('entity:update', entityUpdater)
-    }, [token])
+    }, [])
 
 
     // // "WorldRepository"
@@ -96,7 +99,7 @@ const GameProvider = ({ children }) => {
         allEntities,
         loaded,
         token,
-        worldRepository, regionRepository, borderRepository, survivorRepository, partyRepository,
+        worldRepository, regionRepository, borderRepository, survivorRepository, partyRepository, expeditionTargetRepository, settlementRepository,
         selectedRegion, setSelectedRegion,
     };
 
