@@ -64,7 +64,7 @@
 		{
 			"id": "a",
 			"name": "Start",
-			"settlement": "a",
+			"settlement": "c",
 			"survivors": ["a"]
 		}
 	],
