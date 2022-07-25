@@ -33,11 +33,15 @@ const io = new Server<
 
 app.get('/', (_, res) => res.sendFile(path.resolve('./server/test.html')));
 
+const state = await StatePersister.readState();
+
+app.get('/state', (_, res) =>
+	res.send(`<pre>${JSON.stringify(state, null, 4)}</pre>`)
+);
+
 instrument(io, {
 	auth: false,
 });
-
-const state = await StatePersister.readState();
 
 httpServer.listen(port, host, async () => {
 	console.info(`🚀 Server is listening 🚀`);

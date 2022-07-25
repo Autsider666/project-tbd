@@ -1,5 +1,6 @@
+import { type } from 'os';
 import { Party, PartyId, PartyStateData } from '../entity/Party.js';
-import { SettlementId } from '../entity/Settlement.js';
+import { Settlement, SettlementId } from '../entity/Settlement.js';
 import { Survivor } from '../entity/Survivor.js';
 import { PartyFactory } from '../factory/PartyFactory.js';
 import { ServerState } from '../ServerState.js';
@@ -30,7 +31,19 @@ export class PartyRepository extends Repository<
 		return Party;
 	}
 
-	public createNew(name: string, settlement: SettlementId): Party {
-		return this.factory.create(name, settlement);
+	public createNew(
+		name: string,
+		settlement: Settlement | SettlementId
+	): Party {
+		if (typeof settlement === 'string') {
+			settlement = this.serverState
+				.getRepository(Settlement)
+				.get(settlement) as Settlement;
+
+			if (settlement === null) {
+				throw new Error('Uhm... this should never happen');
+			}
+		}
+		return this.factory.create(name, settlement as Settlement);
 	}
 }

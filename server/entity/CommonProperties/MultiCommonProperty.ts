@@ -40,6 +40,14 @@ export class MultiCommonProperty<
 		this.property.set(value.getId(), value);
 	}
 
+	public remove(value: T): void {
+		this.property.delete(value.getId());
+	}
+
+	public has(value: T): boolean {
+		return this.property.has(value.getId());
+	}
+
 	public toJSON(): TId[] {
 		return Array.from(this.property.keys());
 	}

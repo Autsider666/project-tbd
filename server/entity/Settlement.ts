@@ -7,7 +7,7 @@ import { PartiesProperty } from './CommonProperties/PartiesProperty.js';
 import { RegionProperty } from './CommonProperties/RegionProperty.js';
 import { ResourcesProperty } from './CommonProperties/ResourcesProperty.js';
 import { Entity, EntityClientData, EntityStateData } from './Entity.js';
-import { PartyId } from './Party.js';
+import { Party, PartyId } from './Party.js';
 import { Region, RegionId } from './Region.js';
 import { ResourceId } from './Resource.js';
 
@@ -70,7 +70,7 @@ export class Settlement extends Entity<
 			return updateObject;
 		}
 
-		// this.getRegion().prepareUpdate(updateObject, forClient);
+		// this.getRegion().prepareUpdate(updateObject, forClient); //TODO add later when it works
 		this.partiesProperty.getAll().forEach((party) => {
 			updateObject = party.prepareUpdate(updateObject, forClient);
 		});
@@ -80,5 +80,23 @@ export class Settlement extends Entity<
 
 	public getRegion(): Region {
 		return this.regionProperty.get();
+	}
+
+	public addParty(party: Party): void {
+		if (this.partiesProperty.has(party)) {
+			return;
+		}
+
+		this.partiesProperty.add(party);
+
+		if (party.getSettlement().getId() === this.getId()) {
+			return;
+		}
+
+		party.getSettlement().removeParty(party);
+	}
+
+	public removeParty(party: Party): void {
+		this.partiesProperty.remove(party);
 	}
 }
