@@ -32,4 +32,8 @@ export class Expedition extends Entity<
 			id: this.id,
 		};
 	}
+
+	getUpdateRoomName(): string {
+		return this.getEntityRoomName(); //TODO update asap
+	}
 }

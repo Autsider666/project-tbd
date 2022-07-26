@@ -26,7 +26,7 @@ export type PartyClientData = {
 	EntityClientData<PartyId>;
 
 export class Party extends Entity<PartyId, PartyStateData, PartyClientData> {
-	public readonly name: string;
+	public name: string;
 	private readonly settlementProperty: SettlementProperty;
 	private readonly survivorsProperty: SurvivorsProperty;
 	private readonly inventory: ResourcesProperty;
@@ -59,6 +59,10 @@ export class Party extends Entity<PartyId, PartyStateData, PartyClientData> {
 		};
 	}
 
+	getUpdateRoomName(): string {
+		return this.getSettlement().getUpdateRoomName();
+	}
+
 	public override normalize(forClient?: Client): PartyClientData {
 		return {
 			entityType: this.constructor.name.toLowerCase(),
@@ -67,15 +71,18 @@ export class Party extends Entity<PartyId, PartyStateData, PartyClientData> {
 		};
 	}
 
-	public override prepareUpdate(
+	public override prepareNestedEntityUpdate(
 		updateObject: EntityUpdate = {},
 		forClient?: Client
 	): EntityUpdate {
 		this.getSurvivors().forEach((party) => {
-			updateObject = party.prepareUpdate(updateObject, forClient);
+			updateObject = party.prepareNestedEntityUpdate(
+				updateObject,
+				forClient
+			);
 		});
 
-		return super.prepareUpdate(updateObject, forClient);
+		return super.prepareNestedEntityUpdate(updateObject, forClient);
 	}
 
 	public getSettlement(): Settlement {
@@ -88,6 +95,10 @@ export class Party extends Entity<PartyId, PartyStateData, PartyClientData> {
 
 	public addSurvivor(survivor: Survivor): void {
 		this.survivorsProperty.add(survivor);
+		if (survivor.getParty()?.getId() === this.getId()) {
+			return;
+		}
+
 		survivor.setParty(this);
 	}
 }

@@ -30,15 +30,42 @@ export abstract class Entity<
 
 	public abstract toJSON(): TStateData;
 
+	public abstract getUpdateRoomName(): string;
+
+	public getEntityTypeIdentifier(): string {
+		return 'entity:' + this.constructor.name.toLowerCase();
+	}
+
 	public getEntityRoomName(): string {
-		return 'entity:' + this.constructor.name.toLowerCase() + ':' + this.id;
+		return this.getEntityTypeIdentifier() + ':' + this.id;
 	}
 
 	public getId(): TId {
 		return this.id;
 	}
 
-	public prepareUpdate(
+	public onCreate(proxy: this): void {
+		this.serverState.eventEmitter.emit(
+			`create:${this.getEntityTypeIdentifier()}`,
+			proxy
+		);
+	}
+
+	public onUpdate(proxy: this): void {
+		this.serverState.eventEmitter.emit(
+			`update:${this.getEntityTypeIdentifier()}`,
+			proxy
+		);
+	}
+
+	public prepareNestedEntityUpdate(
+		updateObject: EntityUpdate = {},
+		forClient?: Client
+	): EntityUpdate {
+		return this.prepareEntityUpdate(updateObject, forClient);
+	}
+
+	public prepareEntityUpdate(
 		updateObject: EntityUpdate = {},
 		forClient?: Client
 	): EntityUpdate {

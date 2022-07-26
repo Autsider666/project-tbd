@@ -67,7 +67,11 @@ export class ResourceNode extends Entity<
 		};
 	}
 
-	override prepareUpdate(
+	getUpdateRoomName(): string {
+		return this.regionProperty.get().getUpdateRoomName();
+	}
+
+	override prepareNestedEntityUpdate(
 		updateObject: EntityUpdate = {},
 		forClient?: Client
 	): EntityUpdate {
@@ -75,12 +79,12 @@ export class ResourceNode extends Entity<
 			.getAll()
 			.forEach(
 				(resource) =>
-					(updateObject = resource.prepareUpdate(
+					(updateObject = resource.prepareNestedEntityUpdate(
 						updateObject,
 						forClient
 					))
 			);
 
-		return super.prepareUpdate(updateObject, forClient);
+		return super.prepareNestedEntityUpdate(updateObject, forClient);
 	}
 }

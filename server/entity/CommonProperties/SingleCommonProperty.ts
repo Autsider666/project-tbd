@@ -24,7 +24,9 @@ export class SingleCommonProperty<
 				throw new Error('.... uhm.....');
 			}
 
-			this.property = value;
+			return value;
+
+			// this.property = value;
 		}
 
 		return this.property as T;

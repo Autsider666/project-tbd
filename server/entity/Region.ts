@@ -34,7 +34,7 @@ export class Region extends Entity<
 	RegionStateData,
 	RegionClientData
 > {
-	public readonly name: string;
+	public name: string;
 	private readonly dimensions: string;
 	private borders = new Map<BorderId, Border | null>();
 	private world: World | WorldId;
@@ -80,6 +80,10 @@ export class Region extends Entity<
 		};
 	}
 
+	getUpdateRoomName(): string {
+		return this.getWorld().getEntityRoomName();
+	}
+
 	public override normalize(forClient?: Client): RegionClientData {
 		return {
 			entityType: this.getEntityType(),
@@ -87,7 +91,7 @@ export class Region extends Entity<
 		};
 	}
 
-	override prepareUpdate(
+	override prepareNestedEntityUpdate(
 		updateObject: EntityUpdate = {},
 		forClient?: Client
 	): EntityUpdate {
@@ -97,22 +101,31 @@ export class Region extends Entity<
 
 		this.getBorders().forEach(
 			(border) =>
-				(updateObject = border.prepareUpdate(updateObject, forClient))
+				(updateObject = border.prepareNestedEntityUpdate(
+					updateObject,
+					forClient
+				))
 		);
 
 		this.resourceNodesProperty
 			.getAll()
 			.forEach(
 				(node) =>
-					(updateObject = node.prepareUpdate(updateObject, forClient))
+					(updateObject = node.prepareNestedEntityUpdate(
+						updateObject,
+						forClient
+					))
 			);
 
 		const settlement = this.getSettlement();
 		if (settlement != null) {
-			updateObject = settlement.prepareUpdate(updateObject, forClient);
+			updateObject = settlement.prepareNestedEntityUpdate(
+				updateObject,
+				forClient
+			);
 		}
 
-		return super.prepareUpdate(updateObject, forClient);
+		return super.prepareNestedEntityUpdate(updateObject, forClient);
 	}
 
 	public getWorld(): World {
