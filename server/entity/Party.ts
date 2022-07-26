@@ -4,12 +4,14 @@ import { Uuid } from '../helper/UuidHelper.js';
 import { ResourcesProperty } from './CommonProperties/ResourcesProperty.js';
 import { SettlementProperty } from './CommonProperties/SettlementProperty.js';
 import { SurvivorsProperty } from './CommonProperties/SurvivorsProperty.js';
+import { VoyageProperty } from './CommonProperties/VoyageProperty.js';
 import { ResourceId } from './Resource.js';
 import { Settlement, SettlementId } from './Settlement.js';
 import { ServerState } from '../ServerState.js';
 import { Opaque } from 'type-fest';
 import { Entity, EntityClientData, EntityStateData } from './Entity.js';
 import { Survivor, SurvivorId } from './Survivor.js';
+import { Voyage, VoyageId } from './Voyage.js';
 
 export type PartyId = Opaque<Uuid, 'PartyId'>;
 
@@ -18,6 +20,7 @@ export type PartyStateData = {
 	settlement: SettlementId;
 	survivors: SurvivorId[];
 	inventory: ResourceId[];
+	currentVoyage?: VoyageId;
 } & EntityStateData<PartyId>;
 
 export type PartyClientData = {
@@ -29,7 +32,8 @@ export class Party extends Entity<PartyId, PartyStateData, PartyClientData> {
 	public name: string;
 	private readonly settlementProperty: SettlementProperty;
 	private readonly survivorsProperty: SurvivorsProperty;
-	private readonly inventory: ResourcesProperty;
+	private readonly inventoryProperty: ResourcesProperty;
+	private voyageProperty: VoyageProperty | null;
 
 	constructor(
 		protected readonly serverState: ServerState,
@@ -46,7 +50,13 @@ export class Party extends Entity<PartyId, PartyStateData, PartyClientData> {
 			serverState,
 			data.survivors
 		);
-		this.inventory = new ResourcesProperty(serverState, data.inventory);
+		this.inventoryProperty = new ResourcesProperty(
+			serverState,
+			data.inventory
+		);
+		this.voyageProperty = data.currentVoyage
+			? new VoyageProperty(serverState, data.currentVoyage)
+			: null;
 	}
 
 	public toJSON(): PartyStateData {
@@ -55,7 +65,7 @@ export class Party extends Entity<PartyId, PartyStateData, PartyClientData> {
 			name: this.name,
 			settlement: this.settlementProperty.toJSON(),
 			survivors: this.survivorsProperty.toJSON(),
-			inventory: this.inventory.toJSON(),
+			inventory: this.inventoryProperty.toJSON(),
 		};
 	}
 
@@ -89,6 +99,17 @@ export class Party extends Entity<PartyId, PartyStateData, PartyClientData> {
 		return this.settlementProperty.get();
 	}
 
+	public setSettlement(settlement: Settlement): void {
+		if (
+			this.settlementProperty.get().getUpdateRoomName() !==
+			settlement.getUpdateRoomName()
+		) {
+			throw new Error('Settlement is not in the same world');
+		}
+
+		this.settlementProperty.set(settlement);
+	}
+
 	public getSurvivors(): Survivor[] {
 		return this.survivorsProperty.getAll();
 	}
@@ -100,5 +121,28 @@ export class Party extends Entity<PartyId, PartyStateData, PartyClientData> {
 		}
 
 		survivor.setParty(this);
+	}
+
+	public getVoyage(): Voyage | null {
+		return this.voyageProperty?.get() ?? null;
+	}
+
+	public setVoyage(voyage: Voyage | null): boolean {
+		if (voyage !== null && this.voyageProperty !== null) {
+			return false;
+		}
+
+		if (voyage === null) {
+			this.voyageProperty = null; //TODO handle stopped voyage
+			return true;
+		}
+
+		if (this.voyageProperty === null) {
+			this.voyageProperty = new VoyageProperty(this.serverState, voyage);
+		} else {
+			this.voyageProperty.set(voyage); //TODO handle setting party in voyage
+		}
+
+		return true;
 	}
 }

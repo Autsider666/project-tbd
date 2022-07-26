@@ -82,9 +82,7 @@ export abstract class Repository<
 					return;
 				}
 
-				if (this.constructor.name === 'Region') {
-					console.log(this.getEntityRoomName(), path, applyData);
-				}
+				// console.log(this.getEntityRoomName(), path, applyData);
 
 				entity.onUpdate(this);
 			}

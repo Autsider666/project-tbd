@@ -9,6 +9,7 @@ import { Resource } from '../entity/Resource.js';
 import { ResourceNode } from '../entity/ResourceNode.js';
 import { Settlement } from '../entity/Settlement.js';
 import { Survivor } from '../entity/Survivor.js';
+import { Voyage } from '../entity/Voyage.js';
 import { ExpeditionRepository } from '../repository/ExpeditionRepository.js';
 import { ResourceNodeRepository } from '../repository/ResourceNodeRepository.js';
 import { RegionRepository } from '../repository/RegionRepository.js';
@@ -21,6 +22,7 @@ import { Repository } from '../repository/Repository.js';
 import { ResourceRepository } from '../repository/ResourceRepository.js';
 import { SettlementRepository } from '../repository/SettlementRepository.js';
 import { SurvivorRepository } from '../repository/SurvivorRepository.js';
+import { VoyageRepository } from '../repository/VoyageRepository.js';
 import { ServerState } from '../ServerState.js';
 import { WorldRepository } from '../repository/WorldRepository.js';
 
@@ -41,6 +43,7 @@ repositories.set(Settlement, SettlementRepository);
 repositories.set(Expedition, ExpeditionRepository);
 repositories.set(ResourceNode, ResourceNodeRepository);
 repositories.set(Resource, ResourceRepository);
+repositories.set(Voyage, VoyageRepository);
 
 export class StatePersister {
 	static async writeState(state: ServerState) {

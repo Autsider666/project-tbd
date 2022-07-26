@@ -24,12 +24,14 @@ export class SingleCommonProperty<
 				throw new Error('.... uhm.....');
 			}
 
-			return value;
-
-			// this.property = value;
+			this.property = value;
 		}
 
 		return this.property as T;
+	}
+
+	public set(entity: T): void {
+		this.property = entity;
 	}
 
 	public toJSON(): TId {

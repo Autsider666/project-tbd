@@ -9,7 +9,6 @@ import {
 	SocketData,
 } from '../socket.io.js';
 import debounce from 'debounce';
-import { Client } from './ClientController.js';
 
 export type EntityUpdate = { [key: string]: EntityClientData<any> | null };
 export type EntityUpdatePrep = { [key: string]: Entity<any, any, any> | null };

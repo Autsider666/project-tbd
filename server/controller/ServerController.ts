@@ -43,11 +43,7 @@ export class ServerController {
 			) => {
 				this.clientControllers.set(
 					socket.id,
-					new ClientController(
-						socket,
-						this.io,
-						this.serverState.getRepository(Party) as PartyRepository
-					)
+					new ClientController(socket, this.io, this.serverState)
 				);
 
 				socket.on('disconnect', (reason) => {

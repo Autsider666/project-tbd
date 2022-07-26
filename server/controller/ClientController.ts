@@ -1,9 +1,13 @@
 import { Server, Socket } from 'socket.io';
 import jwt from 'jsonwebtoken';
 import { Party, PartyId } from '../entity/Party.js';
-import { SettlementId } from '../entity/Settlement.js';
+import { Settlement, SettlementId } from '../entity/Settlement.js';
+import { Voyage } from '../entity/Voyage.js';
 import { WorldId } from '../entity/World.js';
+import { VoyageFactory } from '../factory/VoyageFactory.js';
 import { PartyRepository } from '../repository/PartyRepository.js';
+import { VoyageRepository } from '../repository/VoyageRepository.js';
+import { ServerState } from '../ServerState.js';
 import {
 	ClientToServerEvents,
 	ServerToClientEvents,
@@ -23,6 +27,8 @@ export class Client {
 
 export class ClientController {
 	private readonly client: Client;
+	private readonly partyRepository: PartyRepository;
+	private readonly voyageFactory: VoyageFactory;
 
 	constructor(
 		private readonly socket: Socket<
@@ -37,9 +43,15 @@ export class ClientController {
 			any,
 			SocketData
 		>,
-		private readonly partyRepository: PartyRepository
+		private readonly serverState: ServerState
 	) {
 		this.client = new Client();
+		this.partyRepository = this.serverState.getRepository(
+			Party
+		) as PartyRepository;
+		this.voyageFactory = new VoyageFactory(
+			this.serverState.getRepository(Voyage) as VoyageRepository
+		);
 		socket.data.client = this.client;
 		this.handleSocket();
 	}
@@ -85,6 +97,37 @@ export class ClientController {
 				this.initializeParty(newParty as Party);
 			}
 		);
+
+		this.socket.on('party:travel', ({ partyId, targetId }): void => {
+			const party =
+				this.client.parties.get(partyId) ??
+				Array.from(this.client.parties.values())[0];
+			if (!party) {
+				console.error('No valid party id');
+				return; //TODO Handle callback;
+			}
+
+			if (party.getVoyage() !== null) {
+				console.error('Party is already on a voyage');
+				return; //TODO more error stuff
+			}
+
+			if (party.getSettlement().getId() === targetId) {
+				console.error('Party is already in this settlement');
+				return;
+			}
+
+			const target = this.serverState
+				.getRepository(Settlement)
+				.get(targetId);
+			if (target === null) {
+				console.error('target is not a valid settlement id');
+				return; //TODO error stuff
+			}
+
+			this.voyageFactory.create(party, target);
+			console.log('Voyage started.', party);
+		});
 	}
 
 	private initializeParty(party: Party): void {

@@ -1,5 +1,5 @@
 import { Server } from 'socket.io';
-import { SocketId } from 'socket.io-adapter';
+import { Voyage } from '../entity/Voyage.js';
 import { World } from '../entity/World.js';
 import { ServerState } from '../ServerState.js';
 import {
@@ -9,6 +9,7 @@ import {
 } from '../socket.io.js';
 
 export class WorldController {
+	//TODO rename?
 	constructor(
 		private readonly world: World,
 		private readonly serverState: ServerState,
@@ -18,18 +19,27 @@ export class WorldController {
 			any,
 			SocketData
 		>
-	) {
-		const repository = this.serverState.getRepository(World);
-
-		this.io
-			.of('/')
-			.adapter.on('join-room', (room: string, id: SocketId) => {
-				if (room === 'entity:' + world.getId()) {
-				}
-			});
-	}
+	) {}
 
 	async tick(): Promise<void> {
+		const now = new Date();
+		this.serverState
+			.getRepository(Voyage)
+			.getAll()
+			.forEach((voyage) => {
+				if (voyage.handled || voyage.arrivalAt > now) {
+					return;
+				}
+
+				const party = voyage.getParty();
+				party.setSettlement(voyage.getTarget());
+				party.setVoyage(null);
+
+				voyage.handled = true;
+
+				//TODO send notification?
+			});
+
 		// console.log(
 		// 	'Starting tick for ' + this.world.getId() + ' at ' + Date.now()
 		// );

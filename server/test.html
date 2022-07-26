@@ -8,25 +8,16 @@
 		<title>Document</title>
 	</head>
 	<body>
-		<button onClick="sendMsg()">Hit Me</button>
 		<button onClick="createParty()">Create Party</button>
 		<button onClick="addParty()">Initialize Party</button>
+		<button onClick="travel()">Travel</button>
 
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.2/socket.io.js"></script>
 		<script>
 			const socket = io('http://localhost:5000');
 
 			let token = null;
-
-			function sendMsg() {
-				socket.emit('message', 'HELLO WORLD');
-			}
-
 			function createParty() {
-				// if (token != null) {
-				// 	return alert('Already have a party!');
-				// }
-
 				socket.emit('party:create', { name: 'from client' }, (jwt) => {
 					console.log(jwt);
 					token = jwt;
@@ -39,6 +30,10 @@
 				}
 
 				socket.emit('party:init', token);
+			}
+
+			function travel() {
+				socket.emit('party:travel', { targetId: 'b' });
 			}
 
 			socket.on('message', function (data) {
