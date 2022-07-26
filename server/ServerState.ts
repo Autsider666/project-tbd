@@ -1,12 +1,18 @@
+import EventEmitter from 'events';
 import { Entity } from './entity/Entity';
 import { Constructor } from 'type-fest';
 import { Repository } from './repository/Repository';
 
 export class ServerState {
-	private repositories = new Map<
+	private readonly repositories = new Map<
 		Constructor<Entity<any, any, any>>,
 		Repository<any, any, any>
 	>();
+	public readonly eventEmitter: EventEmitter;
+
+	constructor() {
+		this.eventEmitter = new EventEmitter();
+	}
 
 	registerRepository(
 		name: Constructor<Entity<any, any, any>>,

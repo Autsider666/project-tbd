@@ -1,4 +1,6 @@
 import onChange, { ApplyData } from 'on-change';
+import { Party } from '../entity/Party.js';
+import { World } from '../entity/World.js';
 import { generateUUID, Uuid } from '../helper/UuidHelper.js';
 import { ServerState } from '../ServerState.js';
 import { Constructor, Except } from 'type-fest';
@@ -13,24 +15,25 @@ export abstract class Repository<
 > {
 	protected entities = new Map<TId, T>();
 
-	private onChangeCallbacks = new Map<
-		TId,
-		{
-			(
-				entity: T,
-				path: string,
-				value: any,
-				previousValue: any,
-				applyData: ApplyData
-			): void;
-		}[]
-	>();
-
 	public constructor(
 		protected readonly serverState: ServerState,
 		entities: TStateData[] = []
 	) {
 		this.load(entities);
+
+		this.serverState.eventEmitter.on(
+			'create:entity:' + this.entity().name.toLowerCase(),
+			(entity) => this.emitEntity(entity)
+		);
+
+		this.serverState.eventEmitter.on(
+			'update:entity:' + this.entity().name.toLowerCase(),
+			(entity) => this.emitEntity(entity)
+		);
+	}
+
+	protected emitEntity(entity: T): void {
+		this.serverState.eventEmitter.emit('emit:entity', entity);
 	}
 
 	protected abstract entity(): Constructor<T>;
@@ -60,39 +63,38 @@ export abstract class Repository<
 	protected addEntity(entity: T): T {
 		const proxy = onChange(
 			entity,
-			(path: string, value: any, previousValue: any, applyData): void => {
-				this.onChangeCallbacks
-					.get(entity.getId())
-					?.forEach((callback) =>
-						callback(entity, path, value, previousValue, applyData)
-					);
+			function (
+				path: string,
+				value: any,
+				previousValue: any,
+				applyData
+			): void {
+				if (path.includes('function ()')) {
+					return;
+				}
+
+				if (
+					applyData != null &&
+					(applyData.name === 'prepareUpdate' ||
+						applyData.name === 'prepareNestedEntityUpdate' ||
+						applyData.name.includes('get'))
+				) {
+					return;
+				}
+
+				if (this.constructor.name === 'Region') {
+					console.log(this.getEntityRoomName(), path, applyData);
+				}
+
+				entity.onUpdate(this);
 			}
 		);
 
 		this.entities.set(entity.getId(), proxy);
 
+		proxy.onCreate(proxy);
+
 		return proxy;
-	}
-
-	public registerOnChangeCallback(
-		entity: T,
-		callback: {
-			(
-				entity: T,
-				path: string,
-				value: any,
-				previousValue: any,
-				applyData: ApplyData
-			): void;
-		}
-	) {
-		let callbacks = this.onChangeCallbacks.get(entity.getId());
-		if (!callbacks) {
-			callbacks = [];
-			this.onChangeCallbacks.set(entity.getId(), callbacks);
-		}
-
-		callbacks.push(callback);
 	}
 
 	public load(stateData: TStateData[]): void {

@@ -38,6 +38,10 @@ export class World extends Entity<WorldId, WorldStateData, WorldClientData> {
 		};
 	}
 
+	getUpdateRoomName(): string {
+		return this.getEntityRoomName();
+	}
+
 	public override normalize(forClient?: Client): WorldClientData {
 		return {
 			entityType: this.getEntityType(),
@@ -45,15 +49,18 @@ export class World extends Entity<WorldId, WorldStateData, WorldClientData> {
 		};
 	}
 
-	override prepareUpdate(
+	override prepareNestedEntityUpdate(
 		updateObject: EntityUpdate = {},
 		forClient?: Client
 	): EntityUpdate {
 		this.getRegions().forEach((region) => {
-			updateObject = region.prepareUpdate(updateObject, forClient);
+			updateObject = region.prepareNestedEntityUpdate(
+				updateObject,
+				forClient
+			);
 		});
 
-		return super.prepareUpdate(updateObject, forClient);
+		return super.prepareNestedEntityUpdate(updateObject, forClient);
 	}
 
 	public getRegions(): Region[] {

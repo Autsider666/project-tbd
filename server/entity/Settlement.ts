@@ -62,7 +62,11 @@ export class Settlement extends Entity<
 		};
 	}
 
-	override prepareUpdate(
+	getUpdateRoomName(): string {
+		return this.getRegion().getUpdateRoomName();
+	}
+
+	override prepareNestedEntityUpdate(
 		updateObject: EntityUpdate = {},
 		forClient?: Client
 	): EntityUpdate {
@@ -72,10 +76,13 @@ export class Settlement extends Entity<
 
 		// this.getRegion().prepareUpdate(updateObject, forClient); //TODO add later when it works
 		this.partiesProperty.getAll().forEach((party) => {
-			updateObject = party.prepareUpdate(updateObject, forClient);
+			updateObject = party.prepareNestedEntityUpdate(
+				updateObject,
+				forClient
+			);
 		});
 
-		return super.prepareUpdate(updateObject, forClient);
+		return super.prepareNestedEntityUpdate(updateObject, forClient);
 	}
 
 	public getRegion(): Region {

@@ -49,4 +49,8 @@ export class Resource extends Entity<
 			amount: this.amount,
 		};
 	}
+
+	getUpdateRoomName(): string {
+		return this.getEntityRoomName(); //TODO fix asap
+	}
 }

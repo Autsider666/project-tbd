@@ -21,8 +21,6 @@ export class WorldController {
 	) {
 		const repository = this.serverState.getRepository(World);
 
-		repository.registerOnChangeCallback(world, this.handleWorldChange);
-
 		this.io
 			.of('/')
 			.adapter.on('join-room', (room: string, id: SocketId) => {
@@ -50,14 +48,5 @@ export class WorldController {
 				);
 			}, 2000);
 		});
-	}
-
-	handleWorldChange(
-		world: World,
-		path: string,
-		value: any,
-		previousValue: any
-	): void {
-		// console.log(world.name, path, value, previousValue);
 	}
 }

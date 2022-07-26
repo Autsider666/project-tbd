@@ -86,4 +86,8 @@ export class Survivor extends Entity<
 					: (this.party as Party)?.getId() ?? null,
 		};
 	}
+
+	getUpdateRoomName(): string {
+		return this.getParty()?.getEntityRoomName() ?? ''; //TODO add settlement?
+	}
 }
