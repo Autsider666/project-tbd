@@ -1,8 +1,52 @@
 import React from 'react'
-
-import TestSvg from '../../components/svgTest/TestSvg.js'
-import Water from '../../components/svgTest/water.png'
+import Water from '../../components/worldMap/Map1/water.png'
+import WorldMap from '../../components/worldMap/worldMap.js'
 import { useGame } from '../../contexts/GameContext.js'
+
+const Map = () => {
+
+    const { regionRepository, worldRepository, selectedRegion, setSelectedRegion } = useGame()
+    
+    const worldSelected = Object.values(worldRepository)[0] // Add future code to take more than one map.
+
+    const hide = false
+    
+    if (hide) return <img style={{ opacity: 0.3, marginBottom: '-3px' }} src={Water} position="absolute" width="100%" />
+    return <WorldMap world={worldSelected} selectedRegion={selectedRegion} setSelectedRegion={setSelectedRegion} regions={Object.values(regionRepository)} />
+}
+
+export default Map
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /*
 const regionsToBeJsoned = [
     { id: "a", name: "SomeName", world: "a", settlements: ["a"], borders: ["a"] },
@@ -178,19 +222,3 @@ const bordersToBeJsoned = [
 ]
 
 */
-
-
-const Map = () => {
-
-    const { worldRepository } = useGame()
-    console.log({ worldRepository })
-
-    return (
-        <>
-            <TestSvg />
-            {/* <img style={{ opacity: 0.3, marginBottom: '-3px' }} src={Water} position="absolute" width="100%" /> */}
-        </>
-    )
-}
-
-export default Map

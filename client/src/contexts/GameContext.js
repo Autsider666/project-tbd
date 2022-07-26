@@ -12,7 +12,7 @@ const GameProvider = ({ children }) => {
     const { user } = useAuth()
     const { token = null } = user
 
-    const [loaded, setLoaded] = useState(false)
+    // const [loaded, setLoaded] = useState(false)
 
     const [allEntities, setAllEntities] = useState()
 
@@ -21,8 +21,37 @@ const GameProvider = ({ children }) => {
     const [borderRepository, setBorderRepository] = useState({})
     const [survivorRepository, setSurvivorRepository] = useState({})
     const [partyRepository, setPartyRepository] = useState({})
-    const [expeditionTargetRepository, setExpeditionTargetRepository] = useState({})
+    const [resourceNodeRepository, setResourceNodeRepository] = useState({})
     const [settlementRepository, setSettlementRepository] = useState({})
+
+    const isLoaded = () => {
+        // console.log({
+        //     worldRepository, regionRepository,
+        //     borderRepository,
+        //     survivorRepository,
+        //     partyRepository,
+        //     resourceNodeRepository,
+        //     settlementRepository,
+        // })
+        // if (Object.keys(worldRepository).length === 0) console.log("errors out at: worldRepository")
+        if (Object.keys(worldRepository).length === 0) return false
+        // if (Object.keys(regionRepository).length === 0) console.log("errors out at: regionRepository")
+        if (Object.keys(regionRepository).length === 0) return false
+        // if (Object.keys(borderRepository).length === 0) console.log("errors out at: borderRepository")
+        if (Object.keys(borderRepository).length === 0) return false
+        // if (Object.keys(survivorRepository).length === 0) console.log("errors out at: survivorRepository")
+        if (Object.keys(survivorRepository).length === 0) return false
+        // if (Object.keys(partyRepository).length === 0) console.log("errors out at: partyRepository")
+        if (Object.keys(partyRepository).length === 0) return false
+        // if (Object.keys(resourceNodeRepository).length === 0) console.log("errors out at: resourceNodeRepository")
+        if (Object.keys(resourceNodeRepository).length === 0) return false
+        // if (Object.keys(settlementRepository).length === 0) console.log("errors out at: settlementRepository")
+        if (Object.keys(settlementRepository).length === 0) return false
+        console.log("IS LOADED NOW! YAY")
+        return true
+    }
+
+    const [selectedRegion, setSelectedRegion] = useState(null)
 
     const entityUpdater = entities => {
         // console.log(entities)
@@ -37,7 +66,7 @@ const GameProvider = ({ children }) => {
             borderRepository: {},
             survivorRepository: {},
             partyRepository: {},
-            expeditionTargetRepository: {},
+            resourcenodeRepository: {},
             settlementRepository: {}
         })
         setWorldRepository(prev => ({ ...prev, ...entitiesFormatted.worldRepository }))
@@ -45,13 +74,37 @@ const GameProvider = ({ children }) => {
         setBorderRepository(prev => ({ ...prev, ...entitiesFormatted.borderRepository }))
         setSurvivorRepository(prev => ({ ...prev, ...entitiesFormatted.survivorRepository }))
         setPartyRepository(prev => ({ ...prev, ...entitiesFormatted.partyRepository }))
-        setExpeditionTargetRepository(prev => ({ ...prev, ...entitiesFormatted.expeditionTargetRepository }))
+        setResourceNodeRepository(prev => ({ ...prev, ...entitiesFormatted.resourcenodeRepository }))
         setSettlementRepository(prev => ({ ...prev, ...entitiesFormatted.settlementRepository }))
 
 
+
+
         setAllEntities(entities) // temp state for testing
-        setLoaded(true)
+        // if (isLoaded()) setLoaded(true)
     }
+
+    const loaded = isLoaded()
+
+    // const partyRepositoryLength = Object.keys(partyRepository).length
+
+    useEffect(() => {
+        if (loaded) {
+            const partySettlementId = Object.values(partyRepository)[0].settlement
+            // console.log({ partySettlementId })
+            // console.log(settlementRepository)
+            const regionOfPartySettlement = settlementRepository[partySettlementId].region
+            // console.log({ regionOfPartySettlement })
+            setSelectedRegion(regionOfPartySettlement)
+        }
+    }, [loaded])
+
+    // useEffect(()=>{
+    //     console.log(loaded2)
+    //     console.log(settlementRepository)
+    //     // console.log(isLoaded())
+    // },[loaded2])
+
 
     // console.log({
     //     worldRepository, regionRepository, borderRepository, survivorRepository, partyRepository,
@@ -63,47 +116,15 @@ const GameProvider = ({ children }) => {
         return () => socket.off('entity:update', entityUpdater)
     }, [])
 
-
-    // // "WorldRepository"
-    // useEffect(() => {
-    //     socket.emit(EMIT_NAMES.WORLD, jwt, setWorld)
-    //     !socket.hasListeners(EVENT_NAMES.WORLD) && socket.on(EVENT_NAMES.WORLD, setWorld)
-    //     return () => socket.off(EVENT_NAMES.WORLD, setWorld)
-    // }, [jwt])
-
-    // // "RegionRepository"
-    // useEffect(() => {
-    //     socket.emit(EMIT_NAMES.REGIONS, jwt, setRegions)
-    //     !socket.hasListeners(EVENT_NAMES.REGIONS) && socket.on(EVENT_NAMES.REGIONS, setRegions)
-    //     return () => socket.off(EVENT_NAMES.REGIONS, setRegions)
-    // }, [jwt])
-
-    // // "BorderRepository"
-    // useEffect(() => {
-    //     socket.emit(EMIT_NAMES.BORDERS, jwt, setBorders)
-    //     !socket.hasListeners(EVENT_NAMES.BORDERS) && socket.on(EVENT_NAMES.BORDERS, setBorders)
-    //     return () => socket.off(EVENT_NAMES.BORDERS, setBorders)
-    // }, [jwt])
-
-    // // "CharacterRepository"
-    // useEffect(() => {
-    //     socket.emit(EMIT_NAMES.CHARACTERS, jwt, setCharacters)
-    //     !socket.hasListeners(EVENT_NAMES.CHARACTERS) && socket.on(EVENT_NAMES.CHARACTERS, setCharacters)
-    //     return () => socket.off(EVENT_NAMES.CHARACTERS, setCharacters)
-    // }, [jwt])
-
-    const [selectedRegion, setSelectedRegion] = useState(null)
-
-
     const value = {
         allEntities,
         loaded,
         token,
-        worldRepository, regionRepository, borderRepository, survivorRepository, partyRepository, expeditionTargetRepository, settlementRepository,
+        worldRepository, regionRepository, borderRepository, survivorRepository, partyRepository, resourceNodeRepository, settlementRepository,
         selectedRegion, setSelectedRegion,
     };
 
-    console.log(value)
+    // console.log(value)
 
     return (
         <GameContext.Provider value={value}>

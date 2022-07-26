@@ -38,7 +38,7 @@ function a11yProps(index) {
   };
 }
 
-const TabsWrapper = ({content = []}) => {
+const TabsWrapper = ({ content = [], }) => {
   const [value, setValue] = React.useState(0);
 
   const handleChange = (event, newValue) => setValue(newValue);
@@ -52,9 +52,9 @@ const TabsWrapper = ({content = []}) => {
           ))}
         </Tabs>
       </Box>
-      {content.map(({ Component }, index) => (
+      {content.map(({ Component, props = {} }, index) => (
         <TabPanel key={index} value={value} index={index}>
-          <Component />
+          <Component {...props} />
         </TabPanel>
       ))}
 
