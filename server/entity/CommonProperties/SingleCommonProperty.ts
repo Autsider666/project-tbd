@@ -31,7 +31,12 @@ export class SingleCommonProperty<
 	}
 
 	public set(entity: T): void {
-		this.property = entity;
+		const proxy = this.repository.get(entity.getId());
+		if (proxy === null) {
+			throw new Error('Uhmm..');
+		}
+
+		this.property = proxy;
 	}
 
 	public toJSON(): TId {

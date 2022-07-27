@@ -33,7 +33,7 @@
 			}
 
 			function travel() {
-				socket.emit('party:travel', { targetId: 'b' });
+				socket.emit('voyage:start', { targetId: 'b' });
 			}
 
 			socket.on('message', function (data) {

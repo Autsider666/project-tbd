@@ -94,7 +94,10 @@ export class Party extends Entity<PartyId, PartyStateData, PartyClientData> {
 			throw new Error('Settlement is not in the same world');
 		}
 
+		const currentSettlement = this.settlementProperty.get();
 		this.settlementProperty.set(settlement);
+		currentSettlement.removeParty(this);
+		settlement.addParty(this);
 	}
 
 	public getSurvivors(): Survivor[] {
