@@ -19,6 +19,9 @@ export class ClientNotifier {
 	}
 
 	private static notify(message: string, room: string, type: string): void {
-		container.resolve(Server).to(room).emit('notification', message, type);
+		container
+			.resolve(Server)
+			.to(room)
+			.emit('notification', message as any, type as any);
 	}
 }

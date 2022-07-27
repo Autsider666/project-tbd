@@ -33,7 +33,7 @@ export class SingleCommonProperty<
 	public set(entity: T): void {
 		const proxy = this.repository.get(entity.getId());
 		if (proxy === null) {
-			throw new Error('Uhmm..');
+			throw new Error('Uhm..');
 		}
 
 		this.property = proxy;

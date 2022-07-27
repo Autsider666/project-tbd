@@ -70,7 +70,7 @@ export abstract class Repository<
 				}
 
 				if (
-					applyData != null &&
+					applyData &&
 					(applyData.name === 'prepareUpdate' ||
 						applyData.name === 'prepareNestedEntityUpdate' ||
 						applyData.name.includes('get'))

@@ -2,7 +2,7 @@ import { Socket } from 'socket.io';
 import jwt from 'jsonwebtoken';
 import { container } from 'tsyringe';
 import { Party, PartyId } from '../entity/Party.js';
-import { Settlement, SettlementId } from '../entity/Settlement.js';
+import { SettlementId } from '../entity/Settlement.js';
 import { WorldId } from '../entity/World.js';
 import { PartyFactory } from '../factory/PartyFactory.js';
 import { VoyageFactory } from '../factory/VoyageFactory.js';
