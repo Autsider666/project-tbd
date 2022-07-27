@@ -25,8 +25,8 @@ const Main = ({ marginAmount }) => {
             width: '100%',
             display: 'grid',
             gridGap: `${marginAmount}px`,
-            gridTemplateColumns: '3fr 4fr 3fr',
-            gridTemplateRows: 'auto 1fr',
+            gridTemplateColumns: { xs: '2fr 4fr', lg: '3fr 4fr 3fr' },
+            gridTemplateRows: { xs: 'auto 1fr 1fr', lg: 'auto 1fr' },
         }}>
             {sections.map(({ Component, style }, index) => {
                 return (

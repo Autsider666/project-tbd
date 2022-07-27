@@ -52,6 +52,7 @@ const Settlement = ({ settlement, party, voyage, settlementRepository }) => {
     const { name } = settlement
     console.log(voyage)
     const traveling = voyage && voyage.handled === false
+    voyage && console.log(voyage.handled)
     console.log(traveling)
 
 
@@ -99,7 +100,7 @@ const Region = () => {
     const settlement = settlementRepository[region.settlement]
     const party = Object.values(partyRepository).find(party => party.controllable === true)
     console.log(party)
-    const voyage = Object.values(voyageRepository).find(voyage => voyage.party === party.id)
+    const voyage = Object.values(voyageRepository).find(voyage => voyage.party === party.id && voyage.handled === false)
     // console.log(region)
 
     const content = [

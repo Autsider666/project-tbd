@@ -1,5 +1,6 @@
 import { useContext, useState, createContext, useEffect } from 'react';
 import { socket } from '../functions/SocketAPI';
+import { useApp } from './AppContext';
 // import { EVENT_NAMES, EMIT_NAMES} from '../functions/SocketAPI'
 import { useAuth } from './AuthContext';
 
@@ -11,6 +12,7 @@ const GameProvider = ({ children }) => {
 
     const { user } = useAuth()
     const { token = null } = user
+    const { displaySnackbar } = useApp()
 
     // const [loaded, setLoaded] = useState(false)
 
@@ -87,6 +89,10 @@ const GameProvider = ({ children }) => {
         // if (isLoaded()) setLoaded(true)
     }
 
+    const notificationUpdater = ({message, type}) => {
+        displaySnackbar(message, type)
+    }
+
     const loaded = isLoaded()
 
     // const partyRepositoryLength = Object.keys(partyRepository).length
@@ -114,9 +120,15 @@ const GameProvider = ({ children }) => {
     // })
 
     useEffect(() => {
-        !socket.hasListeners('entity:update') && socket.on('entity:update', entityUpdater)
+        if (!socket.hasListeners('entity:update')) {
+            socket.on('entity:update', entityUpdater)
+            socket.on('notification', notificationUpdater)
+        }
         // token && socket.emit('party:init', token, data => console.log(data))
-        return () => socket.off('entity:update', entityUpdater)
+        return () => {
+            socket.off('entity:update', entityUpdater)
+            socket.off('notification', notificationUpdater)
+        }
     }, [])
 
     const value = {
