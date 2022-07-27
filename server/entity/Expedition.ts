@@ -15,6 +15,8 @@ export enum ExpeditionPhase {
 	travel = 'travel',
 	gather = 'gather',
 	combat = 'combat',
+	returning = 'returning',
+	finished = 'finished',
 }
 
 export type ExpeditionStateData = {
@@ -22,10 +24,8 @@ export type ExpeditionStateData = {
 	phase: ExpeditionPhase;
 	origin: SettlementId;
 	target: ResourceNodeId;
-	returning: boolean;
 	startedAt: Date;
 	nextPhaseAt: Date;
-	finished: boolean;
 } & EntityStateData<ExpeditionId>;
 
 export type ExpeditionClientData = ExpeditionStateData &
@@ -42,8 +42,6 @@ export class Expedition extends Entity<
 	private readonly targetProperty: ResourceNodeProperty;
 	public readonly startedAt: Date;
 	public nextPhaseAt: Date;
-	public returning: boolean;
-	public finished: boolean;
 
 	constructor(data: ExpeditionStateData) {
 		super(data);
@@ -54,8 +52,6 @@ export class Expedition extends Entity<
 		this.targetProperty = new ResourceNodeProperty(data.target);
 		this.startedAt = data.startedAt;
 		this.nextPhaseAt = data.nextPhaseAt;
-		this.returning = data.returning;
-		this.finished = data.finished;
 	}
 
 	normalize(forClient?: Client): ExpeditionClientData {
@@ -74,8 +70,6 @@ export class Expedition extends Entity<
 			target: this.targetProperty.toJSON(),
 			startedAt: this.startedAt,
 			nextPhaseAt: this.nextPhaseAt,
-			returning: this.returning,
-			finished: this.finished,
 		};
 	}
 

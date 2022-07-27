@@ -30,8 +30,6 @@ export class ExpeditionFactory {
 			target: node.getId(),
 			startedAt,
 			nextPhaseAt,
-			returning: false,
-			finished: false,
 		});
 
 		if (!party.setExpedition(expedition)) {

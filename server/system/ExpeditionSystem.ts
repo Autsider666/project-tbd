@@ -14,7 +14,8 @@ export class ExpeditionSystem implements System {
 			.getAll()
 			.filter(
 				(expedition) =>
-					!expedition.finished && expedition.nextPhaseAt <= now
+					expedition.phase !== ExpeditionPhase.finished &&
+					expedition.nextPhaseAt <= now
 			)
 			.forEach((expedition) => {
 				switch (expedition.phase) {
@@ -22,6 +23,7 @@ export class ExpeditionSystem implements System {
 						this.handleEndOfGathering(expedition);
 						break;
 					case ExpeditionPhase.travel:
+					case ExpeditionPhase.returning:
 						this.handleEndOfTravel(expedition);
 						break;
 					default:
@@ -31,8 +33,7 @@ export class ExpeditionSystem implements System {
 	}
 
 	private handleEndOfGathering(expedition: Expedition): void {
-		expedition.phase = ExpeditionPhase.travel;
-		expedition.returning = true;
+		expedition.phase = ExpeditionPhase.returning;
 
 		const durationInSeconds = 5;
 		const now = new Date();
@@ -51,9 +52,9 @@ export class ExpeditionSystem implements System {
 	private handleEndOfTravel(expedition: Expedition): void {
 		const party = expedition.getParty();
 		const target = expedition.getTarget();
-		if (expedition.returning) {
+		if (expedition.phase === ExpeditionPhase.returning) {
 			party.setExpedition(null);
-			expedition.finished = true;
+			expedition.phase = ExpeditionPhase.finished;
 
 			ClientNotifier.success(
 				`Party "${party.name}" returned from their expedition to ${target.name}.`,
