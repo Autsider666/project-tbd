@@ -23,6 +23,7 @@ const GameProvider = ({ children }) => {
     const [partyRepository, setPartyRepository] = useState({})
     const [resourceNodeRepository, setResourceNodeRepository] = useState({})
     const [settlementRepository, setSettlementRepository] = useState({})
+    const [voyageRepository, setVoyageRepository] = useState({})
 
     const isLoaded = () => {
         // console.log({
@@ -54,7 +55,7 @@ const GameProvider = ({ children }) => {
     const [selectedRegion, setSelectedRegion] = useState(null)
 
     const entityUpdater = entities => {
-        // console.log(entities)
+        console.log(entities)
         // Does all the pretty work of saving it into the various repositories.
 
         const entitiesFormatted = Object.values(entities).reduce((accum, { id, entityType, ...rest }) => {
@@ -67,7 +68,8 @@ const GameProvider = ({ children }) => {
             survivorRepository: {},
             partyRepository: {},
             resourcenodeRepository: {},
-            settlementRepository: {}
+            settlementRepository: {},
+            voyageRepository: {}
         })
         setWorldRepository(prev => ({ ...prev, ...entitiesFormatted.worldRepository }))
         setRegionRepository(prev => ({ ...prev, ...entitiesFormatted.regionRepository }))
@@ -76,6 +78,7 @@ const GameProvider = ({ children }) => {
         setPartyRepository(prev => ({ ...prev, ...entitiesFormatted.partyRepository }))
         setResourceNodeRepository(prev => ({ ...prev, ...entitiesFormatted.resourcenodeRepository }))
         setSettlementRepository(prev => ({ ...prev, ...entitiesFormatted.settlementRepository }))
+        setVoyageRepository(prev => ({ ...prev, ...entitiesFormatted.voyageRepository }))
 
 
 
@@ -120,7 +123,7 @@ const GameProvider = ({ children }) => {
         allEntities,
         loaded,
         token,
-        worldRepository, regionRepository, borderRepository, survivorRepository, partyRepository, resourceNodeRepository, settlementRepository,
+        worldRepository, regionRepository, borderRepository, survivorRepository, partyRepository, resourceNodeRepository, settlementRepository, voyageRepository,
         selectedRegion, setSelectedRegion,
     };
 
