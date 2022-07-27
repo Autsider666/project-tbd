@@ -2,7 +2,7 @@ import EventEmitter from 'events';
 import onChange from 'on-change';
 import { container } from 'tsyringe';
 import { generateUUID, Uuid } from '../helper/UuidHelper.js';
-import { Constructor, Except } from 'type-fest';
+import { Constructor } from 'type-fest';
 import { Entity, EntityStateData } from '../entity/Entity.js';
 
 type Optional<T, TKey extends keyof T> = Partial<Pick<T, TKey>> & Omit<T, TKey>;
@@ -46,7 +46,7 @@ export abstract class Repository<
 		this.entities.delete(id);
 	}
 
-	public create(data: Except<TStateData, 'id'>): T {
+	public create(data: Omit<TStateData, 'id'>): T {
 		const ClassName = this.entity();
 		const entity = new ClassName({
 			id: generateUUID(),
