@@ -6,6 +6,7 @@ import { Settlement, SettlementId } from '../entity/Settlement.js';
 import { WorldId } from '../entity/World.js';
 import { PartyFactory } from '../factory/PartyFactory.js';
 import { VoyageFactory } from '../factory/VoyageFactory.js';
+import { ClientNotifier } from '../helper/ClientNotifier.js';
 import { PartyRepository } from '../repository/PartyRepository.js';
 import { SettlementRepository } from '../repository/SettlementRepository.js';
 import {
@@ -100,31 +101,47 @@ export class ClientController {
 
 		this.socket.on('voyage:start', ({ partyId, targetId }): void => {
 			const party =
-				this.client.parties.get(partyId) ??
-				Array.from(this.client.parties.values())[0];
+				this.client.parties.get(partyId) ?? partyId === 'test'
+					? Array.from(this.client.parties.values())[0]
+					: null;
 			if (!party) {
-				console.error('No valid party id');
-				return; //TODO Handle callback;
+				ClientNotifier.error(
+					"You can't control this party",
+					this.socket.id
+				);
+				return;
 			}
 
 			if (party.getVoyage() !== null) {
-				console.error('Party is already on a voyage');
-				return; //TODO more error stuff
+				ClientNotifier.error(
+					'Party is already on a voyage',
+					party.getUpdateRoomName()
+				);
+				return;
 			}
 
 			if (party.getSettlement().getId() === targetId) {
-				console.error('Party is already in this settlement');
+				ClientNotifier.error(
+					'Party is already in this settlement',
+					party.getUpdateRoomName()
+				);
 				return;
 			}
 
 			const target = this.settlementRepository.get(targetId);
 			if (target === null) {
-				console.error('target is not a valid settlement id');
-				return; //TODO error stuff
+				ClientNotifier.error(
+					'This settlement does not exist.',
+					party.getUpdateRoomName()
+				);
+				return;
 			}
 
 			this.voyageFactory.create(party, target);
-			console.log('Voyage started.');
+			ClientNotifier.success(
+				`Party "${party.name}" is starting it's voyage to settlement "${target.name}".`,
+				party.getUpdateRoomName()
+			);
 		});
 	}
 
@@ -141,6 +158,7 @@ export class ClientController {
 		);
 
 		this.client.parties.set(party.getId(), party);
+		party.sockets.push(this.socket); //TODO remove after disconnect
 
 		const settlement = party.getSettlement();
 		const region = settlement.getRegion();

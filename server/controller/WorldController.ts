@@ -1,5 +1,6 @@
 import { container } from 'tsyringe';
 import { World } from '../entity/World.js';
+import { ClientNotifier } from '../helper/ClientNotifier.js';
 import { VoyageRepository } from '../repository/VoyageRepository.js';
 
 export class WorldController {
@@ -16,12 +17,16 @@ export class WorldController {
 			}
 
 			const party = voyage.getParty();
-			party.setSettlement(voyage.getTarget());
+			const target = voyage.getTarget();
+			party.setSettlement(target);
 			party.setVoyage(null);
 
 			voyage.handled = true;
 
-			//TODO send notification?
+			ClientNotifier.success(
+				`Party "${party.name}" has arrived at settlement "${target.name}".`,
+				party.getUpdateRoomName()
+			);
 		});
 
 		// console.log(

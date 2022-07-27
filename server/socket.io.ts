@@ -5,6 +5,7 @@ import { SettlementId } from './entity/Settlement.js';
 
 export interface ServerToClientEvents {
 	'entity:update': (entities: EntityUpdate) => void;
+	notification: (message: string, type: string) => void;
 
 	//Default to keep PhpStorm calm
 	[event: string]: (...args: any[]) => void;

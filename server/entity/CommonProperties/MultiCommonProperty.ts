@@ -38,15 +38,17 @@ export class MultiCommonProperty<
 	}
 
 	public add(value: T): void {
-		this.property.set(value.getId(), value);
+		this.property.set(value.getId(), null);
 	}
 
 	public remove(value: T): void {
 		this.property.delete(value.getId());
 	}
 
-	public has(value: T): boolean {
-		return this.property.has(value.getId());
+	public has(value: T | TId): boolean {
+		return this.property.has(
+			typeof value === 'string' ? value : (value as T).getId()
+		);
 	}
 
 	public toJSON(): TId[] {

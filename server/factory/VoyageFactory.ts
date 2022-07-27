@@ -22,9 +22,11 @@ export class VoyageFactory {
 			throw new Error("Target settlement isn't in the same world.");
 		}
 
-		const duration = 1;
+		const durationInSeconds = 5;
 		const startedAt = new Date();
-		const arrivalAt = new Date(startedAt.getTime() + duration * 60000);
+		const arrivalAt = new Date(
+			startedAt.getTime() + durationInSeconds * 1000
+		);
 
 		const voyage = this.voyageRepository.create({
 			party: party.getId(),

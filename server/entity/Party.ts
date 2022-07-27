@@ -1,3 +1,4 @@
+import { Socket } from 'socket.io';
 import { Client } from '../controller/ClientController.js';
 import { EntityUpdate } from '../controller/StateSyncController.js';
 import { Uuid } from '../helper/UuidHelper.js';
@@ -33,6 +34,7 @@ export class Party extends Entity<PartyId, PartyStateData, PartyClientData> {
 	private readonly survivorsProperty: SurvivorsProperty;
 	private readonly inventoryProperty: ResourcesProperty;
 	private voyageProperty: VoyageProperty | null;
+	public readonly sockets: Socket[] = [];
 
 	constructor(data: PartyStateData) {
 		super(data);

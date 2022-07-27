@@ -10,7 +10,8 @@
 	<body>
 		<button onClick="createParty()">Create Party</button>
 		<button onClick="addParty()">Initialize Party</button>
-		<button onClick="travel()">Travel</button>
+		<button onClick="travel('a')">Travel to A</button>
+		<button onClick="travel('b')">Travel to B</button>
 
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.2/socket.io.js"></script>
 		<script>
@@ -32,8 +33,8 @@
 				socket.emit('party:init', token);
 			}
 
-			function travel() {
-				socket.emit('voyage:start', { targetId: 'b' });
+			function travel(targetId) {
+				socket.emit('voyage:start', { partyId: 'test', targetId });
 			}
 
 			socket.on('message', function (data) {
@@ -42,6 +43,10 @@
 
 			socket.on('initialize', function (data) {
 				console.log('initialize', data);
+			});
+
+			socket.on('notification', function (message, type) {
+				console.log('notification', message, type);
 			});
 
 			socket.on('entity:update', function (data) {
