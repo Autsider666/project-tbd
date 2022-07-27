@@ -2,10 +2,11 @@ import { Client } from './controller/ClientController.js';
 import { EntityUpdate } from './controller/StateSyncController.js';
 import { PartyId } from './entity/Party.js';
 import { SettlementId } from './entity/Settlement.js';
+import { NotificationSeverity } from './helper/ClientNotifier.js';
 
 export interface ServerToClientEvents {
 	'entity:update': (entities: EntityUpdate) => void;
-	notification: (message: string, type: string) => void;
+	notification: (notification: { message: string; severity: NotificationSeverity }) => void;
 
 	//Default to keep PhpStorm calm
 	[event: string]: (...args: any[]) => void;
