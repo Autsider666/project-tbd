@@ -89,8 +89,9 @@ const GameProvider = ({ children }) => {
         // if (isLoaded()) setLoaded(true)
     }
 
-    const notificationUpdater = ({message, type}) => {
-        displaySnackbar(message, type)
+    const notificationUpdater = ({ message, severity }) => {
+        console.log({message, severity})
+        displaySnackbar(message, severity)
     }
 
     const loaded = isLoaded()
