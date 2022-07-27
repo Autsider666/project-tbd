@@ -23,13 +23,6 @@ const app = express();
 
 const httpServer = createServer(app);
 
-export type SocketServer = Server<
-	ClientToServerEvents,
-	ServerToClientEvents,
-	any,
-	SocketData
->;
-
 const io = new Server<
 	ClientToServerEvents,
 	ServerToClientEvents,
