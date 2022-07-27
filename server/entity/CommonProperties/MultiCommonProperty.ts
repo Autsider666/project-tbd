@@ -38,6 +38,10 @@ export class MultiCommonProperty<
 	}
 
 	public add(value: T): void {
+		if (this.property.has(value.getId())) {
+			return;
+		}
+
 		this.property.set(value.getId(), null);
 	}
 

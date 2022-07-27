@@ -31,6 +31,14 @@ export class SingleCommonProperty<
 	}
 
 	public set(entity: T): void {
+		if (
+			entity.getId() === this.property ||
+			(typeof this.property !== 'string' &&
+				entity.getId() === (this.property as T).getId())
+		) {
+			return;
+		}
+
 		const proxy = this.repository.get(entity.getId());
 		if (proxy === null) {
 			throw new Error('Uhm..');

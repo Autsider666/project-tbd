@@ -5,9 +5,10 @@ import { Uuid } from '../helper/UuidHelper.js';
 import { BorderRepository } from '../repository/BorderRepository.js';
 import { WorldRepository } from '../repository/WorldRepository.js';
 import { Border, BorderId } from './Border.js';
+import { BordersProperty } from './CommonProperties/BordersProperty.js';
 import { ResourceNodesProperty } from './CommonProperties/ResourceNodesProperty.js';
 import { SettlementProperty } from './CommonProperties/SettlementProperty.js';
-import { ResourceNodeId } from './ResourceNode.js';
+import { ResourceNode, ResourceNodeId } from './ResourceNode.js';
 import { Settlement, SettlementId } from './Settlement.js';
 import { World, WorldId } from './World.js';
 import { Entity, EntityClientData, EntityStateData } from './Entity.js';
@@ -20,9 +21,9 @@ export type RegionStateData = {
 	type: RegionType;
 	dimensions: string;
 	world: WorldId;
-	borders: BorderId[];
-	settlement: SettlementId | null;
-	nodes: ResourceNodeId[];
+	borders?: BorderId[];
+	settlement?: SettlementId | null;
+	nodes?: ResourceNodeId[];
 } & EntityStateData<RegionId>;
 
 export type RegionClientData = RegionStateData & EntityClientData<RegionId>;
@@ -43,7 +44,7 @@ export class Region extends Entity<
 
 	public name: string;
 	private readonly dimensions: string;
-	private borders = new Map<BorderId, Border | null>();
+	private borders: BordersProperty;
 	private world: World | WorldId;
 	public readonly type: RegionType;
 	private settlementProperty: SettlementProperty | null;
@@ -60,9 +61,11 @@ export class Region extends Entity<
 			? new SettlementProperty(data.settlement)
 			: null;
 
-		data.borders.forEach((id) => this.borders.set(id, null));
+		this.borders = new BordersProperty(data.borders ?? []);
 
-		this.resourceNodesProperty = new ResourceNodesProperty(data.nodes);
+		this.resourceNodesProperty = new ResourceNodesProperty(
+			data.nodes ?? []
+		);
 	}
 
 	toJSON(): RegionStateData {
@@ -75,7 +78,7 @@ export class Region extends Entity<
 				typeof this.world === 'string'
 					? (this.world as WorldId)
 					: (this.world as World).getId(),
-			borders: Array.from(this.borders.keys()),
+			borders: this.borders.toJSON(),
 			settlement: this.settlementProperty?.toJSON() ?? null,
 			nodes: this.resourceNodesProperty.toJSON(),
 		};
@@ -143,23 +146,35 @@ export class Region extends Entity<
 	}
 
 	public getBorders(): Border[] {
-		this.borders.forEach((border, id) => {
-			if (border != null) {
-				return;
-			}
+		return this.borders.getAll();
+	}
 
-			const lazyLoadedBorder = this.borderRepository.get(id);
-			if (lazyLoadedBorder === null) {
-				throw new Error('.... uhm.....');
-			}
+	public addBorder(border: Border): void {
+		if (this.borders.has(border)) {
+			return;
+		}
 
-			this.borders.set(id, lazyLoadedBorder);
-		});
+		this.borders.add(border);
 
-		return Array.from(this.borders.values()) as Border[];
+		border.addRegion(this);
 	}
 
 	public getSettlement(): Settlement | null {
 		return this.settlementProperty?.get() ?? null;
+	}
+
+	public setSettlement(settlement: Settlement): void {
+		if (this.settlementProperty === null) {
+			this.settlementProperty = new SettlementProperty(settlement);
+			return;
+		}
+
+		this.settlementProperty.set(settlement);
+	}
+
+	public addResourceNode(node: ResourceNode): void {
+		this.resourceNodesProperty.add(node);
+
+		node.setRegion(this);
 	}
 }

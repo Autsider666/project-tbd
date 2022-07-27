@@ -45,6 +45,11 @@ export class Border extends Entity<
 	}
 
 	getUpdateRoomName(): string {
+		const regions = this.getRegions();
+		if (regions.length === 0) {
+			return '';
+		}
+
 		return this.getRegions()[0].getEntityRoomName();
 	}
 
@@ -57,5 +62,15 @@ export class Border extends Entity<
 
 	public getRegions(): Region[] {
 		return this.regions.getAll();
+	}
+
+	public addRegion(region: Region): void {
+		if (this.regions.has(region)) {
+			return;
+		}
+
+		this.regions.add(region);
+
+		region.addBorder(this);
 	}
 }

@@ -3,6 +3,7 @@ import { EntityUpdate } from './controller/StateSyncController.js';
 import { PartyId } from './entity/Party.js';
 import { ResourceNodeId } from './entity/ResourceNode.js';
 import { SettlementId } from './entity/Settlement.js';
+import { WorldClientData } from './entity/World.js';
 import { NotificationSeverity } from './helper/ClientNotifier.js';
 
 export interface ServerToClientEvents {
@@ -30,6 +31,7 @@ export interface ClientToServerEvents {
 		partyId: PartyId;
 		targetId: ResourceNodeId;
 	}) => void;
+	'world:list': (callback: (worlds: WorldClientData[]) => void) => void;
 
 	//Default to keep PhpStorm calm
 	[event: string]: (...args: any[]) => void;

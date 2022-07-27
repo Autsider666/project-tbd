@@ -15,8 +15,8 @@ export type SettlementId = Opaque<Uuid, 'SettlementId'>;
 export type SettlementStateData = {
 	name: string;
 	region: RegionId;
-	parties: PartyId[];
-	storage: ResourceId[];
+	parties?: PartyId[];
+	storage?: ResourceId[];
 } & EntityStateData<SettlementId>;
 
 export type SettlementClientData = SettlementStateData &
@@ -37,7 +37,7 @@ export class Settlement extends Entity<
 
 		this.name = data.name;
 		this.regionProperty = new RegionProperty(data.region);
-		this.partiesProperty = new PartiesProperty(data.parties);
+		this.partiesProperty = new PartiesProperty(data.parties ?? []);
 		this.storage = new ResourcesProperty(data.storage ?? []);
 	}
 

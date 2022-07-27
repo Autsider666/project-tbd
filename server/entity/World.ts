@@ -62,4 +62,8 @@ export class World extends Entity<WorldId, WorldStateData, WorldClientData> {
 	public getRegions(): Region[] {
 		return this.regions.getAll();
 	}
+
+	public addRegion(region: Region): void {
+		this.regions.add(region);
+	}
 }

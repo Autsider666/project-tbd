@@ -11,6 +11,7 @@ import { ClientNotifier } from '../helper/ClientNotifier.js';
 import { PartyRepository } from '../repository/PartyRepository.js';
 import { ResourceNodeRepository } from '../repository/ResourceNodeRepository.js';
 import { SettlementRepository } from '../repository/SettlementRepository.js';
+import { WorldRepository } from '../repository/WorldRepository.js';
 import {
 	ClientToServerEvents,
 	ServerToClientEvents,
@@ -30,6 +31,8 @@ export class Client {
 
 export class ClientController {
 	private readonly client: Client;
+	private readonly worldRepository: WorldRepository =
+		container.resolve(WorldRepository);
 	private readonly partyRepository: PartyRepository =
 		container.resolve(PartyRepository);
 	private readonly settlementRepository: SettlementRepository =
@@ -62,6 +65,14 @@ export class ClientController {
 
 		this.handleTravel();
 		this.handleExpedition();
+
+		this.socket.on('world:list', (callback) => {
+			callback(
+				this.worldRepository
+					.getAll()
+					.map((world) => world.normalize(this.client))
+			);
+		});
 	}
 
 	private handlePartyInitialization(): void {

@@ -5,7 +5,7 @@ import { Uuid } from '../helper/UuidHelper.js';
 import { RegionProperty } from './CommonProperties/RegionProperty.js';
 import { ResourcesProperty } from './CommonProperties/ResourcesProperty.js';
 import { Entity, EntityClientData, EntityStateData } from './Entity.js';
-import { RegionId } from './Region.js';
+import { Region, RegionId } from './Region.js';
 import { ResourceId } from './Resource.js';
 
 export type ResourceNodeId = Opaque<Uuid, 'ResourceNodeId'>;
@@ -21,7 +21,7 @@ export type ResourceNodeStateData = {
 	name: string;
 	type: ResourceNodeType;
 	region: RegionId;
-	resources: ResourceId[];
+	resources?: ResourceId[];
 } & EntityStateData<ResourceNodeId>;
 
 export type ResourceNodeClientData = ResourceNodeStateData &
@@ -43,7 +43,7 @@ export class ResourceNode extends Entity<
 		this.name = data.name;
 		this.type = data.type;
 		this.regionProperty = new RegionProperty(data.region);
-		this.resourcesProperty = new ResourcesProperty(data.resources);
+		this.resourcesProperty = new ResourcesProperty(data.resources ?? []);
 	}
 
 	normalize(forClient?: Client): ResourceNodeClientData {
@@ -82,5 +82,13 @@ export class ResourceNode extends Entity<
 			);
 
 		return super.prepareNestedEntityUpdate(updateObject, forClient);
+	}
+
+	getRegion(): Region {
+		return this.regionProperty.get();
+	}
+
+	setRegion(region: Region): void {
+		this.regionProperty.set(region);
 	}
 }

@@ -3,6 +3,7 @@ import EventEmitter from 'events';
 import { container } from 'tsyringe';
 import { ServerController } from './controller/ServerController.js';
 import { StateSyncController } from './controller/StateSyncController.js';
+import { WorldFactory } from './factory/WorldFactory.js';
 import { StatePersister } from './helper/StatePersister.js';
 import { instrument } from '@socket.io/admin-ui';
 import express from 'express';
@@ -40,10 +41,19 @@ container.register(EventEmitter, { useValue: new EventEmitter() });
 
 app.get('/', (_, res) => res.sendFile(path.resolve('./server/test.html')));
 
-const state = await StatePersister.readState();
+await StatePersister.readState();
 
 app.get('/state', (_, res) =>
-	res.send(`<pre>${JSON.stringify(state, null, 4)}</pre>`)
+	res.send(
+		`<pre>${JSON.stringify(
+			container
+				.resolve(WorldFactory)
+				.create()
+				.prepareNestedEntityUpdate(),
+			null,
+			4
+		)}</pre>`
+	)
 );
 
 instrument(io, {
