@@ -17,7 +17,7 @@ import {
 } from './socket.io.js';
 
 const port = 5000;
-const host = 'localhost';
+const host = '0.0.0.0';
 const corsOrigin = ['http://localhost:3000', 'https://admin.socket.io'];
 
 const app = express();
@@ -39,7 +39,10 @@ const io = new Server<
 container.register(Server, { useValue: io });
 container.register(EventEmitter, { useValue: new EventEmitter() });
 
-app.get('/', (_, res) => res.sendFile(path.resolve('./server/test.html')));
+app.get('/', (_, res) => {
+	console.log('test');
+	res.sendFile(path.resolve('./server/test.html'));
+});
 
 await StatePersister.readState();
 
