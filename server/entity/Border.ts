@@ -1,7 +1,6 @@
 import { Opaque } from 'type-fest';
 import { Client } from '../controller/ClientController.js';
 import { Uuid } from '../helper/UuidHelper.js';
-import { ServerState } from '../ServerState.js';
 import { RegionsProperty } from './CommonProperties/RegionsProperty.js';
 import { Region, RegionId } from './Region.js';
 import { Entity, EntityClientData, EntityStateData } from './Entity.js';
@@ -28,16 +27,13 @@ export class Border extends Entity<
 	private regions: RegionsProperty;
 	public readonly type: BorderType;
 
-	constructor(
-		protected readonly serverState: ServerState,
-		data: BorderStateData
-	) {
-		super(serverState, data);
+	constructor(data: BorderStateData) {
+		super(data);
 
 		this.id = data.id;
 		this.type = data.type ?? BorderType.default;
 
-		this.regions = new RegionsProperty(serverState, data.regions);
+		this.regions = new RegionsProperty(data.regions);
 	}
 
 	toJSON(): BorderStateData {

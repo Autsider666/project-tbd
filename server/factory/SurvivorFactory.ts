@@ -1,3 +1,4 @@
+import { injectable } from 'tsyringe';
 import { Except } from 'type-fest';
 import { Party, PartyId } from '../entity/Party.js';
 import { Survivor, SurvivorStateData } from '../entity/Survivor.js';
@@ -18,6 +19,7 @@ const survivorTemplates: {
 	},
 };
 
+@injectable()
 export class SurvivorFactory {
 	constructor(private readonly repository: SurvivorRepository) {}
 

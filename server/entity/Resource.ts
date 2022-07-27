@@ -1,7 +1,6 @@
 import { Opaque } from 'type-fest';
 import { Client } from '../controller/ClientController.js';
 import { Uuid } from '../helper/UuidHelper.js';
-import { ServerState } from '../ServerState.js';
 import { Entity, EntityClientData, EntityStateData } from './Entity.js';
 
 export type ResourceId = Opaque<Uuid, 'ResourceId'>;
@@ -28,8 +27,8 @@ export class Resource extends Entity<
 	public readonly type: ResourceType;
 	private amount: number;
 
-	constructor(serverState: ServerState, data: ResourceStateData) {
-		super(serverState, data);
+	constructor(data: ResourceStateData) {
+		super(data);
 
 		this.type = data.type;
 		this.amount = data.amount;

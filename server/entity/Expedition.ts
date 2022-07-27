@@ -1,7 +1,6 @@
 import { Opaque } from 'type-fest';
 import { Client } from '../controller/ClientController.js';
 import { Uuid } from '../helper/UuidHelper.js';
-import { ServerState } from '../ServerState.js';
 import { Entity, EntityClientData, EntityStateData } from './Entity.js';
 
 export type ExpeditionId = Opaque<Uuid, 'ExpeditionId'>;
@@ -16,8 +15,8 @@ export class Expedition extends Entity<
 	ExpeditionStateData,
 	ExpeditionClientData
 > {
-	constructor(serverState: ServerState, data: ExpeditionStateData) {
-		super(serverState, data);
+	constructor(data: ExpeditionStateData) {
+		super(data);
 	}
 
 	normalize(forClient?: Client): ExpeditionClientData {

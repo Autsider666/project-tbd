@@ -1,7 +1,6 @@
 import { Opaque } from 'type-fest';
 import { Client } from '../controller/ClientController.js';
 import { Uuid } from '../helper/UuidHelper.js';
-import { ServerState } from '../ServerState.js';
 import { PartyProperty } from './CommonProperties/PartyProperty.js';
 import { SettlementProperty } from './CommonProperties/SettlementProperty.js';
 import { Entity, EntityClientData, EntityStateData } from './Entity.js';
@@ -33,12 +32,12 @@ export class Voyage extends Entity<
 	public readonly arrivalAt: Date;
 	public handled: boolean;
 
-	constructor(serverState: ServerState, data: VoyageStateData) {
-		super(serverState, data);
+	constructor(data: VoyageStateData) {
+		super(data);
 
-		this.partyProperty = new PartyProperty(serverState, data.party);
-		this.originProperty = new SettlementProperty(serverState, data.origin);
-		this.targetProperty = new SettlementProperty(serverState, data.target);
+		this.partyProperty = new PartyProperty(data.party);
+		this.originProperty = new SettlementProperty(data.origin);
+		this.targetProperty = new SettlementProperty(data.target);
 		this.startedAt = data.startedAt;
 		this.arrivalAt = data.arrivalAt;
 		this.handled = data.handled;

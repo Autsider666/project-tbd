@@ -1,13 +1,15 @@
+import { container } from 'tsyringe';
 import { Client } from '../controller/ClientController.js';
 import { EntityUpdate } from '../controller/StateSyncController.js';
 import { Uuid } from '../helper/UuidHelper.js';
+import { BorderRepository } from '../repository/BorderRepository.js';
+import { WorldRepository } from '../repository/WorldRepository.js';
 import { Border, BorderId } from './Border.js';
 import { ResourceNodesProperty } from './CommonProperties/ResourceNodesProperty.js';
 import { SettlementProperty } from './CommonProperties/SettlementProperty.js';
 import { ResourceNodeId } from './ResourceNode.js';
 import { Settlement, SettlementId } from './Settlement.js';
 import { World, WorldId } from './World.js';
-import { ServerState } from '../ServerState.js';
 import { Entity, EntityClientData, EntityStateData } from './Entity.js';
 import { Opaque } from 'type-fest';
 
@@ -34,6 +36,11 @@ export class Region extends Entity<
 	RegionStateData,
 	RegionClientData
 > {
+	private readonly worldRepository: WorldRepository =
+		container.resolve(WorldRepository);
+	private readonly borderRepository: BorderRepository =
+		container.resolve(BorderRepository);
+
 	public name: string;
 	private readonly dimensions: string;
 	private borders = new Map<BorderId, Border | null>();
@@ -42,26 +49,20 @@ export class Region extends Entity<
 	private settlementProperty: SettlementProperty | null;
 	private resourceNodesProperty: ResourceNodesProperty;
 
-	constructor(
-		protected readonly serverState: ServerState,
-		data: RegionStateData
-	) {
-		super(serverState, data);
+	constructor(data: RegionStateData) {
+		super(data);
 
 		this.name = data.name;
 		this.dimensions = data.dimensions;
 		this.world = data.world;
 		this.type = data.type ?? RegionType.plain;
 		this.settlementProperty = data.settlement
-			? new SettlementProperty(serverState, data.settlement)
+			? new SettlementProperty(data.settlement)
 			: null;
 
 		data.borders.forEach((id) => this.borders.set(id, null));
 
-		this.resourceNodesProperty = new ResourceNodesProperty(
-			serverState,
-			data.nodes
-		);
+		this.resourceNodesProperty = new ResourceNodesProperty(data.nodes);
 	}
 
 	toJSON(): RegionStateData {
@@ -130,9 +131,7 @@ export class Region extends Entity<
 
 	public getWorld(): World {
 		if (typeof this.world === 'string') {
-			const repository = this.serverState.getRepository(World);
-
-			const world = repository.get(this.world as WorldId);
+			const world = this.worldRepository.get(this.world as WorldId);
 			if (world === null) {
 				throw new Error('.... uhm.....');
 			}
@@ -149,9 +148,7 @@ export class Region extends Entity<
 				return;
 			}
 
-			const lazyLoadedBorder = this.serverState
-				.getRepository(Border)
-				.get(id);
+			const lazyLoadedBorder = this.borderRepository.get(id);
 			if (lazyLoadedBorder === null) {
 				throw new Error('.... uhm.....');
 			}

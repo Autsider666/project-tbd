@@ -2,7 +2,6 @@ import { Opaque } from 'type-fest';
 import { Client } from '../controller/ClientController.js';
 import { EntityUpdate } from '../controller/StateSyncController.js';
 import { Uuid } from '../helper/UuidHelper.js';
-import { ServerState } from '../ServerState.js';
 import { PartiesProperty } from './CommonProperties/PartiesProperty.js';
 import { RegionProperty } from './CommonProperties/RegionProperty.js';
 import { ResourcesProperty } from './CommonProperties/ResourcesProperty.js';
@@ -33,16 +32,13 @@ export class Settlement extends Entity<
 	private readonly partiesProperty: PartiesProperty;
 	private readonly storage: ResourcesProperty;
 
-	constructor(
-		protected readonly serverState: ServerState,
-		data: SettlementStateData
-	) {
-		super(serverState, data);
+	constructor(data: SettlementStateData) {
+		super(data);
 
 		this.name = data.name;
-		this.regionProperty = new RegionProperty(serverState, data.region);
-		this.partiesProperty = new PartiesProperty(serverState, data.parties);
-		this.storage = new ResourcesProperty(serverState, data.storage ?? []);
+		this.regionProperty = new RegionProperty(data.region);
+		this.partiesProperty = new PartiesProperty(data.parties);
+		this.storage = new ResourcesProperty(data.storage ?? []);
 	}
 
 	normalize(forClient: Client | undefined): SettlementClientData {

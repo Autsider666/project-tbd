@@ -1,7 +1,8 @@
+import { container } from 'tsyringe';
 import { Opaque } from 'type-fest';
 import { Client } from '../controller/ClientController.js';
 import { Uuid } from '../helper/UuidHelper.js';
-import { ServerState } from '../ServerState.js';
+import { PartyRepository } from '../repository/PartyRepository.js';
 import { Entity, EntityClientData, EntityStateData } from './Entity.js';
 import { Party, PartyId } from './Party.js';
 
@@ -23,17 +24,17 @@ export class Survivor extends Entity<
 	SurvivorStateData,
 	SurvivorClientDate
 > {
+	private readonly partyRepository: PartyRepository =
+		container.resolve(PartyRepository);
+
 	private readonly name: string;
 	private party: PartyId | Party | null;
 	public readonly hp: number;
 	public readonly damage: number;
 	public readonly carryCapacity: number;
 
-	constructor(
-		protected readonly serverState: ServerState,
-		data: SurvivorStateData
-	) {
-		super(serverState, data);
+	constructor(data: SurvivorStateData) {
+		super(data);
 
 		this.name = data.name;
 		this.party = data.party ?? null;
@@ -44,9 +45,7 @@ export class Survivor extends Entity<
 
 	public getParty(): Party | null {
 		if (typeof this.party === 'string') {
-			const repository = this.serverState.getRepository(Party);
-
-			const party = repository.get(this.party as PartyId);
+			const party = this.partyRepository.get(this.party as PartyId);
 			if (party === null) {
 				throw new Error('.... uhm.....');
 			}

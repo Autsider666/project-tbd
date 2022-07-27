@@ -1,20 +1,23 @@
+import { container } from 'tsyringe';
 import { Constructor } from 'type-fest';
 import { Uuid } from '../../helper/UuidHelper.js';
-import { ServerState } from '../../ServerState.js';
+import { Repository } from '../../repository/Repository.js';
 import { Entity } from '../Entity.js';
 
 export class MultiCommonProperty<
 	TId extends Uuid,
 	T extends Entity<TId, any, any>
 > {
-	private readonly property = new Map<TId, T | null>();
+	protected readonly property = new Map<TId, T | null>();
+	protected readonly repository: Repository<T, TId, any>;
 
 	constructor(
-		protected readonly serverState: ServerState,
 		property: TId[],
-		protected readonly repositoryIdentifier: Constructor<T>
+		repositoryIdentifier: Constructor<Repository<T, TId, any>>
 	) {
 		property.forEach((id) => this.property.set(id, null));
+
+		this.repository = container.resolve(repositoryIdentifier);
 	}
 
 	public getAll(): T[] {
@@ -23,9 +26,7 @@ export class MultiCommonProperty<
 				return;
 			}
 
-			const value = this.serverState
-				.getRepository(this.repositoryIdentifier)
-				.get(id);
+			const value = this.repository.get(id);
 			if (value === null) {
 				throw new Error('.... uhm.....');
 			}

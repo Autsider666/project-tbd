@@ -1,8 +1,10 @@
+import { injectable } from 'tsyringe';
 import { Party } from '../entity/Party.js';
 import { Settlement } from '../entity/Settlement.js';
 import { Voyage } from '../entity/Voyage.js';
 import { VoyageRepository } from '../repository/VoyageRepository.js';
 
+@injectable()
 export class VoyageFactory {
 	constructor(protected readonly voyageRepository: VoyageRepository) {}
 

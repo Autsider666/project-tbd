@@ -1,44 +1,28 @@
-import { Server } from 'socket.io';
-import { Voyage } from '../entity/Voyage.js';
+import { container } from 'tsyringe';
 import { World } from '../entity/World.js';
-import { ServerState } from '../ServerState.js';
-import {
-	ClientToServerEvents,
-	ServerToClientEvents,
-	SocketData,
-} from '../socket.io.js';
+import { VoyageRepository } from '../repository/VoyageRepository.js';
 
 export class WorldController {
+	private readonly voyageRepository = container.resolve(VoyageRepository);
+
 	//TODO rename?
-	constructor(
-		private readonly world: World,
-		private readonly serverState: ServerState,
-		private readonly io: Server<
-			ClientToServerEvents,
-			ServerToClientEvents,
-			any,
-			SocketData
-		>
-	) {}
+	constructor(private readonly world: World) {}
 
 	async tick(): Promise<void> {
 		const now = new Date();
-		this.serverState
-			.getRepository(Voyage)
-			.getAll()
-			.forEach((voyage) => {
-				if (voyage.handled || voyage.arrivalAt > now) {
-					return;
-				}
+		this.voyageRepository.getAll().forEach((voyage) => {
+			if (voyage.handled || voyage.arrivalAt > now) {
+				return;
+			}
 
-				const party = voyage.getParty();
-				party.setSettlement(voyage.getTarget());
-				party.setVoyage(null);
+			const party = voyage.getParty();
+			party.setSettlement(voyage.getTarget());
+			party.setVoyage(null);
 
-				voyage.handled = true;
+			voyage.handled = true;
 
-				//TODO send notification?
-			});
+			//TODO send notification?
+		});
 
 		// console.log(
 		// 	'Starting tick for ' + this.world.getId() + ' at ' + Date.now()

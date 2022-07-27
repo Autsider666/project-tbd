@@ -1,4 +1,8 @@
+import 'reflect-metadata';
+import EventEmitter from 'events';
+import { container } from 'tsyringe';
 import { ServerController } from './controller/ServerController.js';
+import { StateSyncController } from './controller/StateSyncController.js';
 import { StatePersister } from './helper/StatePersister.js';
 import { instrument } from '@socket.io/admin-ui';
 import express from 'express';
@@ -19,6 +23,13 @@ const app = express();
 
 const httpServer = createServer(app);
 
+export type SocketServer = Server<
+	ClientToServerEvents,
+	ServerToClientEvents,
+	any,
+	SocketData
+>;
+
 const io = new Server<
 	ClientToServerEvents,
 	ServerToClientEvents,
@@ -30,6 +41,9 @@ const io = new Server<
 		// credentials: true,
 	},
 });
+
+container.register(Server, { useValue: io });
+container.register(EventEmitter, { useValue: new EventEmitter() });
 
 app.get('/', (_, res) => res.sendFile(path.resolve('./server/test.html')));
 
@@ -47,7 +61,7 @@ httpServer.listen(port, host, async () => {
 	console.info(`🚀 Server is listening 🚀`);
 	console.info(`http://${host}:${port}`);
 
-	const serverController = new ServerController(io, state);
+	await container.resolve(ServerController).start();
 
-	await serverController.start();
+	container.resolve(StateSyncController);
 });

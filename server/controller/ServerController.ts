@@ -1,32 +1,24 @@
 import { SocketId } from 'socket.io-adapter';
-import { Party } from '../entity/Party.js';
-import { PartyRepository } from '../repository/PartyRepository.js';
+import { injectable } from 'tsyringe';
+import { WorldRepository } from '../repository/WorldRepository.js';
 import {
 	ClientToServerEvents,
 	ServerToClientEvents,
 	SocketData,
 } from '../socket.io.js';
 import { ClientController } from './ClientController.js';
-import { World } from '../entity/World.js';
-import { StateSyncController } from './StateSyncController.js';
 import { WorldController } from './WorldController.js';
 import { Server, Socket } from 'socket.io';
-import { ServerState } from '../ServerState.js';
 
+@injectable()
 export class ServerController {
-	private worldControllers: WorldController[] = [];
-	private clientControllers = new Map<SocketId, ClientController>();
-	private stateSyncController: StateSyncController;
+	private readonly worldControllers: WorldController[] = [];
+	private readonly clientControllers = new Map<SocketId, ClientController>();
 
 	constructor(
-		protected readonly io: Server<
-			ClientToServerEvents,
-			ServerToClientEvents
-		>,
-		protected readonly serverState: ServerState
-	) {
-		this.stateSyncController = new StateSyncController(serverState, io);
-	}
+		protected readonly io: Server,
+		private readonly worldRepository: WorldRepository
+	) {}
 
 	async start(): Promise<void> {
 		console.info(`Sockets enabled`);
@@ -43,7 +35,7 @@ export class ServerController {
 			) => {
 				this.clientControllers.set(
 					socket.id,
-					new ClientController(socket, this.io, this.serverState)
+					new ClientController(socket)
 				);
 
 				socket.on('disconnect', (reason) => {
@@ -52,13 +44,10 @@ export class ServerController {
 			}
 		);
 
-		this.serverState
-			.getRepository(World)
-			?.getAll()
+		this.worldRepository
+			.getAll()
 			.forEach((world) =>
-				this.worldControllers.push(
-					new WorldController(world, this.serverState, this.io)
-				)
+				this.worldControllers.push(new WorldController(world))
 			);
 
 		let turn = 0;

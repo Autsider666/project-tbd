@@ -1,7 +1,8 @@
+import EventEmitter from 'events';
+import { container } from 'tsyringe';
 import { Client } from '../controller/ClientController.js';
 import { EntityUpdate } from '../controller/StateSyncController.js';
 import { Uuid } from '../helper/UuidHelper.js';
-import { ServerState } from '../ServerState.js';
 
 export type EntityStateData<TId extends Uuid> = {
 	id: TId;
@@ -19,10 +20,10 @@ export abstract class Entity<
 > {
 	protected id: TId;
 
-	protected constructor(
-		protected readonly serverState: ServerState,
-		data: TStateData
-	) {
+	protected readonly eventEmitter: EventEmitter =
+		container.resolve(EventEmitter);
+
+	protected constructor(data: TStateData) {
 		this.id = data.id;
 	}
 
@@ -45,14 +46,14 @@ export abstract class Entity<
 	}
 
 	public onCreate(proxy: this): void {
-		this.serverState.eventEmitter.emit(
+		this.eventEmitter.emit(
 			`create:${this.getEntityTypeIdentifier()}`,
 			proxy
 		);
 	}
 
 	public onUpdate(proxy: this): void {
-		this.serverState.eventEmitter.emit(
+		this.eventEmitter.emit(
 			`update:${this.getEntityTypeIdentifier()}`,
 			proxy
 		);

@@ -1,13 +1,13 @@
-import { Server, Socket } from 'socket.io';
+import { Socket } from 'socket.io';
 import jwt from 'jsonwebtoken';
+import { container } from 'tsyringe';
 import { Party, PartyId } from '../entity/Party.js';
 import { Settlement, SettlementId } from '../entity/Settlement.js';
-import { Voyage } from '../entity/Voyage.js';
 import { WorldId } from '../entity/World.js';
+import { PartyFactory } from '../factory/PartyFactory.js';
 import { VoyageFactory } from '../factory/VoyageFactory.js';
 import { PartyRepository } from '../repository/PartyRepository.js';
-import { VoyageRepository } from '../repository/VoyageRepository.js';
-import { ServerState } from '../ServerState.js';
+import { SettlementRepository } from '../repository/SettlementRepository.js';
 import {
 	ClientToServerEvents,
 	ServerToClientEvents,
@@ -27,8 +27,14 @@ export class Client {
 
 export class ClientController {
 	private readonly client: Client;
-	private readonly partyRepository: PartyRepository;
-	private readonly voyageFactory: VoyageFactory;
+	private readonly partyRepository: PartyRepository =
+		container.resolve(PartyRepository);
+	private readonly settlementRepository: SettlementRepository =
+		container.resolve(SettlementRepository);
+	private readonly voyageFactory: VoyageFactory =
+		container.resolve(VoyageFactory);
+	private readonly partyFactory: PartyFactory =
+		container.resolve(PartyFactory);
 
 	constructor(
 		private readonly socket: Socket<
@@ -36,22 +42,9 @@ export class ClientController {
 			ServerToClientEvents,
 			any,
 			SocketData
-		>,
-		private readonly io: Server<
-			ClientToServerEvents,
-			ServerToClientEvents,
-			any,
-			SocketData
-		>,
-		private readonly serverState: ServerState
+		>
 	) {
 		this.client = new Client();
-		this.partyRepository = this.serverState.getRepository(
-			Party
-		) as PartyRepository;
-		this.voyageFactory = new VoyageFactory(
-			this.serverState.getRepository(Voyage) as VoyageRepository
-		);
 		socket.data.client = this.client;
 		this.handleSocket();
 	}
@@ -77,9 +70,16 @@ export class ClientController {
 			(data: { name: string }, callback: (token: string) => void) => {
 				console.log('create party', data);
 
-				const newParty = this.partyRepository.createNew(
-					data.name,
+				const settlement = this.settlementRepository.get(
 					'a' as SettlementId
+				);
+				if (settlement === null) {
+					throw new Error('shit');
+				}
+
+				const newParty = this.partyFactory.create(
+					data.name,
+					settlement
 				);
 
 				const payload: PartyPayload = {
@@ -117,16 +117,14 @@ export class ClientController {
 				return;
 			}
 
-			const target = this.serverState
-				.getRepository(Settlement)
-				.get(targetId);
+			const target = this.settlementRepository.get(targetId);
 			if (target === null) {
 				console.error('target is not a valid settlement id');
 				return; //TODO error stuff
 			}
 
 			this.voyageFactory.create(party, target);
-			console.log('Voyage started.', party);
+			console.log('Voyage started.');
 		});
 	}
 

@@ -1,8 +1,10 @@
+import EventEmitter from 'events';
 import { Server } from 'socket.io';
 import { SocketId } from 'socket.io-adapter';
+import { injectable } from 'tsyringe';
 import { Entity, EntityClientData } from '../entity/Entity.js';
-import { World } from '../entity/World.js';
-import { ServerState } from '../ServerState.js';
+import { World, WorldId } from '../entity/World.js';
+import { WorldRepository } from '../repository/WorldRepository.js';
 import {
 	ClientToServerEvents,
 	ServerToClientEvents,
@@ -13,49 +15,39 @@ import debounce from 'debounce';
 export type EntityUpdate = { [key: string]: EntityClientData<any> | null };
 export type EntityUpdatePrep = { [key: string]: Entity<any, any, any> | null };
 
+@injectable()
 export class StateSyncController {
-	private readonly entityUpdateQueue: Map<string, EntityUpdatePrep>;
+	private readonly entityUpdateQueue = new Map<string, EntityUpdatePrep>();
 
 	constructor(
-		private readonly serverState: ServerState,
+		private readonly worldRepository: WorldRepository,
 		private readonly io: Server<
 			ClientToServerEvents,
 			ServerToClientEvents,
 			any,
 			SocketData
-		>
+		>,
+		private readonly eventEmitter: EventEmitter
 	) {
-		const repository = this.serverState.getRepository(World);
-		if (!repository) {
-			throw new Error(
-				'WorldRepository is not registered to ServerState.'
-			);
-		}
-
-		this.entityUpdateQueue = new Map();
-
 		const debouncedUpdate = debounce(() => this.emitEntities(), 250);
-		this.serverState.eventEmitter.on(
-			'emit:entity',
-			(entity: Entity<any, any, any>) => {
-				const entityUpdate =
-					this.entityUpdateQueue.get(entity.getUpdateRoomName()) ??
-					({} as EntityUpdatePrep);
-				console.log('Queueing for emit:', entity.getEntityRoomName());
+		this.eventEmitter.on('emit:entity', (entity: Entity<any, any, any>) => {
+			const entityUpdate =
+				this.entityUpdateQueue.get(entity.getUpdateRoomName()) ??
+				({} as EntityUpdatePrep);
+			console.log('Queueing for emit:', entity.getEntityRoomName());
 
-				entityUpdate[entity.getEntityRoomName()] = entity;
+			entityUpdate[entity.getEntityRoomName()] = entity;
 
-				this.entityUpdateQueue.set(
-					entity.getUpdateRoomName(),
-					entityUpdate
-				);
+			this.entityUpdateQueue.set(
+				entity.getUpdateRoomName(),
+				entityUpdate
+			);
 
-				debouncedUpdate();
-			}
-		);
+			debouncedUpdate();
+		});
 
 		//TODO just do it better
-		this.serverState.eventEmitter.on(
+		this.eventEmitter.on(
 			'emit:entity:delete',
 			(entity: Entity<any, any, any>) => {
 				const entityUpdate =
@@ -91,8 +83,8 @@ export class StateSyncController {
 		}
 
 		if (room.startsWith('entity:world:')) {
-			const worldId = room.replace('entity:world:', '');
-			const world = this.serverState.getRepository(World).get(worldId);
+			const worldId = room.replace('entity:world:', '') as WorldId;
+			const world = this.worldRepository.get(worldId);
 			if (world === null || world.constructor !== World) {
 				throw new Error('Tried to initialize a non-existent world');
 			}

@@ -7,7 +7,6 @@ import { SurvivorsProperty } from './CommonProperties/SurvivorsProperty.js';
 import { VoyageProperty } from './CommonProperties/VoyageProperty.js';
 import { ResourceId } from './Resource.js';
 import { Settlement, SettlementId } from './Settlement.js';
-import { ServerState } from '../ServerState.js';
 import { Opaque } from 'type-fest';
 import { Entity, EntityClientData, EntityStateData } from './Entity.js';
 import { Survivor, SurvivorId } from './Survivor.js';
@@ -35,27 +34,15 @@ export class Party extends Entity<PartyId, PartyStateData, PartyClientData> {
 	private readonly inventoryProperty: ResourcesProperty;
 	private voyageProperty: VoyageProperty | null;
 
-	constructor(
-		protected readonly serverState: ServerState,
-		data: PartyStateData
-	) {
-		super(serverState, data);
+	constructor(data: PartyStateData) {
+		super(data);
 
 		this.name = data.name;
-		this.settlementProperty = new SettlementProperty(
-			serverState,
-			data.settlement
-		);
-		this.survivorsProperty = new SurvivorsProperty(
-			serverState,
-			data.survivors
-		);
-		this.inventoryProperty = new ResourcesProperty(
-			serverState,
-			data.inventory
-		);
+		this.settlementProperty = new SettlementProperty(data.settlement);
+		this.survivorsProperty = new SurvivorsProperty(data.survivors);
+		this.inventoryProperty = new ResourcesProperty(data.inventory);
 		this.voyageProperty = data.currentVoyage
-			? new VoyageProperty(serverState, data.currentVoyage)
+			? new VoyageProperty(data.currentVoyage)
 			: null;
 	}
 
@@ -138,7 +125,7 @@ export class Party extends Entity<PartyId, PartyStateData, PartyClientData> {
 		}
 
 		if (this.voyageProperty === null) {
-			this.voyageProperty = new VoyageProperty(this.serverState, voyage);
+			this.voyageProperty = new VoyageProperty(voyage);
 		} else {
 			this.voyageProperty.set(voyage); //TODO handle setting party in voyage
 		}

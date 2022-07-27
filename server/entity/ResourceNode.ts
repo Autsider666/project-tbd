@@ -2,7 +2,6 @@ import { Opaque } from 'type-fest';
 import { Client } from '../controller/ClientController.js';
 import { EntityUpdate } from '../controller/StateSyncController.js';
 import { Uuid } from '../helper/UuidHelper.js';
-import { ServerState } from '../ServerState.js';
 import { RegionProperty } from './CommonProperties/RegionProperty.js';
 import { ResourcesProperty } from './CommonProperties/ResourcesProperty.js';
 import { Entity, EntityClientData, EntityStateData } from './Entity.js';
@@ -38,16 +37,13 @@ export class ResourceNode extends Entity<
 	private readonly regionProperty: RegionProperty;
 	private readonly resourcesProperty: ResourcesProperty;
 
-	constructor(serverState: ServerState, data: ResourceNodeStateData) {
-		super(serverState, data);
+	constructor(data: ResourceNodeStateData) {
+		super(data);
 
 		this.name = data.name;
 		this.type = data.type;
-		this.regionProperty = new RegionProperty(serverState, data.region);
-		this.resourcesProperty = new ResourcesProperty(
-			serverState,
-			data.resources
-		);
+		this.regionProperty = new RegionProperty(data.region);
+		this.resourcesProperty = new ResourcesProperty(data.resources);
 	}
 
 	normalize(forClient?: Client): ResourceNodeClientData {

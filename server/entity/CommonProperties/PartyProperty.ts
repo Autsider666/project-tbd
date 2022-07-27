@@ -1,9 +1,9 @@
-import { ServerState } from '../../ServerState.js';
+import { PartyRepository } from '../../repository/PartyRepository.js';
 import { Party, PartyId } from '../Party.js';
 import { SingleCommonProperty } from './SingleCommonProperty.js';
 
 export class PartyProperty extends SingleCommonProperty<PartyId, Party> {
-	constructor(serverState: ServerState, party: PartyId | Party) {
-		super(serverState, party, Party);
+	constructor(party: PartyId | Party) {
+		super(party, PartyRepository);
 	}
 }

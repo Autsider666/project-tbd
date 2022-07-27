@@ -1,7 +1,6 @@
 import { Client } from '../controller/ClientController.js';
 import { EntityUpdate } from '../controller/StateSyncController.js';
 import { Uuid } from '../helper/UuidHelper.js';
-import { ServerState } from '../ServerState.js';
 import { RegionsProperty } from './CommonProperties/RegionsProperty.js';
 import { Region, RegionId } from './Region.js';
 import { Opaque } from 'type-fest';
@@ -20,14 +19,11 @@ export class World extends Entity<WorldId, WorldStateData, WorldClientData> {
 	public name: string;
 	private regions: RegionsProperty;
 
-	constructor(
-		protected readonly serverState: ServerState,
-		data: WorldStateData
-	) {
-		super(serverState, data);
+	constructor(data: WorldStateData) {
+		super(data);
 
 		this.name = data.name;
-		this.regions = new RegionsProperty(serverState, data.regions);
+		this.regions = new RegionsProperty(data.regions);
 	}
 
 	toJSON(): WorldStateData {

@@ -1,8 +1,7 @@
-import onChange, { ApplyData } from 'on-change';
-import { Party } from '../entity/Party.js';
-import { World } from '../entity/World.js';
+import EventEmitter from 'events';
+import onChange from 'on-change';
+import { container } from 'tsyringe';
 import { generateUUID, Uuid } from '../helper/UuidHelper.js';
-import { ServerState } from '../ServerState.js';
 import { Constructor, Except } from 'type-fest';
 import { Entity, EntityStateData } from '../entity/Entity.js';
 
@@ -14,26 +13,23 @@ export abstract class Repository<
 	TStateData extends EntityStateData<TId>
 > {
 	protected entities = new Map<TId, T>();
+	protected readonly eventEmitter: EventEmitter =
+		container.resolve(EventEmitter);
 
-	public constructor(
-		protected readonly serverState: ServerState,
-		entities: TStateData[] = []
-	) {
-		this.load(entities);
-
-		this.serverState.eventEmitter.on(
+	public constructor() {
+		this.eventEmitter.on(
 			'create:entity:' + this.entity().name.toLowerCase(),
 			(entity) => this.emitEntity(entity)
 		);
 
-		this.serverState.eventEmitter.on(
+		this.eventEmitter.on(
 			'update:entity:' + this.entity().name.toLowerCase(),
 			(entity) => this.emitEntity(entity)
 		);
 	}
 
 	protected emitEntity(entity: T): void {
-		this.serverState.eventEmitter.emit('emit:entity', entity);
+		this.eventEmitter.emit('emit:entity', entity);
 	}
 
 	protected abstract entity(): Constructor<T>;
@@ -52,7 +48,7 @@ export abstract class Repository<
 
 	public create(data: Except<TStateData, 'id'>): T {
 		const ClassName = this.entity();
-		const entity = new ClassName(this.serverState, {
+		const entity = new ClassName({
 			id: generateUUID(),
 			...data,
 		});
@@ -98,7 +94,7 @@ export abstract class Repository<
 	public load(stateData: TStateData[]): void {
 		for (let entityData of stateData) {
 			const ClassName = this.entity();
-			const entity = new ClassName(this.serverState, entityData);
+			const entity = new ClassName(entityData);
 			this.addEntity(entity);
 		}
 	}
