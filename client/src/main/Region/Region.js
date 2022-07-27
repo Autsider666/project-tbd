@@ -7,13 +7,14 @@ import { expeditionStart, voyageStart } from '../../functions/socketCalls';
 
 
 const RegionOverview = ({ region, party, expedition, resourceNodeRepository }) => {
-    const { name, nodes, settlement } = region
+    const { name, settlement } = region
+    const nodes = Object.values(resourceNodeRepository).filter(node => region.nodes.find(regionNode => regionNode === node.id))
 
-    const [node, nodeSelected] = React.useState(null);
+    const [nodeButton, nodeButtonSelected] = React.useState(null);
 
     const handleClick = (node) => () => {
 
-        nodeSelected(prev => {
+        nodeButtonSelected(prev => {
             if (prev === node) return null
             return node
         })
@@ -33,9 +34,9 @@ const RegionOverview = ({ region, party, expedition, resourceNodeRepository }) =
                         justifyContent: 'space-around',
                         width: 1,
                     }}>
-                        {nodes.map(nodeName => {
+                        {nodes.map(node => {
                             return (
-                                <Button key={nodeName} onClick={handleClick(nodeName)} color={nodeName === node ? 'secondary' : 'primary'} variant="contained">{nodeName}</Button>
+                                <Button sx={{margin: 1}} key={node.id} onClick={handleClick(node.id)} color={node.id === nodeButton ? 'secondary' : 'primary'} variant="contained">{node.name}</Button>
                             )
                         })}
                     </Box>
@@ -43,8 +44,8 @@ const RegionOverview = ({ region, party, expedition, resourceNodeRepository }) =
                 </Grid>
                 <Grid sx={{ margin: 1 }} item xs={12}>
                     <Button onClick={
-                        () => expeditionStart(party.id, node)
-                    } disabled={(node === null ? true : false) || (expedition && expedition.phase !== 'finished')} variant="contained" sx={{ width: 1 }} >
+                        () => expeditionStart(party.id, nodeButton)
+                    } disabled={(nodeButton === null ? true : false) || (expedition && expedition.phase !== 'finished')} variant="contained" sx={{ width: 1 }} >
                         {expedition && expedition.phase !== 'finished'
                             ? `Currently on expedition to ${resourceNodeRepository[expedition.target].name}`
                             : `Go on Expedition!`
