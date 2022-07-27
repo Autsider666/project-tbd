@@ -78,8 +78,6 @@ export abstract class Repository<
 					return;
 				}
 
-				// console.log(this.getEntityRoomName(), path, applyData);
-
 				entity.onUpdate(this);
 			}
 		);

@@ -50,7 +50,7 @@ export class Border extends Entity<
 			return '';
 		}
 
-		return this.getRegions()[0].getEntityRoomName();
+		return this.getRegions()[0].getUpdateRoomName();
 	}
 
 	public override normalize(forClient?: Client): BorderClientData {

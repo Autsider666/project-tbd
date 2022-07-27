@@ -123,8 +123,6 @@ export class WorldFactory {
 						return;
 					}
 
-					console.log(123);
-
 					const border = this.borderRepository.create({
 						type: expectedType,
 						regions: [],
@@ -132,8 +130,6 @@ export class WorldFactory {
 
 					border.addRegion(region);
 					border.addRegion(neighbour);
-
-					console.log(border);
 
 					createdBorders.set(
 						`${neighbour.getId()}-${region.getId()}`,

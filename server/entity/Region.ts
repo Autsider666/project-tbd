@@ -84,8 +84,8 @@ export class Region extends Entity<
 		};
 	}
 
-	getUpdateRoomName(): string {
-		return this.getWorld().getEntityRoomName();
+	override getUpdateRoomName(): string {
+		return this.getWorld().getUpdateRoomName();
 	}
 
 	public override normalize(forClient?: Client): RegionClientData {

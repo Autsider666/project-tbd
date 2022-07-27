@@ -6,6 +6,7 @@ import {
 	SocketData,
 } from '../socket.io.js';
 import { ExpeditionSystem } from '../system/ExpeditionSystem.js';
+import { StatusLoggerSystem } from '../system/StatusLoggerSystem.js';
 import { System } from '../system/System.js';
 import { VoyageSystem } from '../system/VoyageSystem.js';
 import { ClientController } from './ClientController.js';
@@ -15,7 +16,7 @@ import { Server, Socket } from 'socket.io';
 @registry([
 	{ token: 'System', useClass: VoyageSystem },
 	{ token: 'System', useClass: ExpeditionSystem },
-	// { token: 'System', useClass: StatusLoggerSystem },
+	{ token: 'System', useClass: StatusLoggerSystem },
 ])
 @injectable()
 export class ServerController {

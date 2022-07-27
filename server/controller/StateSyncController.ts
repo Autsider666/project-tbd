@@ -34,7 +34,6 @@ export class StateSyncController {
 			const entityUpdate =
 				this.entityUpdateQueue.get(entity.getUpdateRoomName()) ??
 				({} as EntityUpdatePrep);
-			console.log('Queueing for emit:', entity.getEntityRoomName());
 
 			entityUpdate[entity.getEntityRoomName()] = entity;
 
@@ -98,6 +97,10 @@ export class StateSyncController {
 
 	private emitEntities(): void {
 		this.entityUpdateQueue.forEach((update, room) => {
+			if (room === '') {
+				return;
+			}
+
 			console.log(
 				'emitting',
 				Object.values(update).length,
