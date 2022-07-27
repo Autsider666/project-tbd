@@ -15,7 +15,7 @@ export type VoyageStateData = {
 	target: SettlementId;
 	startedAt: Date;
 	arrivalAt: Date;
-	handled: boolean;
+	finished: boolean;
 } & EntityStateData<VoyageId>;
 
 export type VoyageClientData = VoyageStateData & EntityClientData<VoyageId>;
@@ -30,7 +30,7 @@ export class Voyage extends Entity<
 	private readonly targetProperty: SettlementProperty;
 	public readonly startedAt: Date;
 	public readonly arrivalAt: Date;
-	public handled: boolean;
+	public finished: boolean;
 
 	constructor(data: VoyageStateData) {
 		super(data);
@@ -40,7 +40,7 @@ export class Voyage extends Entity<
 		this.targetProperty = new SettlementProperty(data.target);
 		this.startedAt = data.startedAt;
 		this.arrivalAt = data.arrivalAt;
-		this.handled = data.handled;
+		this.finished = data.finished;
 	}
 
 	getUpdateRoomName(): string {
@@ -62,7 +62,7 @@ export class Voyage extends Entity<
 			target: this.targetProperty.toJSON(),
 			startedAt: this.startedAt,
 			arrivalAt: this.arrivalAt,
-			handled: this.handled,
+			finished: this.finished,
 		};
 	}
 

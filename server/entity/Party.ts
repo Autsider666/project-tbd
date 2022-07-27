@@ -2,10 +2,12 @@ import { Socket } from 'socket.io';
 import { Client } from '../controller/ClientController.js';
 import { EntityUpdate } from '../controller/StateSyncController.js';
 import { Uuid } from '../helper/UuidHelper.js';
+import { ExpeditionProperty } from './CommonProperties/ExpedtionProperty.js';
 import { ResourcesProperty } from './CommonProperties/ResourcesProperty.js';
 import { SettlementProperty } from './CommonProperties/SettlementProperty.js';
 import { SurvivorsProperty } from './CommonProperties/SurvivorsProperty.js';
 import { VoyageProperty } from './CommonProperties/VoyageProperty.js';
+import { Expedition, ExpeditionId } from './Expedition.js';
 import { ResourceId } from './Resource.js';
 import { Settlement, SettlementId } from './Settlement.js';
 import { Opaque } from 'type-fest';
@@ -21,6 +23,7 @@ export type PartyStateData = {
 	survivors: SurvivorId[];
 	inventory: ResourceId[];
 	currentVoyage?: VoyageId;
+	currentExpedition?: ExpeditionId;
 } & EntityStateData<PartyId>;
 
 export type PartyClientData = {
@@ -34,6 +37,7 @@ export class Party extends Entity<PartyId, PartyStateData, PartyClientData> {
 	private readonly survivorsProperty: SurvivorsProperty;
 	private readonly inventoryProperty: ResourcesProperty;
 	private voyageProperty: VoyageProperty | null;
+	private expeditionProperty: ExpeditionProperty | null;
 	public readonly sockets: Socket[] = [];
 
 	constructor(data: PartyStateData) {
@@ -45,6 +49,9 @@ export class Party extends Entity<PartyId, PartyStateData, PartyClientData> {
 		this.inventoryProperty = new ResourcesProperty(data.inventory);
 		this.voyageProperty = data.currentVoyage
 			? new VoyageProperty(data.currentVoyage)
+			: null;
+		this.expeditionProperty = data.currentExpedition
+			? new ExpeditionProperty(data.currentExpedition)
 			: null;
 	}
 
@@ -133,6 +140,29 @@ export class Party extends Entity<PartyId, PartyStateData, PartyClientData> {
 			this.voyageProperty = new VoyageProperty(voyage);
 		} else {
 			this.voyageProperty.set(voyage); //TODO handle setting party in voyage
+		}
+
+		return true;
+	}
+
+	public getExpedition(): Expedition | null {
+		return this.expeditionProperty?.get() ?? null;
+	}
+
+	public setExpedition(expedition: Expedition | null): boolean {
+		if (expedition !== null && this.expeditionProperty !== null) {
+			return false;
+		}
+
+		if (expedition === null) {
+			this.expeditionProperty = null; //TODO handle stopped expedition
+			return true;
+		}
+
+		if (this.expeditionProperty === null) {
+			this.expeditionProperty = new ExpeditionProperty(expedition);
+		} else {
+			this.expeditionProperty.set(expedition); //TODO handle setting party in expedition
 		}
 
 		return true;

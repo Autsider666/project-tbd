@@ -34,10 +34,11 @@ export class VoyageFactory {
 			target: target.getId(),
 			startedAt,
 			arrivalAt,
-			handled: false,
+			finished: false,
 		});
 
 		if (!party.setVoyage(voyage)) {
+			this.voyageRepository.removeEntity(voyage.getId());
 			throw new Error('Could not add voyage to party');
 		}
 

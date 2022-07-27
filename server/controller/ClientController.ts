@@ -4,10 +4,12 @@ import { container } from 'tsyringe';
 import { Party, PartyId } from '../entity/Party.js';
 import { SettlementId } from '../entity/Settlement.js';
 import { WorldId } from '../entity/World.js';
+import { ExpeditionFactory } from '../factory/ExpeditionFactory.js';
 import { PartyFactory } from '../factory/PartyFactory.js';
 import { VoyageFactory } from '../factory/VoyageFactory.js';
 import { ClientNotifier } from '../helper/ClientNotifier.js';
 import { PartyRepository } from '../repository/PartyRepository.js';
+import { ResourceNodeRepository } from '../repository/ResourceNodeRepository.js';
 import { SettlementRepository } from '../repository/SettlementRepository.js';
 import {
 	ClientToServerEvents,
@@ -32,10 +34,14 @@ export class ClientController {
 		container.resolve(PartyRepository);
 	private readonly settlementRepository: SettlementRepository =
 		container.resolve(SettlementRepository);
+	private readonly resourceNodeRepository: ResourceNodeRepository =
+		container.resolve(ResourceNodeRepository);
 	private readonly voyageFactory: VoyageFactory =
 		container.resolve(VoyageFactory);
 	private readonly partyFactory: PartyFactory =
 		container.resolve(PartyFactory);
+	private readonly expeditionFactory: ExpeditionFactory =
+		container.resolve(ExpeditionFactory);
 
 	constructor(
 		private readonly socket: Socket<
@@ -51,6 +57,14 @@ export class ClientController {
 	}
 
 	private handleSocket(): void {
+		this.handlePartyInitialization();
+		this.handlePartyCreation();
+
+		this.handleTravel();
+		this.handleExpedition();
+	}
+
+	private handlePartyInitialization(): void {
 		this.socket.on('party:init', (token: string) => {
 			if (token.length === 0) {
 				return; //TODO add error handling
@@ -65,7 +79,9 @@ export class ClientController {
 
 			this.initializeParty(party);
 		});
+	}
 
+	private handlePartyCreation(): void {
 		this.socket.on(
 			'party:create',
 			(data: { name: string }, callback: (token: string) => void) => {
@@ -98,25 +114,37 @@ export class ClientController {
 				this.initializeParty(newParty as Party);
 			}
 		);
+	}
 
+	private initializeParty(party: Party): void {
+		if (this.client.parties.has(party.getId())) {
+			console.log('Not gonna initialize this party again.');
+			return;
+		}
+
+		console.log(
+			`adding party "${party.name} (${party.getId()})" to ${
+				this.socket.id
+			}`
+		);
+
+		this.client.parties.set(party.getId(), party);
+		party.sockets.push(this.socket); //TODO remove after disconnect
+
+		const settlement = party.getSettlement();
+		const region = settlement.getRegion();
+		const world = region.getWorld();
+
+		this.socket.join(party.getEntityRoomName());
+		this.socket.join(settlement.getEntityRoomName());
+		this.socket.join(region.getEntityRoomName());
+		this.socket.join(world.getEntityRoomName());
+	}
+
+	private handleTravel(): void {
 		this.socket.on('voyage:start', ({ partyId, targetId }): void => {
-			const party =
-				this.client.parties.get(partyId) ?? partyId === 'test'
-					? Array.from(this.client.parties.values())[0]
-					: null;
-			if (!party) {
-				ClientNotifier.error(
-					"You can't control this party",
-					this.socket.id
-				);
-				return;
-			}
-
-			if (party.getVoyage() !== null) {
-				ClientNotifier.error(
-					'Party is already on a voyage',
-					party.getUpdateRoomName()
-				);
+			const party = this.validatePartyForActivity(partyId);
+			if (party === null) {
 				return;
 			}
 
@@ -145,28 +173,61 @@ export class ClientController {
 		});
 	}
 
-	private initializeParty(party: Party): void {
-		if (this.client.parties.has(party.getId())) {
-			console.log('Not gonna initialize this party again.');
-			return;
+	private handleExpedition(): void {
+		this.socket.on('expedition:start', ({ partyId, targetId }): void => {
+			const party = this.validatePartyForActivity(partyId);
+			if (party === null) {
+				return;
+			}
+			const target = this.resourceNodeRepository.get(targetId);
+			if (target === null) {
+				ClientNotifier.error(
+					'This resource node does not exist.',
+					party.getUpdateRoomName()
+				);
+				return;
+			}
+
+			this.expeditionFactory.create(party, target);
+			ClientNotifier.success(
+				`Party "${party.name}" is starting it's expedition to ${target.name}.`,
+				party.getUpdateRoomName()
+			);
+		});
+	}
+
+	private validatePartyForActivity(id: PartyId): Party | null {
+		const party =
+			this.client.parties.get(id) ?? id === 'test'
+				? Array.from(this.client.parties.values())[0]
+				: null;
+		if (!party) {
+			ClientNotifier.error(
+				"You can't control this party",
+				this.socket.id
+			);
+
+			return null;
 		}
 
-		console.log(
-			`adding party "${party.name} (${party.getId()})" to ${
-				this.socket.id
-			}`
-		);
+		if (party.getVoyage() !== null) {
+			ClientNotifier.error(
+				'Party is already on a voyage',
+				party.getUpdateRoomName()
+			);
 
-		this.client.parties.set(party.getId(), party);
-		party.sockets.push(this.socket); //TODO remove after disconnect
+			return null;
+		}
 
-		const settlement = party.getSettlement();
-		const region = settlement.getRegion();
-		const world = region.getWorld();
+		if (party.getExpedition() !== null) {
+			ClientNotifier.error(
+				'Party is already on an expedition',
+				party.getUpdateRoomName()
+			);
 
-		this.socket.join(party.getEntityRoomName());
-		this.socket.join(settlement.getEntityRoomName());
-		this.socket.join(region.getEntityRoomName());
-		this.socket.join(world.getEntityRoomName());
+			return null;
+		}
+
+		return party;
 	}
 }

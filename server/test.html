@@ -8,10 +8,21 @@
 		<title>Document</title>
 	</head>
 	<body>
-		<button onClick="createParty()">Create Party</button>
-		<button onClick="addParty()">Initialize Party</button>
-		<button onClick="travel('a')">Travel to A</button>
-		<button onClick="travel('b')">Travel to B</button>
+		<div>
+			<h3>Party</h3>
+			<button onClick="createParty()">Create Party</button>
+			<button onClick="addParty()">Initialize Party</button>
+		</div>
+		<div>
+			<h3>Journey</h3>
+			<button onClick="travel('a')">Travel to A</button>
+			<button onClick="travel('b')">Travel to B</button>
+		</div>
+		<div>
+			<h3>Expedition</h3>
+			<button onClick="expedition('aaaa')">Start expedition to A</button>
+			<button onClick="expedition('aaab')">Start expedition to B</button>
+		</div>
 
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.2/socket.io.js"></script>
 		<script>
@@ -38,6 +49,10 @@
 				socket.emit('voyage:start', { partyId: 'test', targetId });
 			}
 
+			function expedition(targetId) {
+				socket.emit('expedition:start', { partyId: 'test', targetId });
+			}
+
 			socket.on('message', function (data) {
 				console.log(data);
 			});
@@ -46,12 +61,12 @@
 				console.log('initialize', data);
 			});
 
-			socket.on('notification', function (message, type) {
-				console.log('notification', message, type);
+			socket.on('notification', function (messageData) {
+				console.log('notification', messageData);
 			});
 
 			socket.on('entity:update', function (data) {
-				console.log('entity:update', JSON.stringify(data));
+				// console.log('entity:update', JSON.stringify(data));
 				console.log(data);
 			});
 		</script>

@@ -10,7 +10,7 @@ export class VoyageSystem implements System {
 	async tick(): Promise<void> {
 		const now = new Date();
 		this.voyageRepository.getAll().forEach((voyage) => {
-			if (voyage.handled || voyage.arrivalAt > now) {
+			if (voyage.finished || voyage.arrivalAt > now) {
 				return;
 			}
 
@@ -19,7 +19,7 @@ export class VoyageSystem implements System {
 			party.setSettlement(target);
 			party.setVoyage(null);
 
-			voyage.handled = true;
+			voyage.finished = true;
 
 			ClientNotifier.success(
 				`Party "${party.name}" has arrived at settlement "${target.name}".`,
