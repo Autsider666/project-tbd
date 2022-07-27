@@ -98,7 +98,7 @@ export class ClientController {
 			}
 		);
 
-		this.socket.on('party:travel', ({ partyId, targetId }): void => {
+		this.socket.on('voyage:start', ({ partyId, targetId }): void => {
 			const party =
 				this.client.parties.get(partyId) ??
 				Array.from(this.client.parties.values())[0];

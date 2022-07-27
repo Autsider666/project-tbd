@@ -16,7 +16,7 @@ export interface ClientToServerEvents {
 		data: { name: string },
 		callback: (token: string) => void
 	) => void;
-	'party:travel': (data: {
+	'voyage:start': (data: {
 		partyId: PartyId;
 		targetId: SettlementId;
 	}) => void;
