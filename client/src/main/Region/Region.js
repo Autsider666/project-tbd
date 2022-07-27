@@ -2,11 +2,11 @@ import React from 'react'
 import TabsWrapper from '../../components/TabsWrapper'
 import { useGame } from '../../contexts/GameContext'
 
-import { Box, Button, Grid } from '@mui/material';
-import { travelToSettlement } from '../../functions/socketCalls';
+import { Box, Button, Grid, Typography } from '@mui/material';
+import { expeditionStart, voyageStart } from '../../functions/socketCalls';
 
 
-const RegionOverview = ({ region }) => {
+const RegionOverview = ({ region, party, expedition, resourceNodeRepository }) => {
     const { name, nodes, settlement } = region
 
     const [node, nodeSelected] = React.useState(null);
@@ -42,7 +42,14 @@ const RegionOverview = ({ region }) => {
 
                 </Grid>
                 <Grid sx={{ margin: 1 }} item xs={12}>
-                    <Button disabled={node === null ? true : false} variant="contained" sx={{ width: 1 }} >Go on Expedition!</Button>
+                    <Button onClick={
+                        () => expeditionStart(party.id, node)
+                    } disabled={(node === null ? true : false) || (expedition && expedition.phase !== 'finished')} variant="contained" sx={{ width: 1 }} >
+                        {expedition && expedition.phase !== 'finished'
+                            ? `Currently on expedition to ${resourceNodeRepository[expedition.target].name}`
+                            : `Go on Expedition!`
+                        }
+                    </Button>
                 </Grid>
             </Grid >
         </Box>
@@ -56,7 +63,7 @@ const Settlement = ({ settlement, party, voyage, settlementRepository }) => {
     console.log(traveling)
 
 
-        return (
+    return (
         <Grid container sx={{ padding: 0 }}>
             <Grid sx={{ margin: 1 }} item xs={12}>
                 <div>Name of Settlement: {name}</div>
@@ -65,18 +72,18 @@ const Settlement = ({ settlement, party, voyage, settlementRepository }) => {
                 settlement.id !== party.settlement &&
                 <Grid sx={{ margin: 1 }} item xs={12}>
                     <Button disabled={traveling} onClick={
-                        () => travelToSettlement(party.id, settlement.id)
+                        () => voyageStart(party.id, settlement.id)
                     } variant="contained" >
-                    {traveling
-                        ? `Travelling to ${settlementRepository[voyage.target].name}`
-                        : `Travel to ${name}`}
+                        {traveling
+                            ? `Travelling to ${settlementRepository[voyage.target].name}`
+                            : `Travel to ${name}`}
                     </Button>
                 </Grid>
             }
             {
                 settlement.id === party.settlement &&
                 <Grid sx={{ margin: 1 }} item xs={12}>
-                    You are here!
+                    <Typography> You are here! </Typography>
                 </Grid>
             }
 
@@ -89,7 +96,7 @@ const Random2 = () => <div>Random2</div>
 
 
 const Region = () => {
-    const { regionRepository, selectedRegion, settlementRepository, partyRepository, voyageRepository } = useGame()
+    const { regionRepository, selectedRegion, settlementRepository, partyRepository, voyageRepository, expeditionRepository, resourceNodeRepository } = useGame()
     if (selectedRegion === null) return <div />
     // console.log(regionRepository)
     // console.log(selectedRegion)
@@ -101,18 +108,19 @@ const Region = () => {
     const party = Object.values(partyRepository).find(party => party.controllable === true)
     console.log(party)
     const voyage = Object.values(voyageRepository).find(voyage => voyage.party === party.id && voyage.handled === false)
+    const expedition = Object.values(expeditionRepository).find(expedition => expedition.party === party.id && expedition.phase !== "finished")
     // console.log(region)
 
     const content = [
-        { label: selectedRegion ? `Region #${selectedRegion}` : `Select Region`, Component: RegionOverview, props: { region } },
-        { label: 'Settlement', Component: Settlement, props: { settlement, party, voyage, settlementRepository }, hide: region.settlement ? false : true },
+        { label: 'Region', Component: RegionOverview, props: { region, party, expedition, resourceNodeRepository } },
+        { label: 'Settlement', Component: Settlement, props: { settlement, party, voyage, settlementRepository }, disable: region.settlement ? false : true },
         { label: 'Random2', Component: Random2 },
     ]
     if (!region) return <div />
 
     return (
         <div>
-            <TabsWrapper content={content} />
+            <TabsWrapper key={region.id} content={content} />
 
         </div>
     )

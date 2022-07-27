@@ -26,6 +26,7 @@ const GameProvider = ({ children }) => {
     const [resourceNodeRepository, setResourceNodeRepository] = useState({})
     const [settlementRepository, setSettlementRepository] = useState({})
     const [voyageRepository, setVoyageRepository] = useState({})
+    const [expeditionRepository, setExpeditionRepository] = useState({})
 
     const isLoaded = () => {
         // console.log({
@@ -71,7 +72,8 @@ const GameProvider = ({ children }) => {
             partyRepository: {},
             resourcenodeRepository: {},
             settlementRepository: {},
-            voyageRepository: {}
+            voyageRepository: {},
+            expeditionRepository: {},
         })
         setWorldRepository(prev => ({ ...prev, ...entitiesFormatted.worldRepository }))
         setRegionRepository(prev => ({ ...prev, ...entitiesFormatted.regionRepository }))
@@ -81,9 +83,7 @@ const GameProvider = ({ children }) => {
         setResourceNodeRepository(prev => ({ ...prev, ...entitiesFormatted.resourcenodeRepository }))
         setSettlementRepository(prev => ({ ...prev, ...entitiesFormatted.settlementRepository }))
         setVoyageRepository(prev => ({ ...prev, ...entitiesFormatted.voyageRepository }))
-
-
-
+        setExpeditionRepository(prev => ({ ...prev, ...entitiesFormatted.expeditionRepository }))
 
         setAllEntities(entities) // temp state for testing
         // if (isLoaded()) setLoaded(true)
@@ -136,7 +136,7 @@ const GameProvider = ({ children }) => {
         allEntities,
         loaded,
         token,
-        worldRepository, regionRepository, borderRepository, survivorRepository, partyRepository, resourceNodeRepository, settlementRepository, voyageRepository,
+        worldRepository, regionRepository, borderRepository, survivorRepository, partyRepository, resourceNodeRepository, settlementRepository, voyageRepository,expeditionRepository,
         selectedRegion, setSelectedRegion,
     };
 

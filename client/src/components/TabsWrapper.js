@@ -43,8 +43,8 @@ const TabsWrapper = ({ content = [], }) => {
 
   const handleChange = (event, newValue) => setValue(newValue);
 
-  const hideFilter = row => {
-    if(row.hide !== undefined && row.hide) return false
+  const disableFilter = row => {
+    if(row.disable !== undefined && row.disable) return false
     return true
   }
 
@@ -52,12 +52,12 @@ const TabsWrapper = ({ content = [], }) => {
     <Box sx={{ width: '100%' }}>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
         <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
-          {content.filter(hideFilter).map(({ label }, index) => (
-            <Tab key={index} label={label} {...a11yProps(index)} />
+          {content.map((row, index) => (
+            <Tab disabled={!disableFilter(row)} key={index} label={row.label} {...a11yProps(index)} />
           ))}
         </Tabs>
       </Box>
-      {content.filter(hideFilter).map(({ Component, props = {} }, index) => (
+      {content.map(({ Component, props = {} }, index) => (
         <TabPanel key={index} value={value} index={index}>
           <Component {...props} />
         </TabPanel>
