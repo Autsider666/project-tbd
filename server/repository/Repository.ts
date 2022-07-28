@@ -22,7 +22,7 @@ export abstract class Repository<
 
 		this.eventEmitter.on(
 			'update:entity:' + this.entity().name.toLowerCase(),
-			(entity) => this.emitEntity(entity)
+			(entity: T) => this.emitEntity(entity)
 		);
 	}
 

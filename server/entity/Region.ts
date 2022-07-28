@@ -100,35 +100,31 @@ export class Region
 		};
 	}
 
-	override prepareNestedEntityUpdate(
+	async prepareNestedEntityUpdate(
 		updateObject: EntityUpdate = {},
 		forClient?: Client
-	): EntityUpdate {
+	): Promise<EntityUpdate> {
 		if (this.getEntityRoomName() in updateObject) {
 			return updateObject;
 		}
 
-		this.getBorders().forEach(
-			(border) =>
-				(updateObject = border.prepareNestedEntityUpdate(
-					updateObject,
-					forClient
-				))
-		);
-
-		this.resourceNodesProperty
-			.getAll()
-			.forEach(
-				(node) =>
-					(updateObject = node.prepareNestedEntityUpdate(
-						updateObject,
-						forClient
-					))
+		for (const border of this.getBorders()) {
+			updateObject = await border.prepareNestedEntityUpdate(
+				updateObject,
+				forClient
 			);
+		}
+
+		for (const node of this.getResourceNodes()) {
+			updateObject = await node.prepareNestedEntityUpdate(
+				updateObject,
+				forClient
+			);
+		}
 
 		const settlement = this.getSettlement();
 		if (settlement != null) {
-			updateObject = settlement.prepareNestedEntityUpdate(
+			updateObject = await settlement.prepareNestedEntityUpdate(
 				updateObject,
 				forClient
 			);
@@ -189,5 +185,9 @@ export class Region
 
 	getNextTravelDestinations(): HasTravelTime[] {
 		return this.borders.getAll();
+	}
+
+	public getResourceNodes(): ResourceNode[] {
+		return this.resourceNodesProperty.getAll();
 	}
 }

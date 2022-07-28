@@ -29,26 +29,32 @@ export class StateSyncController {
 		>,
 		private readonly eventEmitter: EventEmitter
 	) {
-		const debouncedUpdate = debounce(() => this.emitEntities(), 250);
-		this.eventEmitter.on('emit:entity', (entity: Entity<any, any, any>) => {
-			const entityUpdate =
-				this.entityUpdateQueue.get(entity.getUpdateRoomName()) ??
-				({} as EntityUpdatePrep);
+		const debouncedUpdate = debounce(
+			async () => await this.emitEntities(),
+			250
+		);
+		this.eventEmitter.on(
+			'emit:entity',
+			async (entity: Entity<any, any, any>) => {
+				const entityUpdate =
+					this.entityUpdateQueue.get(entity.getUpdateRoomName()) ??
+					({} as EntityUpdatePrep);
 
-			entityUpdate[entity.getEntityRoomName()] = entity;
+				entityUpdate[entity.getEntityRoomName()] = entity;
 
-			this.entityUpdateQueue.set(
-				entity.getUpdateRoomName(),
-				entityUpdate
-			);
+				this.entityUpdateQueue.set(
+					entity.getUpdateRoomName(),
+					entityUpdate
+				);
 
-			debouncedUpdate();
-		});
+				await debouncedUpdate();
+			}
+		);
 
 		//TODO just do it better
 		this.eventEmitter.on(
 			'emit:entity:delete',
-			(entity: Entity<any, any, any>) => {
+			async (entity: Entity<any, any, any>) => {
 				const entityUpdate =
 					this.entityUpdateQueue.get(entity.getUpdateRoomName()) ??
 					({} as EntityUpdatePrep);
@@ -65,16 +71,19 @@ export class StateSyncController {
 					entityUpdate
 				);
 
-				debouncedUpdate();
+				await debouncedUpdate();
 			}
 		);
 
 		this.io
 			.of('/')
-			.adapter.on('join-room', (room, id) => this.initialSync(room, id));
+			.adapter.on(
+				'join-room',
+				async (room, id) => await this.initialSync(room, id)
+			);
 	}
 
-	private initialSync(room: string, id: SocketId): void {
+	private async initialSync(room: string, id: SocketId): Promise<void> {
 		console.log(`socket ${id} has joined room ${room}`);
 		const socket = this.io.sockets.sockets.get(id);
 		if (!socket) {
@@ -90,12 +99,12 @@ export class StateSyncController {
 
 			socket.emit(
 				'entity:update',
-				world.prepareNestedEntityUpdate({}, socket.data.client)
+				await world.prepareNestedEntityUpdate({}, socket.data.client)
 			);
 		}
 	}
 
-	private emitEntities(): void {
+	private async emitEntities(): Promise<void> {
 		this.entityUpdateQueue.forEach((update, room) => {
 			if (room === '') {
 				return;
@@ -112,21 +121,21 @@ export class StateSyncController {
 				.to(room)
 				.allSockets()
 				.then((sockets) => {
-					sockets.forEach((id) => {
+					sockets.forEach(async (id) => {
 						const socket = this.io.sockets.sockets.get(id);
 						if (!socket) {
 							throw new Error('Why here?');
 						}
 
 						let entityUpdate: EntityUpdate = {};
-						Object.values(update).forEach(
-							(entity) =>
-								(entityUpdate =
-									entity?.prepareEntityUpdate(
+						for (const entity of Object.values(update)) {
+							entityUpdate = entity
+								? await entity.prepareEntityUpdate(
 										entityUpdate,
 										socket.data.client
-									) ?? entityUpdate)
-						);
+								  )
+								: entityUpdate;
+						}
 
 						socket.emit('entity:update', entityUpdate);
 					});

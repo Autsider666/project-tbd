@@ -81,19 +81,16 @@ export class ResourceNode extends Entity<
 		return this.regionProperty.get().getUpdateRoomName();
 	}
 
-	override prepareNestedEntityUpdate(
+	async prepareNestedEntityUpdate(
 		updateObject: EntityUpdate = {},
 		forClient?: Client
-	): EntityUpdate {
-		this.resourcesProperty
-			.getAll()
-			.forEach(
-				(resource) =>
-					(updateObject = resource.prepareNestedEntityUpdate(
-						updateObject,
-						forClient
-					))
+	): Promise<EntityUpdate> {
+		for (const resource of this.resourcesProperty.getAll()) {
+			updateObject = await resource.prepareNestedEntityUpdate(
+				updateObject,
+				forClient
 			);
+		}
 
 		return super.prepareNestedEntityUpdate(updateObject, forClient);
 	}
