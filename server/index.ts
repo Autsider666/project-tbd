@@ -46,11 +46,11 @@ app.get('/', (_, res) => {
 
 await StatePersister.readState();
 
+const worldFactory = container.resolve(WorldFactory);
 app.get('/state', (_, res) =>
 	res.send(
 		`<pre>${JSON.stringify(
-			container
-				.resolve(WorldFactory)
+			worldFactory
 				.create()
 				.prepareNestedEntityUpdate(),
 			null,
@@ -58,6 +58,8 @@ app.get('/state', (_, res) =>
 		)}</pre>`
 	)
 );
+
+worldFactory.create();
 
 instrument(io, {
 	auth: false,
