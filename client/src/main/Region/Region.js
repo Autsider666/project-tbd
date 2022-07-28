@@ -6,7 +6,7 @@ import { Box, Button, Grid, Typography } from '@mui/material';
 import { expeditionStart, voyageStart } from '../../functions/socketCalls';
 
 
-const RegionOverview = ({ region, party, expedition, resourceNodeRepository }) => {
+const ExpeditionSites = ({ region, party, expedition, resourceNodeRepository }) => {
     const { name, settlement } = region
     const nodes = Object.values(resourceNodeRepository).filter(node => region.nodes.find(regionNode => regionNode === node.id))
 
@@ -27,21 +27,16 @@ const RegionOverview = ({ region, party, expedition, resourceNodeRepository }) =
             <Grid container sx={{ padding: 0 }}>
                 <Grid sx={{ margin: 1 }} item xs={12}>Name: {`${name}`}</Grid>
                 {settlement && <Grid sx={{ margin: 1 }} item xs={12}>Settlement: {`${settlement}`}</Grid>}
-                <Grid sx={{ margin: 1 }} item xs={12}>Nodes:</Grid>
-                <Grid sx={{ margin: 1 }} item xs={12} container>
-                    <Box sx={{
-                        display: 'flex',
-                        justifyContent: 'space-around',
-                        width: 1,
-                    }}>
-                        {nodes.map(node => {
-                            return (
-                                <Button sx={{margin: 1}} key={node.id} onClick={handleClick(node.id)} color={node.id === nodeButton ? 'secondary' : 'primary'} variant="contained">{node.name}</Button>
-                            )
-                        })}
-                    </Box>
+                <Grid sx={{ margin: 1 }} item xs={12}>Sites:</Grid>
 
-                </Grid>
+                {nodes.map(node => {
+                    return (
+                        <Grid key={node.id} item container xs={6}>
+                            <Button sx={{ margin: 1, flexGrow: 1 }} key={node.id} onClick={handleClick(node.id)} color={node.id === nodeButton ? 'secondary' : 'primary'} variant="contained">{node.name}</Button>
+                        </Grid>
+                    )
+                })}
+
                 <Grid sx={{ margin: 1 }} item xs={12}>
                     <Button onClick={
                         () => expeditionStart(party.id, nodeButton)
@@ -91,7 +86,7 @@ const Settlement = ({ settlement, party, voyage, settlementRepository }) => {
         </Grid >
     )
 }
-const Random2 = () => <div>Random2</div>
+// const Random2 = () => <div>Random2</div>
 
 
 
@@ -113,9 +108,9 @@ const Region = () => {
     // console.log(region)
 
     const content = [
-        { label: 'Region', Component: RegionOverview, props: { region, party, expedition, resourceNodeRepository } },
+        { label: 'Expedition Sites', Component: ExpeditionSites, props: { region, party, expedition, resourceNodeRepository } },
         { label: 'Settlement', Component: Settlement, props: { settlement, party, voyage, settlementRepository }, disable: region.settlement ? false : true },
-        { label: 'Random2', Component: Random2 },
+        // { label: 'Random2', Component: Random2 },
     ]
     if (!region) return <div />
 
