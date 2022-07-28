@@ -84,6 +84,8 @@ export abstract class Repository<
 
 		proxy.onCreate(proxy);
 
+		this.onAdd(proxy);
+
 		return proxy;
 	}
 
@@ -94,6 +96,8 @@ export abstract class Repository<
 			this.addEntity(entity);
 		}
 	}
+
+	protected onAdd(entity: T): void {}
 
 	public toJSON(): T[] {
 		return this.getAll();

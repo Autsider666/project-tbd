@@ -1,6 +1,7 @@
 import { Opaque } from 'type-fest';
 import { Client } from '../controller/ClientController.js';
 import { EntityUpdate } from '../controller/StateSyncController.js';
+import { calculateTravelTime } from '../helper/TravelTimeCalculator.js';
 import { Uuid } from '../helper/UuidHelper.js';
 import { RegionProperty } from './CommonProperties/RegionProperty.js';
 import { ResourcesProperty } from './CommonProperties/ResourcesProperty.js';
@@ -24,7 +25,9 @@ export type ResourceNodeStateData = {
 	resources?: ResourceId[];
 } & EntityStateData<ResourceNodeId>;
 
-export type ResourceNodeClientData = ResourceNodeStateData &
+export type ResourceNodeClientData = {
+	travelTimeFromSettlement: { [key: string] };
+} & ResourceNodeStateData &
 	EntityClientData<ResourceNodeId>;
 
 export class ResourceNode extends Entity<
@@ -47,8 +50,19 @@ export class ResourceNode extends Entity<
 	}
 
 	normalize(forClient?: Client): ResourceNodeClientData {
+		const travelTimeFromSettlement = {};
+		if (forClient) {
+			const region = this.getRegion();
+			forClient.parties.forEach((party) => {
+				const settlement = party.getSettlement();
+				travelTimeFromSettlement[settlement.getId()] =
+					calculateTravelTime(region, settlement.getRegion());
+			});
+		}
+
 		return {
 			entityType: this.getEntityType(),
+			travelTimeFromSettlement,
 			...this.toJSON(),
 		};
 	}

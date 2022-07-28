@@ -56,7 +56,5 @@ export function calculateTravelTime(
 		cache.set(`${goal.getId()}-${start.getId()}`, minimalTravelTime);
 	}
 
-	console.log(costSoFar);
-
 	return minimalTravelTime;
 }
