@@ -52,10 +52,11 @@ const ExpeditionSites = ({ region, party, expedition, resourceNodeRepository }) 
     )
 }
 const Settlement = ({ settlement, party, voyage, settlementRepository }) => {
+    
     const { name } = settlement
     console.log(voyage)
-    const traveling = voyage && voyage.handled === false
-    voyage && console.log(voyage.handled)
+    const traveling = voyage && voyage.finished === false
+    voyage && console.log(voyage.finished)
     console.log(traveling)
 
 
@@ -102,9 +103,10 @@ const Region = () => {
     // console.log(settlementRepository)
     const settlement = settlementRepository[region.settlement]
     const party = Object.values(partyRepository).find(party => party.controllable === true)
-    console.log(party)
-    const voyage = Object.values(voyageRepository).find(voyage => voyage.party === party.id && voyage.handled === false)
+    
+    const voyage = Object.values(voyageRepository).find(voyage => voyage.party === party.id && voyage.finished === false)
     const expedition = Object.values(expeditionRepository).find(expedition => expedition.party === party.id && expedition.phase !== "finished")
+    console.log({party, voyageRepository})
     // console.log(region)
 
     const content = [
