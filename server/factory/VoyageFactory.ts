@@ -2,6 +2,7 @@ import { injectable } from 'tsyringe';
 import { Party } from '../entity/Party.js';
 import { Settlement } from '../entity/Settlement.js';
 import { Voyage } from '../entity/Voyage.js';
+import { calculateTravelTime } from '../helper/TravelTimeCalculator.js';
 import { VoyageRepository } from '../repository/VoyageRepository.js';
 
 @injectable()
@@ -22,7 +23,14 @@ export class VoyageFactory {
 			throw new Error("Target settlement isn't in the same world.");
 		}
 
-		const durationInSeconds = 5;
+		const durationInSeconds = calculateTravelTime(
+			party.getSettlement().getRegion(),
+			target.getRegion()
+		);
+		if (durationInSeconds === null) {
+			throw new Error('Could not find a route to target settlement.');
+		}
+
 		const startedAt = new Date();
 		const arrivalAt = new Date(
 			startedAt.getTime() + durationInSeconds * 1000

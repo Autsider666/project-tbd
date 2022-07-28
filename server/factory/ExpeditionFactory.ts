@@ -2,6 +2,7 @@ import { injectable } from 'tsyringe';
 import { Expedition, ExpeditionPhase } from '../entity/Expedition.js';
 import { Party } from '../entity/Party.js';
 import { ResourceNode } from '../entity/ResourceNode.js';
+import { calculateTravelTime } from '../helper/TravelTimeCalculator.js';
 import { ExpeditionRepository } from '../repository/ExpeditionRepository.js';
 
 @injectable()
@@ -17,7 +18,13 @@ export class ExpeditionFactory {
 			throw new Error('Party is already on an expedition.');
 		}
 
-		const durationInSeconds = 5;
+		const durationInSeconds = calculateTravelTime(
+			party.getSettlement().getRegion(),
+			node.getRegion()
+		);
+		if (durationInSeconds === null) {
+			throw new Error('Could not find a route to target resource node.');
+		}
 		const startedAt = new Date();
 		const nextPhaseAt = new Date(
 			startedAt.getTime() + durationInSeconds * 1000

@@ -50,9 +50,7 @@ const worldFactory = container.resolve(WorldFactory);
 app.get('/state', (_, res) =>
 	res.send(
 		`<pre>${JSON.stringify(
-			worldFactory
-				.create()
-				.prepareNestedEntityUpdate(),
+			worldFactory.create().prepareNestedEntityUpdate(),
 			null,
 			4
 		)}</pre>`
