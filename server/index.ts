@@ -4,7 +4,6 @@ import { container } from 'tsyringe';
 import { ServerController } from './controller/ServerController.js';
 import { StateSyncController } from './controller/StateSyncController.js';
 import { WorldFactory } from './factory/WorldFactory.js';
-import { StatePersister } from './helper/StatePersister.js';
 import { instrument } from '@socket.io/admin-ui';
 import express from 'express';
 import { createServer } from 'http';
@@ -43,8 +42,6 @@ app.get('/', (_, res) => {
 	console.log('test');
 	res.sendFile(path.resolve('./server/test.html'));
 });
-
-await StatePersister.readState();
 
 const worldFactory = container.resolve(WorldFactory);
 app.get('/state', (_, res) =>
