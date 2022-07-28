@@ -128,18 +128,27 @@ export class ClientController {
 					throw new Error('shit');
 				}
 
-				const newParty = this.partyFactory.create(
-					data.name,
-					settlement
-				);
+				const name = data.name;
+				const world = settlement.getRegion().getWorld();
+				for (const region of world.getRegions()) {
+					for (const existingParty of region
+						.getSettlement()
+						?.getParties() ?? []) {
+						if (existingParty.name === name) {
+							ClientNotifier.error(
+								'Party name is already in use in this world.',
+								this.socket.id
+							);
+							return;
+						}
+					}
+				}
+
+				const newParty = this.partyFactory.create(name, settlement);
 
 				const payload: PartyPayload = {
 					party: newParty.getId(),
-					world: newParty
-						.getSettlement()
-						.getRegion()
-						.getWorld()
-						.getId(),
+					world: world.getId(),
 				};
 
 				const token = jwt.sign(payload, secret);

@@ -102,4 +102,8 @@ export class Settlement extends Entity<
 	public removeParty(party: Party): void {
 		this.partiesProperty.remove(party);
 	}
+
+	public getParties(): Party[] {
+		return this.partiesProperty.getAll();
+	}
 }

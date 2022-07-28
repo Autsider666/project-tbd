@@ -26,7 +26,7 @@ export type ResourceNodeStateData = {
 } & EntityStateData<ResourceNodeId>;
 
 export type ResourceNodeClientData = {
-	travelTimeFromSettlement: { [key: string] };
+	travelTimeFromSettlement: { [key: string]: number | null };
 } & ResourceNodeStateData &
 	EntityClientData<ResourceNodeId>;
 
@@ -50,7 +50,7 @@ export class ResourceNode extends Entity<
 	}
 
 	normalize(forClient?: Client): ResourceNodeClientData {
-		const travelTimeFromSettlement = {};
+		const travelTimeFromSettlement: { [key: string]: number | null } = {};
 		if (forClient) {
 			const region = this.getRegion();
 			forClient.parties.forEach((party) => {
