@@ -11,8 +11,8 @@ import { Box } from "@mui/system";
 import { useApp } from "./contexts/AppContext";
 
 const StyledApp = styled("div")(({ theme }) => ({
-	height: "100vh",
-	width: "100vw",
+	height: "100%",
+	width: "100%",
 	backgroundColor: "#b0620d",
 }));
 
@@ -34,7 +34,7 @@ function App() {
 				padding: 3,
 			}} >
 				{
-					loaded ? <Main marginAmount={marginAmount} /> : <SplashPage />
+					loaded ? <Main marginAmount={marginAmount} /> : <SplashPage marginAmount={marginAmount} />
 				}
 			</Box>
 

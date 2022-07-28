@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import { useApp } from '../contexts/AppContext'
 import { useAuth } from '../contexts/AuthContext'
 
-const SplashPage = () => {
+const SplashPage = ({marginAmount}) => {
 
     const { characterCreate } = useAuth()
     const { displaySnackbar } = useApp()
@@ -13,7 +13,7 @@ const SplashPage = () => {
         <>
             <Box sx={{
                 // margin: 3,
-                height: '100%',
+                height: `calc(100vh - 70.5px - ${marginAmount * 2}px)`,
                 width: '100%',
                 display: 'flex',
                 justifyContent: 'center',
