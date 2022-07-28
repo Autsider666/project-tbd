@@ -73,7 +73,7 @@ const WorldTemplates: { [key: string]: WorldTemplate } = {
 						type: ResourceNodeType.Ruin,
 					},
 					{
-						name: 'randomName C',
+						name: 'The Forgotten Ruins',
 						type: ResourceNodeType.Ruin,
 					},
 					{
@@ -135,7 +135,7 @@ const WorldTemplates: { [key: string]: WorldTemplate } = {
 						type: ResourceNodeType.Ruin,
 					},
 					{
-						name: 'randomName C',
+						name: 'The Forgotten Ruins',
 						type: ResourceNodeType.Ruin,
 					},
 					{
@@ -224,7 +224,7 @@ const WorldTemplates: { [key: string]: WorldTemplate } = {
 						type: ResourceNodeType.Ruin,
 					},
 					{
-						name: 'randomName C',
+						name: 'The Forgotten Ruins',
 						type: ResourceNodeType.Ruin,
 					},
 					{
@@ -279,7 +279,7 @@ const WorldTemplates: { [key: string]: WorldTemplate } = {
 						type: ResourceNodeType.Ruin,
 					},
 					{
-						name: 'randomName C',
+						name: 'The Forgotten Ruins',
 						type: ResourceNodeType.Ruin,
 					},
 					{
@@ -334,7 +334,7 @@ const WorldTemplates: { [key: string]: WorldTemplate } = {
 						type: ResourceNodeType.Ruin,
 					},
 					{
-						name: 'randomName C',
+						name: 'The Forgotten Ruins',
 						type: ResourceNodeType.Ruin,
 					},
 					{
@@ -363,7 +363,7 @@ const WorldTemplates: { [key: string]: WorldTemplate } = {
 						type: ResourceNodeType.Ruin,
 					},
 					{
-						name: 'randomName C',
+						name: 'The Forgotten Ruins',
 						type: ResourceNodeType.Ruin,
 					},
 					{
@@ -481,7 +481,7 @@ const WorldTemplates: { [key: string]: WorldTemplate } = {
 						type: ResourceNodeType.Ruin,
 					},
 					{
-						name: 'randomName C',
+						name: 'The Forgotten Ruins',
 						type: ResourceNodeType.Ruin,
 					},
 					{
@@ -539,7 +539,7 @@ const WorldTemplates: { [key: string]: WorldTemplate } = {
 						type: ResourceNodeType.Ruin,
 					},
 					{
-						name: 'randomName C',
+						name: 'The Forgotten Ruins',
 						type: ResourceNodeType.Ruin,
 					},
 					{
