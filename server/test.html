@@ -10,14 +10,23 @@
 	<body>
 		<div>
 			<h3>Pre-Game</h3>
+			<div>
+				<label>
+					Party name:
+					<input id="partyName" type="text" value="Testing" />
+				</label>
+			</div>
 			<button onClick="getWorlds()">Get all worlds</button>
-			<button onClick="getSettlements()">
-				Get all settlements in world
-			</button>
+			<div id="worlds">
+				<h4>Worlds</h4>
+			</div>
+			<div id="settlements">
+				<h4>Settlements</h4>
+			</div>
 		</div>
 		<div>
 			<h3>Party</h3>
-			<button onClick="createParty()">Create Party</button>
+			<button onClick="createParty('a')">Create Party</button>
 			<button onClick="addParty()">Initialize Party</button>
 		</div>
 		<div>
@@ -38,11 +47,17 @@
 
 			let token = null;
 
-			function createParty() {
-				socket.emit('party:create', { name: 'from client' }, (jwt) => {
-					console.log(jwt);
-					token = jwt;
-				});
+			const partyNameInput = document.getElementById('partyName');
+
+			function createParty(settlementId) {
+				socket.emit(
+					'party:create',
+					{ name: partyNameInput.value, settlementId },
+					(jwt) => {
+						console.log(jwt);
+						token = jwt;
+					}
+				);
 			}
 
 			function addParty() {
@@ -61,20 +76,36 @@
 				socket.emit('expedition:start', { partyId: 'test', targetId });
 			}
 
+			const worldsContainer = document.getElementById('worlds');
+			const settlementsContainer = document.getElementById('settlements');
+
 			function getWorlds() {
 				socket.emit('world:list', (worlds) => {
+					worlds.forEach((world) => {
+						const worldButton = document.createElement('span');
+						worldButton.innerHTML = `<button onClick="getSettlements('${world.id}')">World: ${world.name}</button>`;
+						worldsContainer.appendChild(worldButton);
+					});
 					console.log(worlds);
 				});
 			}
 
-			function getSettlements() {
+			function getSettlements(worldId) {
+				console.log('Getting settlements for', worldId);
+
 				socket.emit(
 					'settlement:list',
 					{
-						worldId: 'a',
+						worldId: worldId,
 					},
-					(worlds) => {
-						console.log(worlds);
+					(settlements) => {
+						settlements.forEach((settlement) => {
+							const settlementButton =
+								document.createElement('span');
+							settlementButton.innerHTML = `<button onClick="createParty('${settlement.id}')">Create party in settlement: ${settlement.name}</button>`;
+							settlementsContainer.appendChild(settlementButton);
+						});
+						console.log(settlements);
 					}
 				);
 			}

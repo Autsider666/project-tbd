@@ -115,11 +115,14 @@ export class ClientController {
 	private handlePartyCreation(): void {
 		this.socket.on(
 			'party:create',
-			(data: { name: string }, callback: (token: string) => void) => {
+			(
+				data: { name: string; settlementId: SettlementId },
+				callback: (token: string) => void
+			) => {
 				console.log('create party', data);
 
 				const settlement = this.settlementRepository.get(
-					'a' as SettlementId
+					data.settlementId ?? ('a' as SettlementId)
 				);
 				if (settlement === null) {
 					throw new Error('shit');

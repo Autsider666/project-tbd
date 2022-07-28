@@ -20,7 +20,7 @@ export interface ServerToClientEvents {
 export interface ClientToServerEvents {
 	'party:init': (token: string) => void;
 	'party:create': (
-		data: { name: string },
+		data: { name: string; settlementId: SettlementId },
 		callback: (token: string) => void
 	) => void;
 	'voyage:start': (data: {
