@@ -6,7 +6,7 @@ import { RegionProperty } from './CommonProperties/RegionProperty.js';
 import { ResourcesProperty } from './CommonProperties/ResourcesProperty.js';
 import { Entity, EntityClientData, EntityStateData } from './Entity.js';
 import { Region, RegionId } from './Region.js';
-import { ResourceId } from './Resource.js';
+import { Resource, ResourceId } from './Resource.js';
 
 export type ResourceNodeId = Opaque<Uuid, 'ResourceNodeId'>;
 
@@ -90,5 +90,13 @@ export class ResourceNode extends Entity<
 
 	setRegion(region: Region): void {
 		this.regionProperty.set(region);
+	}
+
+	getResources(): Resource[] {
+		return this.resourcesProperty.getAll();
+	}
+
+	addResource(resource: Resource): void {
+		this.resourcesProperty.add(resource);
 	}
 }

@@ -11,6 +11,7 @@ import { RegionRepository } from '../repository/RegionRepository.js';
 import { ResourceNodeRepository } from '../repository/ResourceNodeRepository.js';
 import { SettlementRepository } from '../repository/SettlementRepository.js';
 import { WorldRepository } from '../repository/WorldRepository.js';
+import { ResourceNodeFactory } from './ResourceNodeFactory.js';
 
 @injectable()
 export class WorldFactory {
@@ -19,7 +20,8 @@ export class WorldFactory {
 		private readonly regionRepository: RegionRepository,
 		private readonly nodeRepository: ResourceNodeRepository,
 		private readonly borderRepository: BorderRepository,
-		private readonly settlementRepository: SettlementRepository
+		private readonly settlementRepository: SettlementRepository,
+		private readonly resourceNodeFactory: ResourceNodeFactory
 	) {}
 
 	create(template: string = 'default'): World {
@@ -91,13 +93,11 @@ export class WorldFactory {
 				);
 
 				regionTemplate.nodes.forEach((nodeTemplate) => {
-					const node = this.nodeRepository.create({
-						name: nodeTemplate.name ?? fallbackName,
-						type: nodeTemplate.type,
-						region: region.getId(),
-					});
-
-					region.addResourceNode(node);
+					this.resourceNodeFactory.create(
+						nodeTemplate.name ?? fallbackName,
+						nodeTemplate.type,
+						region
+					);
 				});
 			}
 		);
