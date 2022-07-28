@@ -2,7 +2,7 @@ import { Socket } from 'socket.io';
 import jwt from 'jsonwebtoken';
 import { container } from 'tsyringe';
 import { Party, PartyId } from '../entity/Party.js';
-import { SettlementId } from '../entity/Settlement.js';
+import { Settlement, SettlementId } from '../entity/Settlement.js';
 import { WorldId } from '../entity/World.js';
 import { ExpeditionFactory } from '../factory/ExpeditionFactory.js';
 import { PartyFactory } from '../factory/PartyFactory.js';
@@ -72,6 +72,26 @@ export class ClientController {
 					.getAll()
 					.map((world) => world.normalize(this.client))
 			);
+		});
+
+		this.socket.on('settlement:list', ({ worldId }, callback) => {
+			console.log(callback);
+			const world = this.worldRepository.get(worldId);
+			if (world === null) {
+				ClientNotifier.error(
+					'This world does not exist',
+					this.socket.id
+				);
+				return;
+			}
+
+			const regionsWithSettlement = world
+				.getRegions()
+				.filter((region) => region.getSettlement());
+			const settlements = regionsWithSettlement.map((region) =>
+				(region.getSettlement() as Settlement).normalize(this.client)
+			);
+			callback(settlements);
 		});
 	}
 

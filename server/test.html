@@ -9,6 +9,13 @@
 	</head>
 	<body>
 		<div>
+			<h3>Pre-Game</h3>
+			<button onClick="getWorlds()">Get all worlds</button>
+			<button onClick="getSettlements()">
+				Get all settlements in world
+			</button>
+		</div>
+		<div>
 			<h3>Party</h3>
 			<button onClick="createParty()">Create Party</button>
 			<button onClick="addParty()">Initialize Party</button>
@@ -30,6 +37,7 @@
 			const socket = io('http://localhost:5000');
 
 			let token = null;
+
 			function createParty() {
 				socket.emit('party:create', { name: 'from client' }, (jwt) => {
 					console.log(jwt);
@@ -51,6 +59,24 @@
 
 			function expedition(targetId) {
 				socket.emit('expedition:start', { partyId: 'test', targetId });
+			}
+
+			function getWorlds() {
+				socket.emit('world:list', (worlds) => {
+					console.log(worlds);
+				});
+			}
+
+			function getSettlements() {
+				socket.emit(
+					'settlement:list',
+					{
+						worldId: 'a',
+					},
+					(worlds) => {
+						console.log(worlds);
+					}
+				);
 			}
 
 			socket.on('message', function (data) {
