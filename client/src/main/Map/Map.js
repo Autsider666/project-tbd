@@ -11,7 +11,7 @@ const Map = () => {
 
     const hide = false
     
-    if (hide) return <img style={{ opacity: 0.3, marginBottom: '-3px' }} src={Water} position="absolute" width="100%" />
+    if (hide) return <img style={{ opacity: 0.3, marginBottom: '-8px' }} src={Water} position="absolute" width="100%" />
     return <WorldMap world={worldSelected} selectedRegion={selectedRegion} setSelectedRegion={setSelectedRegion} regions={Object.values(regionRepository)} />
 }
 

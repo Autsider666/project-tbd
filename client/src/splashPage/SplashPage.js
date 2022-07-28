@@ -1,13 +1,60 @@
-import { Box, Button, TextField } from '@mui/material'
+import styled from '@emotion/styled';
+import { Box, Button, Grid, TextField, Typography } from '@mui/material'
 import React, { useState } from 'react'
 import { useApp } from '../contexts/AppContext'
 import { useAuth } from '../contexts/AuthContext'
 
-const SplashPage = ({marginAmount}) => {
+const StyledSearchTextField = styled(TextField)(({ theme }) => ({
+    // color: "white",
+    "& .MuiInputBase-root": {
+        color: "white",
+        "& fieldset": {
+            borderColor: "rgba(255, 255, 255, 0.53)",
+        },
+        "&:hover fieldset": {
+            borderColor: "rgba(255, 255, 255, 0.73)",
+        },
+        "&:active fieldset": {
+            borderColor: "rgba(255, 255, 255, 0.63)",
+        },
+    },
+    "& .MuiInputLabel-root": {
+        color: "white",
+        "& .Mui-focused": {
+            color: "white",
+        },
+    },
+    "& label.Mui-focused": {
+        color: "white",
+    },
+    "& .MuiInput-underline:after": {
+        borderBottomColor: "white",
+    },
+    "& .MuiInputBase-input": {
+        color: "white",
+        "& fieldset > legend": {
+            color: "white",
+        },
+    },
+    "& .MuiOutlinedInput-root": {
+        color: "white",
+        "& fieldset": {
+            borderColor: "rgba(255, 255, 255, 0.63)",
+        },
+        "&:hover fieldset": {
+            borderColor: "rgba(255, 255, 255, 0.63)",
+        },
+        "&.Mui-focused fieldset": {
+            borderColor: "rgba(255, 255, 255, 0.63)",
+        },
+    },
+}));
 
-    const { characterCreate } = useAuth()
+const SplashPage = ({ marginAmount }) => {
+
+    const { partyCreate } = useAuth()
     const { displaySnackbar } = useApp()
-    const [characterName, setCharacterName] = useState("")
+    const [partyName, setPartyName] = useState("")
 
     return (
         <>
@@ -38,22 +85,42 @@ const SplashPage = ({marginAmount}) => {
                 <Box sx={{
                     position: 'absolute',
                     height: '30%',
-                    width: '40%',
-                    background: 'lightgray',
+                    width: { xs: '60%', md: '40%' },
+                    backgroundColor: (theme) => theme.palette.background.paper,
                     borderRadius: '10px',
                     border: '1px solid black',
                     display: 'flex',
                     justifyContent: 'space-around',
                     alignItems: 'center',
                 }} >
-                    <TextField label="Character Name" value={characterName} onChange={event => setCharacterName(event.target.value)} />
-                    <Button variant="contained" onClick={() => {
-                        displaySnackbar(`The party called ${characterName} joined the game!`, 'success')
-                        characterCreate(characterName)
-                    }}>
-                    Create
-                    </Button>
-
+                    <Grid gap={2} container sx={{ width: '100%', my: 'auto', padding: { xs: 3, md: 6 }, justifyContent: "center" }}>
+                        <Grid item xs={12}>
+                            <Box
+                                padding={2}
+                                gridRow={1}
+                                borderRadius={'4px'}
+                                sx={{
+                                    backgroundColor: (theme) => theme.palette.primary.main,
+                                    color: (theme) => theme.palette.primary.contrastText,
+                                }}
+                            >
+                                <Typography sx={{ textAlign: 'center', color: theme => theme.palette.primary.contrastText, fontSize: { xs: '1m', md: "1.5em", lg: "2em" } }}  >
+                                    Welcome to Project TBD
+                                </Typography>
+                            </Box>
+                        </Grid>
+                        <Grid item xs={6} md={6} my={1}>
+                            <TextField fullWidth={true} label="Party Name" value={partyName} onChange={event => setPartyName(event.target.value)} />
+                        </Grid>
+                        <Grid item xs={4} md={6} my={1}>
+                            <Button sx={{ height: '100%', width: '100%' }} variant="contained" onClick={() => {
+                                displaySnackbar(`The party called ${partyName} joined the game!`, 'success')
+                                partyCreate(partyName)
+                            }}>
+                                Create
+                            </Button>
+                        </Grid>
+                    </Grid>
                 </Box>
             </Box>
 

@@ -26,7 +26,6 @@ const ExpeditionSites = ({ region, party, expedition, resourceNodeRepository }) 
         <Box sx={{ flexGrow: 1 }}>
             <Grid container sx={{ padding: 0 }}>
                 <Grid sx={{ margin: 1 }} item xs={12}>Name: {`${name}`}</Grid>
-                {settlement && <Grid sx={{ margin: 1 }} item xs={12}>Settlement: {`${settlement}`}</Grid>}
                 <Grid sx={{ margin: 1 }} item xs={12}>Sites:</Grid>
 
                 {nodes.map(node => {

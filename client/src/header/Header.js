@@ -39,7 +39,7 @@ const ResponsiveAppBar = () => {
     <AppBar position="static">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-          <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
+          {/* <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
             <IconButton
               size="large"
               aria-label="account of current user"
@@ -85,10 +85,13 @@ const ResponsiveAppBar = () => {
                 {page}
               </Button>
             ))}
+          </Box> */}
+          <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'flex' } }}>
+
           </Box>
-          <AdbIcon sx={{ display: { xs: 'flex', md: 'flex' }, mr: 1 }} />
+          {/* <AdbIcon sx={{ display: { xs: 'flex', md: 'flex' }, mr: 1 }} /> */}
           <Typography
-            variant="h6"
+            variant="h4"
             noWrap
             component="a"
             href="/"
@@ -102,7 +105,7 @@ const ResponsiveAppBar = () => {
               textDecoration: 'none',
             }}
           >
-            PROJECT TBD
+            Project TBD
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'flex' } }}>
 
@@ -130,7 +133,7 @@ const ResponsiveAppBar = () => {
           </Typography> */}
 
 
-          <Box sx={{ flexGrow: 0 }}>
+          {/* <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                 <Avatar alt="Remy Sharp" src="" />
@@ -158,7 +161,7 @@ const ResponsiveAppBar = () => {
                 </MenuItem>
               ))}
             </Menu>
-          </Box>
+          </Box> */}
         </Toolbar>
       </Container>
     </AppBar>

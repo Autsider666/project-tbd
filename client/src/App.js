@@ -29,8 +29,8 @@ function App() {
 		<StyledApp>
 			<Header />
 			<Box sx={{
-				height: `calc(100% - 68.5px - ${marginAmount * 2}px)`,
-				width: `calc(100% - ${marginAmount * 2}px)`,
+				height: `calc(100% - 24px - ${marginAmount * 2}px)`,
+				// width: `calc(100% - ${marginAmount * 2}px)`,
 				padding: 3,
 			}} >
 				{

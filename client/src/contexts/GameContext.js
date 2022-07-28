@@ -27,6 +27,7 @@ const GameProvider = ({ children }) => {
     const [settlementRepository, setSettlementRepository] = useState({})
     const [voyageRepository, setVoyageRepository] = useState({})
     const [expeditionRepository, setExpeditionRepository] = useState({})
+    const [resourceRepository, setResourceRepository] = useState({})
 
     const isLoaded = () => {
         // console.log({
@@ -74,6 +75,7 @@ const GameProvider = ({ children }) => {
             settlementRepository: {},
             voyageRepository: {},
             expeditionRepository: {},
+            resourceRepository: {},
         })
         setWorldRepository(prev => ({ ...prev, ...entitiesFormatted.worldRepository }))
         setRegionRepository(prev => ({ ...prev, ...entitiesFormatted.regionRepository }))
@@ -84,6 +86,7 @@ const GameProvider = ({ children }) => {
         setSettlementRepository(prev => ({ ...prev, ...entitiesFormatted.settlementRepository }))
         setVoyageRepository(prev => ({ ...prev, ...entitiesFormatted.voyageRepository }))
         setExpeditionRepository(prev => ({ ...prev, ...entitiesFormatted.expeditionRepository }))
+        setResourceRepository(prev => ({ ...prev, ...entitiesFormatted.resourceRepository }))
 
         setAllEntities(entities) // temp state for testing
         // if (isLoaded()) setLoaded(true)
@@ -100,7 +103,7 @@ const GameProvider = ({ children }) => {
 
     useEffect(() => {
         if (loaded) {
-            const partySettlementId = Object.values(partyRepository)[0].settlement
+            const partySettlementId = Object.values(partyRepository).find(party=>party.controllable === true).settlement
             // console.log({ partySettlementId })
             // console.log(settlementRepository)
             const regionOfPartySettlement = settlementRepository[partySettlementId].region
@@ -136,7 +139,7 @@ const GameProvider = ({ children }) => {
         allEntities,
         loaded,
         token,
-        worldRepository, regionRepository, borderRepository, survivorRepository, partyRepository, resourceNodeRepository, settlementRepository, voyageRepository,expeditionRepository,
+        worldRepository, regionRepository, borderRepository, survivorRepository, partyRepository, resourceNodeRepository, settlementRepository, voyageRepository,expeditionRepository, resourceRepository,
         selectedRegion, setSelectedRegion,
     };
 

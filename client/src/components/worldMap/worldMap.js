@@ -16,7 +16,7 @@ const WorldMap = ({ world, regions, selectedRegion, setSelectedRegion }) => {
     const dev = true
 
     return (
-        <Box sx={{ position: 'relative', width: '100%', marginBottom: '-5px' }} >
+        <Box sx={{ position: 'relative', width: '100%', marginBottom: '-8px' }} >
             <img src={worldMapSelected.map.Water} position="absolute" width="100%" />
             {!dev && <img className="mapOverlay" src={worldMapSelected.map.Paths} position="absolute" width="100%" />}
             <svg className="mapRegionWrapper" width="100%" viewBox="0 0 1440 1080" >
