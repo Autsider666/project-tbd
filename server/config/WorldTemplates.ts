@@ -110,7 +110,7 @@ const WorldTemplates: { [key: string]: WorldTemplate } = {
 						type: ResourceNodeType.Forest,
 					},
 					{
-						name: 'randomName D',
+						name: 'The Steep Mountains',
 						type: ResourceNodeType.Mountain,
 					},
 				],
@@ -139,7 +139,7 @@ const WorldTemplates: { [key: string]: WorldTemplate } = {
 						type: ResourceNodeType.Ruin,
 					},
 					{
-						name: 'randomName D',
+						name: 'The Steep Mountains',
 						type: ResourceNodeType.Mountain,
 					},
 				],
@@ -172,7 +172,7 @@ const WorldTemplates: { [key: string]: WorldTemplate } = {
 						type: ResourceNodeType.Forest,
 					},
 					{
-						name: 'randomName D',
+						name: 'The Steep Mountains',
 						type: ResourceNodeType.Mountain,
 					},
 				],
@@ -200,7 +200,7 @@ const WorldTemplates: { [key: string]: WorldTemplate } = {
 						type: ResourceNodeType.Tower,
 					},
 					{
-						name: 'randomName D',
+						name: 'The Steep Mountains',
 						type: ResourceNodeType.Mountain,
 					},
 				],
@@ -228,7 +228,7 @@ const WorldTemplates: { [key: string]: WorldTemplate } = {
 						type: ResourceNodeType.Ruin,
 					},
 					{
-						name: 'randomName D',
+						name: 'The Steep Mountains',
 						type: ResourceNodeType.Mountain,
 					},
 				],
@@ -367,7 +367,7 @@ const WorldTemplates: { [key: string]: WorldTemplate } = {
 						type: ResourceNodeType.Ruin,
 					},
 					{
-						name: 'randomName D',
+						name: 'The Steep Mountains',
 						type: ResourceNodeType.Mountain,
 					},
 				],
@@ -394,7 +394,7 @@ const WorldTemplates: { [key: string]: WorldTemplate } = {
 						type: ResourceNodeType.Tower,
 					},
 					{
-						name: 'randomName D',
+						name: 'The Steep Mountains',
 						type: ResourceNodeType.Mountain,
 					},
 				],
@@ -423,7 +423,7 @@ const WorldTemplates: { [key: string]: WorldTemplate } = {
 						type: ResourceNodeType.Tower,
 					},
 					{
-						name: 'randomName D',
+						name: 'The Steep Mountains',
 						type: ResourceNodeType.Mountain,
 					},
 				],
@@ -457,7 +457,7 @@ const WorldTemplates: { [key: string]: WorldTemplate } = {
 						type: ResourceNodeType.Forest,
 					},
 					{
-						name: 'randomName D',
+						name: 'The Steep Mountains',
 						type: ResourceNodeType.Mountain,
 					},
 				],
@@ -513,7 +513,7 @@ const WorldTemplates: { [key: string]: WorldTemplate } = {
 						type: ResourceNodeType.Tower,
 					},
 					{
-						name: 'randomName D',
+						name: 'The Steep Mountains',
 						type: ResourceNodeType.Mountain,
 					},
 				],
@@ -574,7 +574,7 @@ const WorldTemplates: { [key: string]: WorldTemplate } = {
 						type: ResourceNodeType.Forest,
 					},
 					{
-						name: 'randomName D',
+						name: 'The Steep Mountains',
 						type: ResourceNodeType.Mountain,
 					},
 				],
@@ -601,7 +601,7 @@ const WorldTemplates: { [key: string]: WorldTemplate } = {
 						type: ResourceNodeType.Tower,
 					},
 					{
-						name: 'randomName D',
+						name: 'The Steep Mountains',
 						type: ResourceNodeType.Mountain,
 					},
 				],
@@ -632,7 +632,7 @@ const WorldTemplates: { [key: string]: WorldTemplate } = {
 						type: ResourceNodeType.Forest,
 					},
 					{
-						name: 'randomName D',
+						name: 'The Steep Mountains',
 						type: ResourceNodeType.Mountain,
 					},
 				],
