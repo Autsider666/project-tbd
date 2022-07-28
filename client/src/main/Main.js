@@ -11,7 +11,7 @@ import Log from './Log/Log'
 const sections = [
     { name: 'Profile', Component: Profile, sx: { gridArea: 'Profile' } },
     { name: 'Map', Component: Map, sx: { gridArea: 'Map' } },
-    { name: 'Region', Component: Region, sx: { gridArea: 'Region', maxWidth: {xs:"400px",md:"800px"} } },
+    { name: 'Region', Component: Region, sx: { gridArea: 'Region', maxWidth: { xs: "400px", md: "800px" } } },
     { name: 'Random', Component: Random, sx: { gridArea: 'Random', display: { xs: 'none', md: 'none', lg: 'block' } } },
     { name: 'Chat', Component: Chat, sx: { gridArea: 'Chat', display: { xs: 'none', md: 'block', lg: 'block' } } },
     { name: 'Log', Component: Log, sx: { gridArea: 'Log', display: { xs: 'none', md: 'block', lg: 'block' } } },
@@ -21,7 +21,7 @@ const Main = ({ marginAmount }) => {
 
     return (
         <Box sx={{
-            height: '100%',
+            height: { xs: '100%', lg: `calc(100vh - 70.5px - ${marginAmount * 2}px)` },
             width: '100%',
             display: 'grid',
             gridGap: `${marginAmount}px`,
