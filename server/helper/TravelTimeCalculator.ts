@@ -1,8 +1,12 @@
 import Graph from 'node-dijkstra';
+import { delay, inject, singleton } from 'tsyringe';
+import { RegionId } from '../entity/Region.js';
 import { World } from '../entity/World.js';
+import { RegionRepository } from '../repository/RegionRepository.js';
+import { Uuid } from './UuidHelper.js';
 
 export interface HasTravelTime {
-	getEntityRoomName(): string;
+	getId(): Uuid;
 
 	getTravelTime(): number;
 
@@ -11,80 +15,88 @@ export interface HasTravelTime {
 	getWorld(): World;
 }
 
-const worldCache = new Map<string, Graph>();
-const pathCache = new Map<string, Map<string, PathResult>>();
-
 export interface PathResult {
 	path: string[];
 	cost: number;
 }
 
-export function cacheWorld(world: World): Graph {
-	const data: {
-		[key: string]: {
-			[key: string]: number;
-		};
-	} = {};
-	for (const region of world.getRegions()) {
-		data[region.getEntityRoomName()] = {};
-		for (const border of region.getBorders()) {
-			data[region.getEntityRoomName()][border.getEntityRoomName()] =
-				region.getTravelTime();
-			if (data[border.getEntityRoomName()]) {
-				continue;
-			}
+@singleton()
+export class TravelTimeCalculator {
+	private readonly worldCache = new Map<string, Graph>();
+	private readonly pathCache = new Map<string, Map<string, PathResult>>();
 
-			data[border.getEntityRoomName()] = {};
-			for (const neighbor of border.getRegions()) {
-				data[border.getEntityRoomName()][neighbor.getEntityRoomName()] =
-					border.getTravelTime();
-			}
+	constructor(
+		@inject(delay(() => RegionRepository))
+		private readonly regionRepository: Readonly<RegionRepository>
+	) {}
+
+	calculateTravelTime(
+		start: HasTravelTime,
+		goal: HasTravelTime
+	): PathResult | null {
+		const world = start.getWorld();
+		const key = world.getId();
+		if (key !== goal.getWorld().getId()) {
+			return null;
 		}
-	}
 
-	const graph = new Graph(data);
-	worldCache.set(world.getEntityRoomName(), graph);
-	pathCache.delete(world.getEntityRoomName());
+		let graph = this.worldCache.get(key);
+		if (!graph) {
+			graph = this.cacheWorld(world);
+		}
 
-	return graph;
-}
+		let worldPaths = this.pathCache.get(world.getId());
+		if (!worldPaths) {
+			worldPaths = new Map<string, PathResult>();
+			this.pathCache.set(world.getId(), worldPaths);
+		}
 
-export function calculateTravelTime(
-	start: HasTravelTime,
-	goal: HasTravelTime
-): PathResult | null {
-	const world = start.getWorld();
-	const key = world.getEntityRoomName();
-	if (key !== goal.getWorld().getEntityRoomName()) {
-		return null;
-	}
+		let path = worldPaths.get(start.getId() + goal.getId());
+		if (path) {
+			return path;
+		}
 
-	let graph = worldCache.get(key);
-	if (!graph) {
-		graph = cacheWorld(world);
-	}
+		path = graph.path(start.getId(), goal.getId(), {
+			cost: true,
+		}) as PathResult;
 
-	let worldPaths = pathCache.get(world.getEntityRoomName());
-	if (!worldPaths) {
-		worldPaths = new Map<string, PathResult>();
-		pathCache.set(world.getEntityRoomName(), worldPaths);
-	}
+		path.path = path.path?.filter((id) =>
+			this.regionRepository.has(id as RegionId)
+		);
+		path.cost += goal.getTravelTime();
 
-	let path = worldPaths.get(
-		start.getEntityRoomName() + goal.getEntityRoomName()
-	);
-	if (path) {
+		worldPaths.set(start.getId() + goal.getId(), path);
+		worldPaths.set(goal.getId() + start.getId(), path);
+
 		return path;
 	}
 
-	path = graph.path(start.getEntityRoomName(), goal.getEntityRoomName(), {
-		cost: true,
-	}) as PathResult;
+	cacheWorld(world: World): Graph {
+		const data: {
+			[key: string]: {
+				[key: string]: number;
+			};
+		} = {};
+		for (const region of world.getRegions()) {
+			data[region.getId()] = {};
+			for (const border of region.getBorders()) {
+				data[region.getId()][border.getId()] = region.getTravelTime();
+				if (data[border.getId()]) {
+					continue;
+				}
 
-	path.cost += goal.getTravelTime();
+				data[border.getId()] = {};
+				for (const neighbor of border.getRegions()) {
+					data[border.getId()][neighbor.getId()] =
+						border.getTravelTime();
+				}
+			}
+		}
 
-	worldPaths.set(start.getEntityRoomName() + goal.getEntityRoomName(), path);
-	worldPaths.set(goal.getEntityRoomName() + start.getEntityRoomName(), path);
+		const graph = new Graph(data);
+		this.worldCache.set(world.getId(), graph);
+		this.pathCache.delete(world.getId());
 
-	return path;
+		return graph;
+	}
 }

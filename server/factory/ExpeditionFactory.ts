@@ -2,12 +2,15 @@ import { injectable } from 'tsyringe';
 import { Expedition, ExpeditionPhase } from '../entity/Expedition.js';
 import { Party } from '../entity/Party.js';
 import { ResourceNode } from '../entity/ResourceNode.js';
-import { calculateTravelTime } from '../helper/TravelTimeCalculator.js';
+import { TravelTimeCalculator } from '../helper/TravelTimeCalculator.js';
 import { ExpeditionRepository } from '../repository/ExpeditionRepository.js';
 
 @injectable()
 export class ExpeditionFactory {
-	constructor(private readonly expeditionRepository: ExpeditionRepository) {}
+	constructor(
+		private readonly expeditionRepository: ExpeditionRepository,
+		private readonly travelTimeCalculator: TravelTimeCalculator
+	) {}
 
 	public create(party: Party, node: ResourceNode): Expedition {
 		if (party.getVoyage() !== null) {
@@ -19,7 +22,7 @@ export class ExpeditionFactory {
 		}
 
 		const durationInSeconds =
-			calculateTravelTime(
+			this.travelTimeCalculator.calculateTravelTime(
 				party.getSettlement().getRegion(),
 				node.getRegion()
 			)?.cost ?? null;

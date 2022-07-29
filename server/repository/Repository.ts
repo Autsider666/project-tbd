@@ -32,6 +32,10 @@ export abstract class Repository<
 
 	protected abstract entity(): Constructor<T>;
 
+	public has(id: TId): boolean {
+		return this.entities.hasOwnProperty(id);
+	}
+
 	public get(id: TId): T | null {
 		return this.entities[id] ?? null;
 	}

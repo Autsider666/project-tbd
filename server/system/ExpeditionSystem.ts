@@ -3,13 +3,16 @@ import { ServerTickTime } from '../controller/ServerController.js';
 import { Expedition, ExpeditionPhase } from '../entity/Expedition.js';
 import { Resource } from '../entity/Resource.js';
 import { ClientNotifier } from '../helper/ClientNotifier.js';
-import { calculateTravelTime } from '../helper/TravelTimeCalculator.js';
+import { TravelTimeCalculator } from '../helper/TravelTimeCalculator.js';
 import { ExpeditionRepository } from '../repository/ExpeditionRepository.js';
 import { System } from './System.js';
 
 @injectable()
 export class ExpeditionSystem implements System {
-	constructor(private readonly expeditionRepository: ExpeditionRepository) {}
+	constructor(
+		private readonly expeditionRepository: ExpeditionRepository,
+		private readonly travelTimeCalculator: TravelTimeCalculator
+	) {}
 
 	async tick(): Promise<void> {
 		const now = new Date();
@@ -95,7 +98,7 @@ export class ExpeditionSystem implements System {
 		expedition.phase = ExpeditionPhase.returning;
 
 		const durationInSeconds =
-			calculateTravelTime(
+			this.travelTimeCalculator.calculateTravelTime(
 				expedition.getOrigin().getRegion(),
 				expedition.getTarget().getRegion()
 			)?.cost ?? null;

@@ -1,9 +1,10 @@
+import { container } from 'tsyringe';
 import { Opaque } from 'type-fest';
 import { Client } from '../controller/ClientController.js';
 import { EntityUpdate } from '../controller/StateSyncController.js';
 import {
-	calculateTravelTime,
 	PathResult,
+	TravelTimeCalculator,
 } from '../helper/TravelTimeCalculator.js';
 import { Uuid } from '../helper/UuidHelper.js';
 import { RegionProperty } from './CommonProperties/RegionProperty.js';
@@ -42,6 +43,8 @@ export class ResourceNode extends Entity<
 	public readonly type: ResourceNodeType;
 	private readonly regionProperty: RegionProperty;
 	private readonly resourcesProperty: ResourcesProperty;
+	private readonly travelTimeCalculator: TravelTimeCalculator =
+		container.resolve(TravelTimeCalculator);
 
 	constructor(data: ResourceNodeStateData) {
 		super(data);
@@ -61,10 +64,11 @@ export class ResourceNode extends Entity<
 			const region = this.getRegion();
 			forClient.parties.forEach((party) => {
 				const settlement = party.getSettlement();
-				travelFromSettlement[settlement.getId()] = calculateTravelTime(
-					region,
-					settlement.getRegion()
-				);
+				travelFromSettlement[settlement.getId()] =
+					this.travelTimeCalculator.calculateTravelTime(
+						region,
+						settlement.getRegion()
+					);
 			});
 		}
 

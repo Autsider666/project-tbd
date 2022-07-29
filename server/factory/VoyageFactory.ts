@@ -2,12 +2,15 @@ import { injectable } from 'tsyringe';
 import { Party } from '../entity/Party.js';
 import { Settlement } from '../entity/Settlement.js';
 import { Voyage } from '../entity/Voyage.js';
-import { calculateTravelTime } from '../helper/TravelTimeCalculator.js';
+import { TravelTimeCalculator } from '../helper/TravelTimeCalculator.js';
 import { VoyageRepository } from '../repository/VoyageRepository.js';
 
 @injectable()
 export class VoyageFactory {
-	constructor(protected readonly voyageRepository: VoyageRepository) {}
+	constructor(
+		protected readonly voyageRepository: VoyageRepository,
+		private readonly travelTimeCalculator: TravelTimeCalculator
+	) {}
 
 	public create(party: Party, target: Settlement): Voyage {
 		if (party.getVoyage() !== null) {
@@ -24,7 +27,7 @@ export class VoyageFactory {
 		}
 
 		const durationInSeconds =
-			calculateTravelTime(
+			this.travelTimeCalculator.calculateTravelTime(
 				party.getSettlement().getRegion(),
 				target.getRegion()
 			)?.cost ?? null;

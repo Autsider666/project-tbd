@@ -1,6 +1,5 @@
 import { Client } from '../controller/ClientController.js';
 import { EntityUpdate } from '../controller/StateSyncController.js';
-import { cacheWorld } from '../helper/TravelTimeCalculator.js';
 import { Uuid } from '../helper/UuidHelper.js';
 import { RegionsProperty } from './CommonProperties/RegionsProperty.js';
 import { Region, RegionId } from './Region.js';
@@ -18,7 +17,8 @@ export type WorldClientData = WorldStateData & EntityClientData<WorldId>;
 
 export class World extends Entity<WorldId, WorldStateData, WorldClientData> {
 	public name: string;
-	private regions: RegionsProperty;
+	private readonly regions: RegionsProperty;
+	// private readonly travelTimeCalculator: TravelTimeCalculator = container.resolve(TravelTimeCalculator);
 
 	constructor(data: WorldStateData) {
 		super(data);
@@ -39,15 +39,15 @@ export class World extends Entity<WorldId, WorldStateData, WorldClientData> {
 		return this.getEntityRoomName();
 	}
 
-	onCreate(proxy: this) {
-		cacheWorld(this);
-		super.onCreate(proxy);
-	}
-
-	onUpdate(proxy: this) {
-		cacheWorld(this);
-		super.onUpdate(proxy);
-	}
+	// onCreate(proxy: this) {
+	// 	this.travelTimeCalculator.cacheWorld(this);
+	// 	super.onCreate(proxy);
+	// }
+	//
+	// onUpdate(proxy: this) {
+	// 	this.travelTimeCalculator.cacheWorld(this);
+	// 	super.onUpdate(proxy);
+	// }
 
 	public override normalize(forClient?: Client): WorldClientData {
 		return {
