@@ -131,6 +131,12 @@ export class ExpeditionSystem implements System {
 				party.getUpdateRoomName()
 			);
 
+			const settlement = expedition.getOrigin();
+			for (const item of party.getInventory()) {
+				settlement.addResource(item.getAmount(), item.type);
+				party.deleteResource(item.getId());
+			}
+
 			return;
 		}
 

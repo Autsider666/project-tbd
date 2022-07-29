@@ -36,4 +36,10 @@ export class ResourcesProperty extends MultiCommonProperty<
 
 		this.add(this.repository.create({ type, amount }));
 	}
+
+	public remove(id: ResourceId) {
+		super.remove(id);
+
+		this.repository.removeEntity(id);
+	}
 }

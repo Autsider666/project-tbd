@@ -208,11 +208,19 @@ export class Party extends Entity<PartyId, PartyStateData, PartyClientData> {
 		return carryCapacity;
 	}
 
+	public getInventory(): Resource[] {
+		return this.inventoryProperty.getAll();
+	}
+
 	public addResource(amount: number, type: ResourceType): void {
 		this.inventoryProperty.addResource(amount, type);
 	}
 
 	public getResources(): Resource[] {
 		return this.inventoryProperty.getAll();
+	}
+
+	public deleteResource(id: ResourceId): void {
+		this.inventoryProperty.remove(id);
 	}
 }

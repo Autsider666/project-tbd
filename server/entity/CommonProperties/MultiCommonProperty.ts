@@ -45,8 +45,8 @@ export class MultiCommonProperty<
 		this.property.set(value.getId(), null);
 	}
 
-	public remove(value: T): void {
-		this.property.delete(value.getId());
+	public remove(id: TId): void {
+		this.property.delete(id);
 	}
 
 	public has(value: T | TId): boolean {

@@ -8,7 +8,7 @@ import { ResourcesProperty } from './CommonProperties/ResourcesProperty.js';
 import { Entity, EntityClientData, EntityStateData } from './Entity.js';
 import { Party, PartyId } from './Party.js';
 import { Region, RegionId } from './Region.js';
-import { ResourceId } from './Resource.js';
+import { ResourceId, ResourceType } from './Resource.js';
 
 export type SettlementId = Opaque<Uuid, 'SettlementId'>;
 
@@ -101,10 +101,14 @@ export class Settlement extends Entity<
 	}
 
 	public removeParty(party: Party): void {
-		this.partiesProperty.remove(party);
+		this.partiesProperty.remove(party.getId());
 	}
 
 	public getParties(): Party[] {
 		return this.partiesProperty.getAll();
+	}
+
+	public addResource(amount: number, type: ResourceType): void {
+		this.storage.addResource(amount, type);
 	}
 }
