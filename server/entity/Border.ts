@@ -1,5 +1,6 @@
 import { Opaque } from 'type-fest';
 import { Client } from '../controller/ClientController.js';
+import { HasTravelTime } from '../helper/TravelTimeCalculator.js';
 import { Uuid } from '../helper/UuidHelper.js';
 import { RegionsProperty } from './CommonProperties/RegionsProperty.js';
 import { Region, RegionId } from './Region.js';
@@ -11,7 +12,10 @@ export type BorderStateData = {
 	type: BorderType;
 } & EntityStateData<BorderId>;
 
-export type BorderClientData = BorderStateData & EntityClientData<BorderId>;
+export type BorderClientData = {
+	travelTime: number;
+} & BorderStateData &
+	EntityClientData<BorderId>;
 
 export enum BorderType {
 	default = 'default',
@@ -19,11 +23,18 @@ export enum BorderType {
 	water = 'water',
 }
 
-export class Border extends Entity<
-	BorderId,
-	BorderStateData,
-	BorderClientData
-> {
+const BaseBorderTravelTimeMapping: {
+	[key in BorderType]: number;
+} = {
+	[BorderType.default]: 10,
+	[BorderType.mountain]: 60,
+	[BorderType.water]: 30,
+};
+
+export class Border
+	extends Entity<BorderId, BorderStateData, BorderClientData>
+	implements HasTravelTime
+{
 	private regions: RegionsProperty;
 	public readonly type: BorderType;
 
@@ -56,6 +67,7 @@ export class Border extends Entity<
 	public override normalize(forClient?: Client): BorderClientData {
 		return {
 			entityType: this.getEntityType(),
+			travelTime: this.getTravelTime(),
 			...this.toJSON(),
 		};
 	}
@@ -72,5 +84,13 @@ export class Border extends Entity<
 		this.regions.add(region);
 
 		region.addBorder(this);
+	}
+
+	public getTravelTime(): number {
+		return BaseBorderTravelTimeMapping[this.type];
+	}
+
+	getNextTravelDestinations(): HasTravelTime[] {
+		return this.regions.getAll();
 	}
 }

@@ -21,9 +21,9 @@ export class MultiCommonProperty<
 	}
 
 	public getAll(): T[] {
-		this.property.forEach((region, id) => {
+		for (const [id, region] of this.property) {
 			if (region != null) {
-				return;
+				continue;
 			}
 
 			const value = this.repository.get(id);
@@ -32,7 +32,7 @@ export class MultiCommonProperty<
 			}
 
 			this.property.set(id, value);
-		});
+		}
 
 		return Array.from(this.property.values()) as T[];
 	}

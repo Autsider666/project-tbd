@@ -1,8 +1,8 @@
 import { container } from 'tsyringe';
 import { Client } from '../controller/ClientController.js';
 import { EntityUpdate } from '../controller/StateSyncController.js';
+import { HasTravelTime } from '../helper/TravelTimeCalculator.js';
 import { Uuid } from '../helper/UuidHelper.js';
-import { BorderRepository } from '../repository/BorderRepository.js';
 import { WorldRepository } from '../repository/WorldRepository.js';
 import { Border, BorderId } from './Border.js';
 import { BordersProperty } from './CommonProperties/BordersProperty.js';
@@ -26,21 +26,25 @@ export type RegionStateData = {
 	nodes?: ResourceNodeId[];
 } & EntityStateData<RegionId>;
 
-export type RegionClientData = RegionStateData & EntityClientData<RegionId>;
+export type RegionClientData = {
+	travelTime: number;
+} & RegionStateData &
+	EntityClientData<RegionId>;
 
 export enum RegionType {
 	plain = 'plain',
 }
 
-export class Region extends Entity<
-	RegionId,
-	RegionStateData,
-	RegionClientData
-> {
+const BaseRegionTravelTimeMapping: {
+	[key in RegionType]: number;
+} = { [RegionType.plain]: 10 };
+
+export class Region
+	extends Entity<RegionId, RegionStateData, RegionClientData>
+	implements HasTravelTime
+{
 	private readonly worldRepository: WorldRepository =
 		container.resolve(WorldRepository);
-	private readonly borderRepository: BorderRepository =
-		container.resolve(BorderRepository);
 
 	public name: string;
 	private readonly dimensions: string;
@@ -91,39 +95,36 @@ export class Region extends Entity<
 	public override normalize(forClient?: Client): RegionClientData {
 		return {
 			entityType: this.getEntityType(),
+			travelTime: this.getTravelTime(),
 			...this.toJSON(),
 		};
 	}
 
-	override prepareNestedEntityUpdate(
+	async prepareNestedEntityUpdate(
 		updateObject: EntityUpdate = {},
 		forClient?: Client
-	): EntityUpdate {
+	): Promise<EntityUpdate> {
 		if (this.getEntityRoomName() in updateObject) {
 			return updateObject;
 		}
 
-		this.getBorders().forEach(
-			(border) =>
-				(updateObject = border.prepareNestedEntityUpdate(
-					updateObject,
-					forClient
-				))
-		);
-
-		this.resourceNodesProperty
-			.getAll()
-			.forEach(
-				(node) =>
-					(updateObject = node.prepareNestedEntityUpdate(
-						updateObject,
-						forClient
-					))
+		for (const border of this.getBorders()) {
+			updateObject = await border.prepareNestedEntityUpdate(
+				updateObject,
+				forClient
 			);
+		}
+
+		for (const node of this.getResourceNodes()) {
+			updateObject = await node.prepareNestedEntityUpdate(
+				updateObject,
+				forClient
+			);
+		}
 
 		const settlement = this.getSettlement();
 		if (settlement != null) {
-			updateObject = settlement.prepareNestedEntityUpdate(
+			updateObject = await settlement.prepareNestedEntityUpdate(
 				updateObject,
 				forClient
 			);
@@ -176,5 +177,17 @@ export class Region extends Entity<
 		this.resourceNodesProperty.add(node);
 
 		node.setRegion(this);
+	}
+
+	public getTravelTime(): number {
+		return BaseRegionTravelTimeMapping[this.type];
+	}
+
+	getNextTravelDestinations(): HasTravelTime[] {
+		return this.borders.getAll();
+	}
+
+	public getResourceNodes(): ResourceNode[] {
+		return this.resourceNodesProperty.getAll();
 	}
 }

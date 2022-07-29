@@ -44,5 +44,3 @@ export interface ClientToServerEvents {
 export interface SocketData {
 	client: Client;
 }
-
-

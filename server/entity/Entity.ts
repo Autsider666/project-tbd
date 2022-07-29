@@ -59,17 +59,17 @@ export abstract class Entity<
 		);
 	}
 
-	public prepareNestedEntityUpdate(
+	public async prepareNestedEntityUpdate(
 		updateObject: EntityUpdate = {},
 		forClient?: Client
-	): EntityUpdate {
-		return this.prepareEntityUpdate(updateObject, forClient);
+	): Promise<EntityUpdate> {
+		return await this.prepareEntityUpdate(updateObject, forClient);
 	}
 
-	public prepareEntityUpdate(
+	public async prepareEntityUpdate(
 		updateObject: EntityUpdate = {},
 		forClient?: Client
-	): EntityUpdate {
+	): Promise<EntityUpdate> {
 		if (!(this.getEntityRoomName() in updateObject)) {
 			updateObject[this.getEntityRoomName()] = this.normalize(forClient);
 		}

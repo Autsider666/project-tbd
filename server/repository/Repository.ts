@@ -5,14 +5,12 @@ import { generateUUID, Uuid } from '../helper/UuidHelper.js';
 import { Constructor } from 'type-fest';
 import { Entity, EntityStateData } from '../entity/Entity.js';
 
-type Optional<T, TKey extends keyof T> = Partial<Pick<T, TKey>> & Omit<T, TKey>;
-
 export abstract class Repository<
 	T extends Entity<TId, TStateData, any>,
 	TId extends Uuid,
 	TStateData extends EntityStateData<TId>
 > {
-	protected entities = new Map<TId, T>();
+	protected entities: { [key: string]: T } = {};
 	protected readonly eventEmitter: EventEmitter =
 		container.resolve(EventEmitter);
 
@@ -24,7 +22,7 @@ export abstract class Repository<
 
 		this.eventEmitter.on(
 			'update:entity:' + this.entity().name.toLowerCase(),
-			(entity) => this.emitEntity(entity)
+			(entity: T) => this.emitEntity(entity)
 		);
 	}
 
@@ -35,15 +33,15 @@ export abstract class Repository<
 	protected abstract entity(): Constructor<T>;
 
 	public get(id: TId): T | null {
-		return this.entities.get(id) ?? null;
+		return this.entities[id] ?? null;
 	}
 
 	public getAll(): T[] {
-		return Array.from<T>(this.entities.values());
+		return Object.values(this.entities);
 	}
 
 	public removeEntity(id: TId): void {
-		this.entities.delete(id);
+		delete this.entities[id];
 	}
 
 	public create(data: Omit<TStateData, 'id'>): T {
@@ -82,9 +80,11 @@ export abstract class Repository<
 			}
 		);
 
-		this.entities.set(entity.getId(), proxy);
+		this.entities[entity.getId()] = proxy;
 
 		proxy.onCreate(proxy);
+
+		this.onAdd(proxy);
 
 		return proxy;
 	}
@@ -97,7 +97,9 @@ export abstract class Repository<
 		}
 	}
 
+	protected onAdd(entity: T): void {}
+
 	public toJSON(): T[] {
-		return Array.from(this.entities.values());
+		return this.getAll();
 	}
 }

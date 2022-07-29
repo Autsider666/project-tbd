@@ -45,16 +45,16 @@ export class World extends Entity<WorldId, WorldStateData, WorldClientData> {
 		};
 	}
 
-	override prepareNestedEntityUpdate(
+	async prepareNestedEntityUpdate(
 		updateObject: EntityUpdate = {},
 		forClient?: Client
-	): EntityUpdate {
-		this.getRegions().forEach((region) => {
-			updateObject = region.prepareNestedEntityUpdate(
+	): Promise<EntityUpdate> {
+		for (const region of this.getRegions()) {
+			updateObject = await region.prepareNestedEntityUpdate(
 				updateObject,
 				forClient
 			);
-		});
+		}
 
 		return super.prepareNestedEntityUpdate(updateObject, forClient);
 	}

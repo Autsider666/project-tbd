@@ -77,16 +77,16 @@ export class Party extends Entity<PartyId, PartyStateData, PartyClientData> {
 		};
 	}
 
-	public override prepareNestedEntityUpdate(
+	public async prepareNestedEntityUpdate(
 		updateObject: EntityUpdate = {},
 		forClient?: Client
-	): EntityUpdate {
-		this.getSurvivors().forEach((party) => {
-			updateObject = party.prepareNestedEntityUpdate(
+	): Promise<EntityUpdate> {
+		for (const survivor of this.getSurvivors()) {
+			updateObject = await survivor.prepareNestedEntityUpdate(
 				updateObject,
 				forClient
 			);
-		});
+		}
 
 		return super.prepareNestedEntityUpdate(updateObject, forClient);
 	}

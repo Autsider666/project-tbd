@@ -62,21 +62,22 @@ export class Settlement extends Entity<
 		return this.getRegion().getUpdateRoomName();
 	}
 
-	override prepareNestedEntityUpdate(
+	async prepareNestedEntityUpdate(
 		updateObject: EntityUpdate = {},
 		forClient?: Client
-	): EntityUpdate {
+	): Promise<EntityUpdate> {
 		if (this.getEntityRoomName() in updateObject) {
 			return updateObject;
 		}
 
 		// this.getRegion().prepareUpdate(updateObject, forClient); //TODO add later when it works
-		this.partiesProperty.getAll().forEach((party) => {
-			updateObject = party.prepareNestedEntityUpdate(
+
+		for (const party of this.getParties()) {
+			updateObject = await party.prepareNestedEntityUpdate(
 				updateObject,
 				forClient
 			);
-		});
+		}
 
 		return super.prepareNestedEntityUpdate(updateObject, forClient);
 	}
@@ -101,5 +102,9 @@ export class Settlement extends Entity<
 
 	public removeParty(party: Party): void {
 		this.partiesProperty.remove(party);
+	}
+
+	public getParties(): Party[] {
+		return this.partiesProperty.getAll();
 	}
 }
