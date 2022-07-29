@@ -36,7 +36,7 @@ export class Resource extends Entity<
 		this.amount = data.amount;
 	}
 
-	normalize(forClient: Client | undefined): ResourceClientData {
+	normalize(forClient?: Client): ResourceClientData {
 		return {
 			entityType: this.getEntityType(),
 			...this.toJSON(),
