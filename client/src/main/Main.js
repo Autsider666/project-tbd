@@ -14,7 +14,7 @@ const sections = [
 
 
     { name: 'Profile', Component: Profile, sx: { gridArea: 'Profile', display: { xl: 'block' } } },
-    { name: 'Region', Component: Region, sx: { gridArea: 'Region' } },
+    { name: 'Region', Component: Region, sx: { gridArea: 'Region', minHeight: {md: "400px", lg: 'none'} } },
 
     { name: 'Chat', Component: Chat, sx: { gridArea: 'Chat', display: { xs: 'none', sm: 'none', md: 'block'}, overflow: 'hidden' } },
 

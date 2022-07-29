@@ -36,7 +36,7 @@ const ChatComponent = room => {
                         {
                             randomMessages.map((message, index) => {
                                 return (
-                                    <ListItem sx={{ padding: 0, margin: 0, marginBottom: 0 }}>
+                                    <ListItem key={index} sx={{ padding: 0, margin: 0, marginBottom: 0 }}>
                                         <ListItemText>
                                             {`RandomUser: ${message}`}
                                         </ListItemText>
