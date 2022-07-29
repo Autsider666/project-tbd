@@ -1,5 +1,6 @@
 import { Client } from '../controller/ClientController.js';
 import { EntityUpdate } from '../controller/StateSyncController.js';
+import { cacheWorld } from '../helper/TravelTimeCalculator.js';
 import { Uuid } from '../helper/UuidHelper.js';
 import { RegionsProperty } from './CommonProperties/RegionsProperty.js';
 import { Region, RegionId } from './Region.js';
@@ -36,6 +37,16 @@ export class World extends Entity<WorldId, WorldStateData, WorldClientData> {
 
 	getUpdateRoomName(): string {
 		return this.getEntityRoomName();
+	}
+
+	onCreate(proxy: this) {
+		cacheWorld(this);
+		super.onCreate(proxy);
+	}
+
+	onUpdate(proxy: this) {
+		cacheWorld(this);
+		super.onUpdate(proxy);
 	}
 
 	public override normalize(forClient?: Client): WorldClientData {

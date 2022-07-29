@@ -5,6 +5,7 @@ import { Uuid } from '../helper/UuidHelper.js';
 import { RegionsProperty } from './CommonProperties/RegionsProperty.js';
 import { Region, RegionId } from './Region.js';
 import { Entity, EntityClientData, EntityStateData } from './Entity.js';
+import { World } from './World.js';
 
 export type BorderId = Opaque<Uuid, 'BorderId'>;
 export type BorderStateData = {
@@ -92,5 +93,14 @@ export class Border
 
 	getNextTravelDestinations(): HasTravelTime[] {
 		return this.regions.getAll();
+	}
+
+	getWorld(): World {
+		const region = this.regions.getAll()[0] ?? null;
+		if (region === null) {
+			throw new Error("Can't get world id in a border without regions.");
+		}
+
+		return region.getWorld();
 	}
 }

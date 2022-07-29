@@ -23,10 +23,11 @@ export class VoyageFactory {
 			throw new Error("Target settlement isn't in the same world.");
 		}
 
-		const durationInSeconds = calculateTravelTime(
-			party.getSettlement().getRegion(),
-			target.getRegion()
-		);
+		const durationInSeconds =
+			calculateTravelTime(
+				party.getSettlement().getRegion(),
+				target.getRegion()
+			)?.cost ?? null;
 		if (durationInSeconds === null) {
 			throw new Error('Could not find a route to target settlement.');
 		}

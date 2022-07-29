@@ -75,7 +75,6 @@ export class ClientController {
 		});
 
 		this.socket.on('settlement:list', ({ worldId }, callback) => {
-			console.log(callback);
 			const world = this.worldRepository.get(worldId);
 			if (world === null) {
 				ClientNotifier.error(
@@ -165,7 +164,10 @@ export class ClientController {
 
 	private initializeParty(party: Party): void {
 		if (this.client.parties.has(party.getId())) {
-			console.log('Not gonna initialize this party again.');
+			ClientNotifier.warning(
+				'This party is already added to this session',
+				this.socket.id
+			);
 			return;
 		}
 

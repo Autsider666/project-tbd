@@ -94,10 +94,11 @@ export class ExpeditionSystem implements System {
 	private handleEndOfGathering(expedition: Expedition): void {
 		expedition.phase = ExpeditionPhase.returning;
 
-		const durationInSeconds = calculateTravelTime(
-			expedition.getOrigin().getRegion(),
-			expedition.getTarget().getRegion()
-		);
+		const durationInSeconds =
+			calculateTravelTime(
+				expedition.getOrigin().getRegion(),
+				expedition.getTarget().getRegion()
+			)?.cost ?? null;
 		if (durationInSeconds === null) {
 			throw new Error('Wait, no route between these two?');
 		}

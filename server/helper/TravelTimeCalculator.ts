@@ -1,62 +1,90 @@
-import { Uuid } from './UuidHelper.js';
+import Graph from 'node-dijkstra';
+import { World } from '../entity/World.js';
 
 export interface HasTravelTime {
-	getId(): Uuid;
+	getEntityRoomName(): string;
 
 	getTravelTime(): number;
 
 	getNextTravelDestinations(): HasTravelTime[];
+
+	getWorld(): World;
 }
 
-const cache = new Map<string, number>();
+const worldCache = new Map<string, Graph>();
+const pathCache = new Map<string, Map<string, PathResult>>();
+
+export interface PathResult {
+	path: string[];
+	cost: number;
+}
+
+export function cacheWorld(world: World): Graph {
+	const data: {
+		[key: string]: {
+			[key: string]: number;
+		};
+	} = {};
+	for (const region of world.getRegions()) {
+		data[region.getEntityRoomName()] = {};
+		for (const border of region.getBorders()) {
+			data[region.getEntityRoomName()][border.getEntityRoomName()] =
+				region.getTravelTime();
+			if (data[border.getEntityRoomName()]) {
+				continue;
+			}
+
+			data[border.getEntityRoomName()] = {};
+			for (const neighbor of border.getRegions()) {
+				data[border.getEntityRoomName()][neighbor.getEntityRoomName()] =
+					border.getTravelTime();
+			}
+		}
+	}
+
+	const graph = new Graph(data);
+	worldCache.set(world.getEntityRoomName(), graph);
+	pathCache.delete(world.getEntityRoomName());
+
+	return graph;
+}
 
 export function calculateTravelTime(
 	start: HasTravelTime,
 	goal: HasTravelTime
-): number | null {
-	return 10;
+): PathResult | null {
+	const world = start.getWorld();
+	const key = world.getEntityRoomName();
+	if (key !== goal.getWorld().getEntityRoomName()) {
+		return null;
+	}
 
-	// const previousTravelTime = cache.get(`${start.getId()}-${goal.getId()}`);
-	// if (previousTravelTime) {
-	// 	return previousTravelTime;
-	// }
-	//
-	// let frontier: [number, HasTravelTime][] = [[0, start]];
-	// const cameFrom = new Map<Uuid, HasTravelTime | null>();
-	// const costSoFar = new Map<Uuid, number>();
-	// cameFrom.set(start.getId(), null);
-	// costSoFar.set(start.getId(), start.getTravelTime());
-	//
-	// let minimalTravelTime: number | null = null;
-	// while (frontier.length > 0) {
-	// 	frontier.sort((a, b) => a[0] - b[0]);
-	// 	const current = (frontier.shift() as [number, HasTravelTime])[1];
-	//
-	// 	if (current.getId() === goal.getId()) {
-	// 		minimalTravelTime = costSoFar.get(goal.getId()) ?? null;
-	// 		break;
-	// 	}
-	//
-	// 	for (const next of current.getNextTravelDestinations()) {
-	// 		const newCost =
-	// 			(costSoFar.get(current.getId()) ?? 0) + current.getTravelTime();
-	// 		if (
-	// 			cameFrom.has(next.getId()) &&
-	// 			newCost >= (costSoFar.get(next.getId()) ?? 0)
-	// 		) {
-	// 			continue;
-	// 		}
-	//
-	// 		costSoFar.set(next.getId(), newCost);
-	// 		frontier.push([newCost, next]);
-	// 		cameFrom.set(next.getId(), current);
-	// 	}
-	// }
-	//
-	// if (minimalTravelTime !== null) {
-	// 	cache.set(`${start.getId()}-${goal.getId()}`, minimalTravelTime);
-	// 	cache.set(`${goal.getId()}-${start.getId()}`, minimalTravelTime);
-	// }
-	//
-	// return minimalTravelTime;
+	let graph = worldCache.get(key);
+	if (!graph) {
+		graph = cacheWorld(world);
+	}
+
+	let worldPaths = pathCache.get(world.getEntityRoomName());
+	if (!worldPaths) {
+		worldPaths = new Map<string, PathResult>();
+		pathCache.set(world.getEntityRoomName(), worldPaths);
+	}
+
+	let path = worldPaths.get(
+		start.getEntityRoomName() + goal.getEntityRoomName()
+	);
+	if (path) {
+		return path;
+	}
+
+	path = graph.path(start.getEntityRoomName(), goal.getEntityRoomName(), {
+		cost: true,
+	}) as PathResult;
+
+	path.cost += goal.getTravelTime();
+
+	worldPaths.set(start.getEntityRoomName() + goal.getEntityRoomName(), path);
+	worldPaths.set(goal.getEntityRoomName() + start.getEntityRoomName(), path);
+
+	return path;
 }

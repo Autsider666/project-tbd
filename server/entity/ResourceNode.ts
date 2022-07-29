@@ -1,7 +1,10 @@
 import { Opaque } from 'type-fest';
 import { Client } from '../controller/ClientController.js';
 import { EntityUpdate } from '../controller/StateSyncController.js';
-import { calculateTravelTime } from '../helper/TravelTimeCalculator.js';
+import {
+	calculateTravelTime,
+	PathResult,
+} from '../helper/TravelTimeCalculator.js';
 import { Uuid } from '../helper/UuidHelper.js';
 import { RegionProperty } from './CommonProperties/RegionProperty.js';
 import { ResourcesProperty } from './CommonProperties/ResourcesProperty.js';
@@ -26,7 +29,7 @@ export type ResourceNodeStateData = {
 } & EntityStateData<ResourceNodeId>;
 
 export type ResourceNodeClientData = {
-	travelTimeFromSettlement: { [key: string]: number | null };
+	travelFromSettlement: { [key: string]: PathResult | null };
 } & ResourceNodeStateData &
 	EntityClientData<ResourceNodeId>;
 
@@ -53,19 +56,21 @@ export class ResourceNode extends Entity<
 	}
 
 	normalize(forClient?: Client): ResourceNodeClientData {
-		const travelTimeFromSettlement: { [key: string]: number | null } = {};
+		const travelFromSettlement: { [key: string]: PathResult | null } = {};
 		if (forClient) {
 			const region = this.getRegion();
 			forClient.parties.forEach((party) => {
 				const settlement = party.getSettlement();
-				travelTimeFromSettlement[settlement.getId()] =
-					calculateTravelTime(region, settlement.getRegion());
+				travelFromSettlement[settlement.getId()] = calculateTravelTime(
+					region,
+					settlement.getRegion()
+				);
 			});
 		}
 
 		return {
 			entityType: this.getEntityType(),
-			travelTimeFromSettlement,
+			travelFromSettlement,
 			...this.toJSON(),
 		};
 	}

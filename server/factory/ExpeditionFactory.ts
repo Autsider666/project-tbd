@@ -18,10 +18,11 @@ export class ExpeditionFactory {
 			throw new Error('Party is already on an expedition.');
 		}
 
-		const durationInSeconds = calculateTravelTime(
-			party.getSettlement().getRegion(),
-			node.getRegion()
-		);
+		const durationInSeconds =
+			calculateTravelTime(
+				party.getSettlement().getRegion(),
+				node.getRegion()
+			)?.cost ?? null;
 		if (durationInSeconds === null) {
 			throw new Error('Could not find a route to target resource node.');
 		}

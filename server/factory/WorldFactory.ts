@@ -4,9 +4,8 @@ import WorldTemplates, {
 	WorldTemplate,
 } from '../config/WorldTemplates.js';
 import { BorderType } from '../entity/Border.js';
-import { Region, RegionId, RegionType } from '../entity/Region.js';
+import { Region, RegionType } from '../entity/Region.js';
 import { World } from '../entity/World.js';
-import { calculateTravelTime } from '../helper/TravelTimeCalculator.js';
 import { BorderRepository } from '../repository/BorderRepository.js';
 import { RegionRepository } from '../repository/RegionRepository.js';
 import { ResourceNodeRepository } from '../repository/ResourceNodeRepository.js';
