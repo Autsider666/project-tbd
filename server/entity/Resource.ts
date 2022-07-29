@@ -27,6 +27,8 @@ export class Resource extends Entity<
 	public readonly type: ResourceType;
 	private amount: number;
 
+	public owner: Entity<any, any, any> | null = null;
+
 	constructor(data: ResourceStateData) {
 		super(data);
 
@@ -50,6 +52,24 @@ export class Resource extends Entity<
 	}
 
 	getUpdateRoomName(): string {
-		return this.getEntityRoomName(); //TODO fix asap
+		return this.owner?.getUpdateRoomName() ?? ''; //TODO fix asap
+	}
+
+	public getAmount(): number {
+		return this.amount;
+	}
+
+	public removeAmount(amount: number): void {
+		if (amount > this.amount) {
+			throw new Error('Cannot take more than resource contains.');
+		}
+
+		this.amount -= amount;
+	}
+
+	public addAmount(amount: number): number {
+		this.amount += amount;
+
+		return this.amount;
 	}
 }

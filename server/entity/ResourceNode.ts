@@ -46,7 +46,10 @@ export class ResourceNode extends Entity<
 		this.name = data.name;
 		this.type = data.type;
 		this.regionProperty = new RegionProperty(data.region);
-		this.resourcesProperty = new ResourcesProperty(data.resources ?? []);
+		this.resourcesProperty = new ResourcesProperty(
+			data.resources ?? [],
+			this
+		);
 	}
 
 	normalize(forClient?: Client): ResourceNodeClientData {

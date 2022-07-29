@@ -1,8 +1,7 @@
-import { container } from 'tsyringe';
 import { Opaque } from 'type-fest';
 import { Client } from '../controller/ClientController.js';
 import { Uuid } from '../helper/UuidHelper.js';
-import { PartyRepository } from '../repository/PartyRepository.js';
+import { PartyProperty } from './CommonProperties/PartyProperty.js';
 import { Entity, EntityClientData, EntityStateData } from './Entity.js';
 import { Party, PartyId } from './Party.js';
 
@@ -10,10 +9,11 @@ export type SurvivorId = Opaque<Uuid, 'SurvivorId'>;
 
 export type SurvivorStateData = {
 	name: string;
-	party: PartyId | null;
+	party?: PartyId | null;
 	hp: number;
 	damage: number;
 	carryCapacity: number;
+	gatheringSpeed: number;
 } & EntityStateData<SurvivorId>;
 
 export type SurvivorClientDate = SurvivorStateData &
@@ -24,44 +24,38 @@ export class Survivor extends Entity<
 	SurvivorStateData,
 	SurvivorClientDate
 > {
-	private readonly partyRepository: PartyRepository =
-		container.resolve(PartyRepository);
-
 	private readonly name: string;
-	private party: PartyId | Party | null;
+	private partyProperty: PartyProperty | null;
 	public readonly hp: number;
 	public readonly damage: number;
 	public readonly carryCapacity: number;
+	public readonly gatheringSpeed: number;
 
 	constructor(data: SurvivorStateData) {
 		super(data);
 
 		this.name = data.name;
-		this.party = data.party ?? null;
+		this.partyProperty = data.party ? new PartyProperty(data.party) : null;
 		this.hp = data.hp;
 		this.damage = data.hp;
 		this.carryCapacity = data.carryCapacity;
+		this.gatheringSpeed = data.gatheringSpeed;
 	}
 
 	public getParty(): Party | null {
-		if (typeof this.party === 'string') {
-			const party = this.partyRepository.get(this.party as PartyId);
-			if (party === null) {
-				throw new Error('.... uhm.....');
-			}
-
-			this.party = party;
-		}
-
-		return this.party as Party | null;
+		return this.partyProperty?.get() ?? null;
 	}
 
 	public setParty(party: Party): void {
 		if (this.getParty()?.getId() === party.getId()) {
 			return;
 		}
+		if (this.partyProperty) {
+			this.partyProperty.set(party);
+		} else {
+			this.partyProperty = new PartyProperty(party);
+		}
 
-		this.party = party;
 		party.addSurvivor(this);
 	}
 
@@ -79,10 +73,8 @@ export class Survivor extends Entity<
 			hp: this.hp,
 			damage: this.damage,
 			carryCapacity: this.carryCapacity,
-			party:
-				typeof this.party === 'string'
-					? this.party
-					: (this.party as Party)?.getId() ?? null,
+			gatheringSpeed: this.gatheringSpeed,
+			party: this.partyProperty?.toJSON() ?? null,
 		};
 	}
 

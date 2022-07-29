@@ -125,7 +125,11 @@ export class ClientController {
 					data.settlementId ?? ('a' as SettlementId)
 				);
 				if (settlement === null) {
-					throw new Error('shit');
+					ClientNotifier.error(
+						'This settlement does not exist.',
+						this.socket.id
+					);
+					return;
 				}
 
 				const name = data.name;

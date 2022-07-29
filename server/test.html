@@ -24,20 +24,19 @@
 				<h4>Settlements</h4>
 			</div>
 		</div>
-		<div>
+		<div id="party">
 			<h3>Party</h3>
-			<button onClick="createParty('a')">Create Party</button>
-			<button onClick="addParty()">Initialize Party</button>
+			<!--			<button onClick="addParty()">Initialize Party</button>-->
 		</div>
-		<div>
+		<div id="settlement">
 			<h3>Journey</h3>
-			<button onClick="travel('a')">Travel to A</button>
-			<button onClick="travel('b')">Travel to B</button>
+			<!--			<button onClick="travel('a')">Travel to A</button>-->
+			<!--			<button onClick="travel('b')">Travel to B</button>-->
 		</div>
-		<div>
+		<div id="resourcenode">
 			<h3>Expedition</h3>
-			<button onClick="expedition('aaaa')">Start expedition to A</button>
-			<button onClick="expedition('aaab')">Start expedition to B</button>
+			<!--			<button onClick="expedition('aaaa')">Start expedition to A</button>-->
+			<!--			<button onClick="expedition('aaab')">Start expedition to B</button>-->
 		</div>
 
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.2/socket.io.js"></script>
@@ -123,8 +122,22 @@
 			});
 
 			socket.on('entity:update', function (data) {
-				// console.log('entity:update', JSON.stringify(data));
 				console.log(data);
+				Object.values(data).forEach((entity) => {
+					const container = document.getElementById(
+						entity.entityType
+					);
+					if (
+						container === null ||
+						document.getElementById(entity.id)
+					) {
+						return;
+					}
+
+					const button = document.createElement('span');
+					button.innerHTML = `<button id="${entity.id}" onClick="getSettlements('${entity.id}')">${entity.name} - (${entity.id})</button>`;
+					container.appendChild(button);
+				});
 			});
 		</script>
 	</body>

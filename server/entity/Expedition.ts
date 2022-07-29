@@ -7,7 +7,7 @@ import { SettlementProperty } from './CommonProperties/SettlementProperty.js';
 import { Entity, EntityClientData, EntityStateData } from './Entity.js';
 import { Party, PartyId } from './Party.js';
 import { ResourceNode, ResourceNodeId } from './ResourceNode.js';
-import { SettlementId } from './Settlement.js';
+import { Settlement, SettlementId } from './Settlement.js';
 
 export type ExpeditionId = Opaque<Uuid, 'ExpeditionId'>;
 
@@ -74,7 +74,7 @@ export class Expedition extends Entity<
 	}
 
 	getUpdateRoomName(): string {
-		return this.partyProperty.get().getEntityRoomName();
+		return this.getParty().getEntityRoomName();
 	}
 
 	public getParty(): Party {
@@ -83,5 +83,9 @@ export class Expedition extends Entity<
 
 	public getTarget(): ResourceNode {
 		return this.targetProperty.get();
+	}
+
+	public getOrigin(): Settlement {
+		return this.originProperty.get();
 	}
 }

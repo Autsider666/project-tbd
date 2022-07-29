@@ -8,7 +8,7 @@ import { SettlementProperty } from './CommonProperties/SettlementProperty.js';
 import { SurvivorsProperty } from './CommonProperties/SurvivorsProperty.js';
 import { VoyageProperty } from './CommonProperties/VoyageProperty.js';
 import { Expedition, ExpeditionId } from './Expedition.js';
-import { ResourceId } from './Resource.js';
+import { Resource, ResourceId, ResourceType } from './Resource.js';
 import { Settlement, SettlementId } from './Settlement.js';
 import { Opaque } from 'type-fest';
 import { Entity, EntityClientData, EntityStateData } from './Entity.js';
@@ -46,7 +46,7 @@ export class Party extends Entity<PartyId, PartyStateData, PartyClientData> {
 		this.name = data.name;
 		this.settlementProperty = new SettlementProperty(data.settlement);
 		this.survivorsProperty = new SurvivorsProperty(data.survivors);
-		this.inventoryProperty = new ResourcesProperty(data.inventory);
+		this.inventoryProperty = new ResourcesProperty(data.inventory, this);
 		this.voyageProperty = data.currentVoyage
 			? new VoyageProperty(data.currentVoyage)
 			: null;
@@ -166,5 +166,31 @@ export class Party extends Entity<PartyId, PartyStateData, PartyClientData> {
 		}
 
 		return true;
+	}
+
+	public getGatheringSpeed(): number {
+		let gatheringSpeed = 0;
+		this.getSurvivors().forEach(
+			(survivor) => (gatheringSpeed += survivor.gatheringSpeed)
+		);
+
+		return gatheringSpeed;
+	}
+
+	public getCarryCapacity(): number {
+		let carryCapacity = 0;
+		this.getSurvivors().forEach(
+			(survivor) => (carryCapacity += survivor.carryCapacity)
+		);
+
+		return carryCapacity;
+	}
+
+	public addResource(amount: number, type: ResourceType): void {
+		this.inventoryProperty.addResource(amount, type);
+	}
+
+	public getResources(): Resource[] {
+		return this.inventoryProperty.getAll();
 	}
 }

@@ -12,6 +12,8 @@ import { VoyageSystem } from '../system/VoyageSystem.js';
 import { ClientController } from './ClientController.js';
 import { Server, Socket } from 'socket.io';
 
+export const ServerTickTime = 5000;
+
 // TODO move to config file?
 @registry([
 	{ token: 'System', useClass: VoyageSystem },
@@ -53,6 +55,6 @@ export class ServerController {
 
 		setInterval(() => {
 			this.systems.forEach(async (system) => await system.tick());
-		}, 5000);
+		}, ServerTickTime);
 	}
 }

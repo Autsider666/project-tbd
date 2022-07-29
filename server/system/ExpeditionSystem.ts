@@ -1,6 +1,9 @@
 import { injectable } from 'tsyringe';
+import { ServerTickTime } from '../controller/ServerController.js';
 import { Expedition, ExpeditionPhase } from '../entity/Expedition.js';
+import { Resource } from '../entity/Resource.js';
 import { ClientNotifier } from '../helper/ClientNotifier.js';
+import { calculateTravelTime } from '../helper/TravelTimeCalculator.js';
 import { ExpeditionRepository } from '../repository/ExpeditionRepository.js';
 import { System } from './System.js';
 
@@ -10,32 +13,95 @@ export class ExpeditionSystem implements System {
 
 	async tick(): Promise<void> {
 		const now = new Date();
-		this.expeditionRepository
+
+		const activeExpedition = this.expeditionRepository
 			.getAll()
 			.filter(
-				(expedition) =>
-					expedition.phase !== ExpeditionPhase.finished &&
-					expedition.nextPhaseAt <= now
-			)
-			.forEach((expedition) => {
-				switch (expedition.phase) {
-					case ExpeditionPhase.gather:
-						this.handleEndOfGathering(expedition);
-						break;
-					case ExpeditionPhase.travel:
-					case ExpeditionPhase.returning:
-						this.handleEndOfTravel(expedition);
-						break;
-					default:
-						throw new Error('Should never happen'); //TODO
-				}
-			});
+				(expedition) => expedition.phase !== ExpeditionPhase.finished
+			);
+
+		for (const expedition of activeExpedition) {
+			this.handleGathering(expedition);
+			this.handlePhaseChange(expedition, now);
+		}
+	}
+
+	private handleGathering(expedition: Expedition): void {
+		if (expedition.phase !== ExpeditionPhase.gather) {
+			return;
+		}
+
+		const party = expedition.getParty();
+		const node = expedition.getTarget();
+		let resources = node.getResources();
+
+		let amountToGather = party.getGatheringSpeed();
+		while (amountToGather > 0) {
+			resources = resources.filter(
+				(resource) => resource.getAmount() > 0
+			);
+			if (resources.length === 0) {
+				expedition.nextPhaseAt = new Date();
+				ClientNotifier.info(
+					`${node.name} seems to be completely depleted, so party "${party.name}" is going to head back soon.`,
+					expedition.getUpdateRoomName()
+				);
+				break;
+			}
+
+			const randomResource = this.getRandomResource(resources);
+			const toTake = Math.min(amountToGather, randomResource.getAmount());
+			party.addResource(toTake, randomResource.type);
+			randomResource.removeAmount(toTake);
+			amountToGather -= toTake;
+		}
+	}
+
+	private getRandomResource(resources: Resource[]): Resource {
+		const weights: number[] = [];
+		for (let i = 0; i < resources.length; i++) {
+			weights[i] = resources[i].getAmount() + (weights[i - 1] || 0);
+		}
+
+		const random = Math.random() * weights[weights.length - 1];
+		for (let i = 0; i < weights.length; i++) {
+			if (weights[i] > random) {
+				return resources[i];
+			}
+		}
+
+		throw new Error('Now this is interesting');
+	}
+
+	private handlePhaseChange(expedition: Expedition, now: Date) {
+		if (expedition.nextPhaseAt >= now) {
+			return;
+		}
+
+		switch (expedition.phase) {
+			case ExpeditionPhase.gather:
+				this.handleEndOfGathering(expedition);
+				break;
+			case ExpeditionPhase.travel:
+			case ExpeditionPhase.returning:
+				this.handleEndOfTravel(expedition);
+				break;
+			default:
+				throw new Error('Should never happen'); //TODO
+		}
 	}
 
 	private handleEndOfGathering(expedition: Expedition): void {
 		expedition.phase = ExpeditionPhase.returning;
 
-		const durationInSeconds = 5;
+		const durationInSeconds = calculateTravelTime(
+			expedition.getOrigin().getRegion(),
+			expedition.getTarget().getRegion()
+		);
+		if (durationInSeconds === null) {
+			throw new Error('Wait, no route between these two?');
+		}
+
 		const now = new Date();
 		expedition.nextPhaseAt = new Date(
 			now.getTime() + durationInSeconds * 1000
@@ -66,10 +132,11 @@ export class ExpeditionSystem implements System {
 
 		expedition.phase = ExpeditionPhase.gather;
 
-		const durationInSeconds = 5;
+		const durationInSeconds =
+			party.getCarryCapacity() / party.getGatheringSpeed();
 		const now = new Date();
 		expedition.nextPhaseAt = new Date(
-			now.getTime() + durationInSeconds * 1000
+			now.getTime() + durationInSeconds * ServerTickTime
 		);
 
 		ClientNotifier.success(

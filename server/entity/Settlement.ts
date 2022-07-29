@@ -38,7 +38,7 @@ export class Settlement extends Entity<
 		this.name = data.name;
 		this.regionProperty = new RegionProperty(data.region);
 		this.partiesProperty = new PartiesProperty(data.parties ?? []);
-		this.storage = new ResourcesProperty(data.storage ?? []);
+		this.storage = new ResourcesProperty(data.storage ?? [], this);
 	}
 
 	normalize(forClient: Client | undefined): SettlementClientData {
