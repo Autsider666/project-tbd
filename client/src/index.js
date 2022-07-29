@@ -26,6 +26,15 @@ const theme = createTheme({
 	typography: {
 		fontFamily: "SanFrancisco, Arial",
 	},
+	breakpoints: {
+		values: {
+		  xs: 0,
+		  sm: 735,
+		  md: 900,
+		  lg: 1201,
+		  xl: 1536,
+		},
+	  },
 });
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
