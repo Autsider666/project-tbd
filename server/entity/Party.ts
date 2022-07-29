@@ -28,6 +28,10 @@ export type PartyStateData = {
 
 export type PartyClientData = {
 	controllable: boolean;
+	hp: number;
+	damage: number;
+	carryCapacity: number;
+	gatheringSpeed: number;
 } & PartyStateData &
 	EntityClientData<PartyId>;
 
@@ -73,6 +77,10 @@ export class Party extends Entity<PartyId, PartyStateData, PartyClientData> {
 		return {
 			entityType: this.constructor.name.toLowerCase(),
 			controllable: forClient?.parties.has(this.id) ?? false,
+			hp: this.getHp(),
+			damage: this.getDamage(),
+			gatheringSpeed: this.getGatheringSpeed(),
+			carryCapacity: this.getCarryCapacity(),
 			...this.toJSON(),
 		};
 	}
@@ -166,6 +174,20 @@ export class Party extends Entity<PartyId, PartyStateData, PartyClientData> {
 		}
 
 		return true;
+	}
+
+	public getHp(): number {
+		let hp = 0;
+		this.getSurvivors().forEach((survivor) => (hp += survivor.hp));
+
+		return hp;
+	}
+
+	public getDamage(): number {
+		let damage = 0;
+		this.getSurvivors().forEach((survivor) => (damage += survivor.damage));
+
+		return damage;
 	}
 
 	public getGatheringSpeed(): number {
