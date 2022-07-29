@@ -25,8 +25,13 @@ const ExpeditionSites = ({ region, party, expedition, resourceNodeRepository }) 
     return (
         <Box sx={{ flexGrow: 1 }}>
             <Grid container sx={{ padding: 0 }}>
-                <Grid sx={{ margin: 1 }} item xs={12}>Name: {`${name}`}</Grid>
-                <Grid sx={{ margin: 1 }} item xs={12}>Sites:</Grid>
+                <Grid sx={{ margin: 1 }} item xs={12}>
+                    <Typography textAlign={"center"} variant="h5" >Region of {`${name}`}</Typography>
+                    
+                </Grid>
+                <Grid sx={{ margin: 1, justifyContent: 'center' }} item xs={12} >
+                    <Typography textAlign={"center"} variant="h5" >Resource Sites:</Typography>
+                </Grid>
 
                 {nodes.map(node => {
                     return (
@@ -51,12 +56,12 @@ const ExpeditionSites = ({ region, party, expedition, resourceNodeRepository }) 
     )
 }
 const Settlement = ({ settlement, party, voyage, settlementRepository }) => {
-    
+
     const { name } = settlement
-    console.log(voyage)
+    // console.log(voyage)
     const traveling = voyage && voyage.finished === false
     voyage && console.log(voyage.finished)
-    console.log(traveling)
+    // console.log(traveling)
 
 
     return (
@@ -86,7 +91,7 @@ const Settlement = ({ settlement, party, voyage, settlementRepository }) => {
         </Grid >
     )
 }
-// const Random2 = () => <div>Random2</div>
+const Party = () => <div>Party</div>
 
 
 
@@ -102,16 +107,16 @@ const Region = () => {
     // console.log(settlementRepository)
     const settlement = settlementRepository[region.settlement]
     const party = Object.values(partyRepository).find(party => party.controllable === true)
-    
+
     const voyage = Object.values(voyageRepository).find(voyage => voyage.party === party.id && voyage.finished === false)
     const expedition = Object.values(expeditionRepository).find(expedition => expedition.party === party.id && expedition.phase !== "finished")
-    console.log({party, voyageRepository})
+    // console.log({ party, voyageRepository })
     // console.log(region)
 
     const content = [
         { label: 'Expedition Sites', Component: ExpeditionSites, props: { region, party, expedition, resourceNodeRepository } },
         { label: 'Settlement', Component: Settlement, props: { settlement, party, voyage, settlementRepository }, disable: region.settlement ? false : true },
-        // { label: 'Random2', Component: Random2 },
+        // { label: 'Party', Component: Party },
     ]
     if (!region) return <div />
 

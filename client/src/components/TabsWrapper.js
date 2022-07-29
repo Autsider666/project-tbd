@@ -17,7 +17,7 @@ function TabPanel(props) {
       {...other}
     >
       {value === index && (
-        <Box sx={{ p: 3 }}>
+        <Box sx={{ p: 3, height:'calc(100% - 48px)' }}>
           {children}
         </Box>
       )}
@@ -25,11 +25,6 @@ function TabPanel(props) {
   );
 }
 
-TabPanel.propTypes = {
-  children: PropTypes.node,
-  index: PropTypes.number.isRequired,
-  value: PropTypes.number.isRequired,
-};
 
 function a11yProps(index) {
   return {
@@ -49,16 +44,16 @@ const TabsWrapper = ({ content = [], }) => {
   }
 
   return (
-    <Box sx={{ width: '100%' }}>
+    <Box sx={{ height:"100%", width: '100%' }}>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
         <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
           {content.map((row, index) => (
-            <Tab disabled={!disableFilter(row)} key={index} label={row.label} {...a11yProps(index)} />
+            <Tab sx={row.tabSx} disabled={!disableFilter(row)} key={index} label={row.label} {...a11yProps(index)} />
           ))}
         </Tabs>
       </Box>
       {content.map(({ Component, props = {} }, index) => (
-        <TabPanel key={index} value={value} index={index}>
+        <TabPanel style={{height:'100%', width:'100%'}} key={index} value={value} index={index}>
           <Component {...props} />
         </TabPanel>
       ))}
