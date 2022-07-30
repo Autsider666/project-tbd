@@ -15,7 +15,7 @@ export class MultiCommonProperty<
 		property: TId[],
 		repositoryIdentifier: Constructor<Repository<T, TId, any>>
 	) {
-		property.forEach((id) => this.property.set(id, null));
+		property.forEach((id) => this.add(id));
 
 		this.repository = container.resolve(repositoryIdentifier);
 	}
@@ -37,12 +37,13 @@ export class MultiCommonProperty<
 		return Array.from(this.property.values()) as T[];
 	}
 
-	public add(value: T): void {
-		if (this.property.has(value.getId())) {
+	public add(value: T | TId): void {
+		const key = typeof value === 'string' ? value : (value as T).getId();
+		if (this.property.has(key)) {
 			return;
 		}
 
-		this.property.set(value.getId(), null);
+		this.property.set(key, null);
 	}
 
 	public remove(id: TId): void {
