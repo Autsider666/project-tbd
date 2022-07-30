@@ -10,8 +10,8 @@ const Party = () => {
 
     const party = Object.values(partyRepository).find(party => party.controllable)
     const survivors = Object.values(survivorRepository).filter(survivor => survivor.party = party.id)
-    console.log({ survivorRepository, partyRepository })
-    console.log({ party, survivors })
+    // console.log({ survivorRepository, partyRepository })
+    // console.log({ party, survivors })
 
     return (
             <List>
