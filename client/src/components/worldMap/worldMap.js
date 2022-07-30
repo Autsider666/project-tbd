@@ -9,7 +9,7 @@ const WorldMaps = [
     }
 ]
 
-const WorldMap = ({ world, regions, selectedRegion, setSelectedRegion }) => {
+const WorldMap = ({ world, regions, selectedRegionId, setSelectedRegionId }) => {
     
     const worldMapSelected = WorldMaps[0]
 
@@ -24,9 +24,9 @@ const WorldMap = ({ world, regions, selectedRegion, setSelectedRegion }) => {
                     {regions.map(region => (
                         <path
                             key={region.id}
-                            className={`mapRegion ${selectedRegion === region.id ? 'selected' : ''}`}
+                            className={`mapRegion ${selectedRegionId === region.id ? 'selected' : ''}`}
                             d={region.dimensions}
-                            onClick={() => setSelectedRegion(region.id)}
+                            onClick={() => setSelectedRegionId(region.id)}
                         />
                     ))}
                 </g>

@@ -8,6 +8,14 @@ const GameContext = createContext();
 
 const useGame = () => useContext(GameContext);
 
+const getSettlements = (originId, targetId) => new Promise(resolve => {
+    socket.emit('travel:calculate', { originId, targetId }, data => {
+        resolve(data)
+    })
+})
+
+
+
 const GameProvider = ({ children }) => {
 
     const { user } = useAuth()
@@ -28,6 +36,9 @@ const GameProvider = ({ children }) => {
     const [voyageRepository, setVoyageRepository] = useState({})
     const [expeditionRepository, setExpeditionRepository] = useState({})
     const [resourceRepository, setResourceRepository] = useState({})
+
+    const [travelPaths, setTravelPaths] = useState({})
+    const [selectedRegionTravelPath, setSelectedRegionTravelPath] = useState({})
 
     const isLoaded = () => {
         // console.log({
@@ -52,11 +63,11 @@ const GameProvider = ({ children }) => {
         if (Object.keys(resourceNodeRepository).length === 0) return false
         // if (Object.keys(settlementRepository).length === 0) console.log("errors out at: settlementRepository")
         if (Object.keys(settlementRepository).length === 0) return false
-        console.log("IS LOADED NOW! YAY")
+        // console.log("IS LOADED NOW! YAY")
         return true
     }
 
-    const [selectedRegion, setSelectedRegion] = useState(null)
+    const [selectedRegionId, setSelectedRegionId] = useState(null)
 
     const entityUpdater = entities => {
         console.log(entities)
@@ -93,7 +104,7 @@ const GameProvider = ({ children }) => {
     }
 
     const notificationUpdater = ({ message, severity }) => {
-        console.log({message, severity})
+        console.log({ message, severity })
         displaySnackbar(message, severity)
     }
 
@@ -103,12 +114,12 @@ const GameProvider = ({ children }) => {
 
     useEffect(() => {
         if (loaded) {
-            const partySettlementId = Object.values(partyRepository).find(party=>party.controllable === true).settlement
+            const partySettlementId = Object.values(partyRepository).find(party => party.controllable === true).settlement
             // console.log({ partySettlementId })
             // console.log(settlementRepository)
             const regionOfPartySettlement = settlementRepository[partySettlementId].region
             // console.log({ regionOfPartySettlement })
-            setSelectedRegion(regionOfPartySettlement)
+            setSelectedRegionId(regionOfPartySettlement)
         }
     }, [loaded])
 
@@ -135,15 +146,48 @@ const GameProvider = ({ children }) => {
         }
     }, [])
 
+    const controlledParty = Object.values(partyRepository).find(party => party.controllable)
+    const currentSettlement = controlledParty && Object.keys(settlementRepository).length > 0 && settlementRepository[controlledParty.settlement]
+    const currentSettlementId = currentSettlement && currentSettlement.id
+    const currentRegionId = currentSettlement && currentSettlement.region
+    const selectedRegion = regionRepository[selectedRegionId]
+    const selectedResourceNodes = Object.values(resourceNodeRepository).filter(resourceNode => resourceNode.region === selectedRegionId)
+    // console.log({ selectedRegionId, currentRegionId, travelPaths })
+    // const selectedRegionTravelPath = selectedRegionId && currentRegionId && travelPaths[currentRegionId] && travelPaths[currentRegionId][selectedRegionId]
+
+
+    useEffect(() => {
+        const originId = currentRegionId
+        const targetId = selectedRegionId
+        originId && targetId && socket.emit('travel:calculate', {
+            originId,
+            targetId,
+        }, data => {
+            setTravelPaths(prev => {
+                if (prev[originId]) {
+                    prev[originId][targetId] = data
+                } else {
+                    prev[originId] = { [targetId]: data }
+                }
+                return prev
+            })
+            setSelectedRegionTravelPath(data)
+        })
+    }, [selectedRegionId, currentRegionId])
+
+
+
+
+
+
     const value = {
         allEntities,
         loaded,
         token,
-        worldRepository, regionRepository, borderRepository, survivorRepository, partyRepository, resourceNodeRepository, settlementRepository, voyageRepository,expeditionRepository, resourceRepository,
-        selectedRegion, setSelectedRegion,
+        worldRepository, regionRepository, borderRepository, survivorRepository, partyRepository, resourceNodeRepository, settlementRepository, voyageRepository, expeditionRepository, resourceRepository,
+        selectedRegionId, setSelectedRegionId,
+        travelPaths, selectedRegionTravelPath
     };
-
-    // console.log(value)
 
     return (
         <GameContext.Provider value={value}>
