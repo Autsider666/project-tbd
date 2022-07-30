@@ -1,5 +1,5 @@
 import { injectable } from 'tsyringe';
-import { Party } from '../entity/Party.js';
+import { SurvivorContainer } from '../entity/CommonTypes/SurvivorContainer.js';
 import { Survivor, SurvivorStateData } from '../entity/Survivor.js';
 import { SurvivorRepository } from '../repository/SurvivorRepository.js';
 
@@ -23,10 +23,13 @@ const survivorTemplates: {
 export class SurvivorFactory {
 	constructor(private readonly repository: SurvivorRepository) {}
 
-	public create(type: SurvivorType, party?: Party): Survivor {
-		return this.repository.create({
-			party: party?.getId() ?? null,
+	public create(type: SurvivorType, container: SurvivorContainer): Survivor {
+		const survivor = this.repository.create({
 			...survivorTemplates[type],
 		});
+
+		container.addSurvivor(survivor);
+
+		return survivor;
 	}
 }

@@ -5,10 +5,13 @@ import { Uuid } from '../helper/UuidHelper.js';
 import { PartiesProperty } from './CommonProperties/PartiesProperty.js';
 import { RegionProperty } from './CommonProperties/RegionProperty.js';
 import { ResourcesProperty } from './CommonProperties/ResourcesProperty.js';
+import { SurvivorsProperty } from './CommonProperties/SurvivorsProperty.js';
+import { SurvivorContainer } from './CommonTypes/SurvivorContainer.js';
 import { Entity, EntityClientData, EntityStateData } from './Entity.js';
 import { Party, PartyId } from './Party.js';
 import { Region, RegionId } from './Region.js';
 import { ResourceId, ResourceType } from './Resource.js';
+import { Survivor, SurvivorId } from './Survivor.js';
 
 export type SettlementId = Opaque<Uuid, 'SettlementId'>;
 
@@ -17,20 +20,21 @@ export type SettlementStateData = {
 	region: RegionId;
 	parties?: PartyId[];
 	storage?: ResourceId[];
+	survivors?: SurvivorId[];
 } & EntityStateData<SettlementId>;
 
 export type SettlementClientData = SettlementStateData &
 	EntityClientData<SettlementId>;
 
-export class Settlement extends Entity<
-	SettlementId,
-	SettlementStateData,
-	SettlementClientData
-> {
+export class Settlement
+	extends Entity<SettlementId, SettlementStateData, SettlementClientData>
+	implements SurvivorContainer
+{
 	public name: string;
 	private readonly regionProperty: RegionProperty;
 	private readonly partiesProperty: PartiesProperty;
 	private readonly storage: ResourcesProperty;
+	private readonly survivorsProperty: SurvivorsProperty;
 
 	constructor(data: SettlementStateData) {
 		super(data);
@@ -39,6 +43,10 @@ export class Settlement extends Entity<
 		this.regionProperty = new RegionProperty(data.region);
 		this.partiesProperty = new PartiesProperty(data.parties ?? []);
 		this.storage = new ResourcesProperty(data.storage ?? [], this);
+		this.survivorsProperty = new SurvivorsProperty(
+			data.survivors ?? [],
+			this
+		);
 	}
 
 	normalize(forClient: Client | undefined): SettlementClientData {
@@ -79,6 +87,13 @@ export class Settlement extends Entity<
 			);
 		}
 
+		for (const survivor of this.getSurvivors()) {
+			updateObject = await survivor.prepareNestedEntityUpdate(
+				updateObject,
+				forClient
+			);
+		}
+
 		return super.prepareNestedEntityUpdate(updateObject, forClient);
 	}
 
@@ -110,5 +125,20 @@ export class Settlement extends Entity<
 
 	public addResource(amount: number, type: ResourceType): void {
 		this.storage.addResource(amount, type);
+	}
+
+	addSurvivor(survivor: Survivor): void {
+		this.survivorsProperty.add(survivor);
+	}
+
+	transferSurvivorTo(
+		survivor: Survivor,
+		newContainer: SurvivorContainer
+	): void {
+		this.survivorsProperty.transferSurvivorTo(survivor, newContainer);
+	}
+
+	getSurvivors(): Survivor[] {
+		return this.survivorsProperty.getAll();
 	}
 }

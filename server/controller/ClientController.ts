@@ -68,6 +68,7 @@ export class ClientController {
 	private handleSocket(): void {
 		this.handlePartyInitialization();
 		this.handlePartyCreation();
+		this.handleSurvivorManagement();
 
 		this.handleTravel();
 		this.handleExpedition();
@@ -287,7 +288,7 @@ export class ClientController {
 				: null;
 		if (!party) {
 			ClientNotifier.error(
-				"You can't control this party",
+				"You don't control this party.",
 				this.socket.id
 			);
 
@@ -296,7 +297,7 @@ export class ClientController {
 
 		if (party.getVoyage() !== null) {
 			ClientNotifier.error(
-				'Party is already on a voyage',
+				`Party "${party.name}" is on a voyage.`,
 				party.getUpdateRoomName()
 			);
 
@@ -305,11 +306,73 @@ export class ClientController {
 
 		if (party.getExpedition() !== null) {
 			ClientNotifier.error(
-				'Party is already on an expedition',
+				`Party "${party.name}" is on an expedition.`,
 				party.getUpdateRoomName()
 			);
 
 			return null;
+		}
+
+		return party;
+	}
+
+	private handleSurvivorManagement(): void {
+		this.socket.on('survivor:recruit', ({ partyId, survivorId }) => {
+			const party = this.validatePartyForActivity(partyId);
+			if (party === null) {
+				return;
+			}
+
+			const settlement = party.getSettlement();
+			for (const survivor of settlement.getSurvivors()) {
+				if (survivor.getId() !== survivorId) {
+					continue;
+				}
+
+				settlement.transferSurvivorTo(survivor, party);
+
+				return;
+			}
+
+			ClientNotifier.error(
+				'This survivor is not accessible to this party.',
+				party.getUpdateRoomName()
+			);
+		});
+
+		this.socket.on('survivor:dismiss', ({ partyId, survivorId }) => {
+			const party = this.validatePartyForActivity(partyId);
+			if (party === null) {
+				return;
+			}
+
+			for (const survivor of party.getSurvivors()) {
+				if (survivor.getId() !== survivorId) {
+					continue;
+				}
+
+				party.transferSurvivorTo(survivor, party.getSettlement());
+
+				return;
+			}
+
+			ClientNotifier.error(
+				'This survivor is not accessible to this party.',
+				party.getUpdateRoomName()
+			);
+		});
+	}
+
+	private getParty(id: PartyId): Party | null {
+		const party =
+			this.client.parties.get(id) ?? id === 'test'
+				? Array.from(this.client.parties.values())[0]
+				: null;
+		if (party === null) {
+			ClientNotifier.error(
+				"You don't control this party",
+				this.socket.id
+			);
 		}
 
 		return party;

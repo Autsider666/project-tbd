@@ -10,6 +10,18 @@ export class ResourceRepository extends Repository<
 	ResourceId,
 	ResourceStateData
 > {
+	constructor() {
+		super();
+
+		setInterval(() => {
+			for (const resource of Object.values(this.entities).filter(
+				(resource) => !resource.owner
+			)) {
+				console.error('Resource without owner found:', resource);
+			}
+		}, 60000);
+	}
+
 	protected entity(): Constructor<Resource> {
 		return Resource;
 	}
