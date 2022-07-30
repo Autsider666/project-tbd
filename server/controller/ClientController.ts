@@ -8,7 +8,9 @@ import { ExpeditionFactory } from '../factory/ExpeditionFactory.js';
 import { PartyFactory } from '../factory/PartyFactory.js';
 import { VoyageFactory } from '../factory/VoyageFactory.js';
 import { ClientNotifier } from '../helper/ClientNotifier.js';
+import { TravelTimeCalculator } from '../helper/TravelTimeCalculator.js';
 import { PartyRepository } from '../repository/PartyRepository.js';
+import { RegionRepository } from '../repository/RegionRepository.js';
 import { ResourceNodeRepository } from '../repository/ResourceNodeRepository.js';
 import { SettlementRepository } from '../repository/SettlementRepository.js';
 import { WorldRepository } from '../repository/WorldRepository.js';
@@ -39,12 +41,16 @@ export class ClientController {
 		container.resolve(SettlementRepository);
 	private readonly resourceNodeRepository: ResourceNodeRepository =
 		container.resolve(ResourceNodeRepository);
+	private readonly regionRepository: RegionRepository =
+		container.resolve(RegionRepository);
 	private readonly voyageFactory: VoyageFactory =
 		container.resolve(VoyageFactory);
 	private readonly partyFactory: PartyFactory =
 		container.resolve(PartyFactory);
 	private readonly expeditionFactory: ExpeditionFactory =
 		container.resolve(ExpeditionFactory);
+	private readonly travelTimeCalculator: TravelTimeCalculator =
+		container.resolve(TravelTimeCalculator);
 
 	constructor(
 		private readonly socket: Socket<
@@ -92,6 +98,35 @@ export class ClientController {
 			);
 			callback(settlements);
 		});
+
+		this.socket.on(
+			'travel:calculate',
+			({ originId, targetId }, callback) => {
+				const origin = this.regionRepository.get(originId);
+				if (!origin) {
+					callback(null);
+					return; //todo handle error
+				}
+
+				const target = this.regionRepository.get(targetId);
+				if (!target) {
+					callback(null);
+					return; //todo handle error
+				}
+
+				if (origin.getWorld().getId() !== target.getWorld().getId()) {
+					callback(null);
+					return;
+				}
+
+				callback(
+					this.travelTimeCalculator.calculateTravelTime(
+						origin,
+						target
+					)
+				);
+			}
+		);
 	}
 
 	private handlePartyInitialization(): void {
