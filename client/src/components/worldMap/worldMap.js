@@ -24,7 +24,11 @@ const WorldMap = ({ world, regions, selectedRegionId, setSelectedRegionId }) => 
                     {regions.map(region => (
                         <path
                             key={region.id}
-                            className={`mapRegion ${selectedRegionId === region.id ? 'selected' : ''}`}
+                            className={`
+                                mapRegion 
+                                ${selectedRegionId === region.id ? 'selected' : ''}
+                                ${region.expeditionInProgress !== '' ? `expedition ${region.expeditionInProgress}` : ''}
+                                `}
                             d={region.dimensions}
                             onClick={() => setSelectedRegionId(region.id)}
                         />

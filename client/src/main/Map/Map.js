@@ -4,15 +4,22 @@ import WorldMap from '../../components/worldMap/worldMap.js'
 import { useGame } from '../../contexts/GameContext.js'
 
 const Map = () => {
+    const { regionRepository, worldRepository, selectedRegionId, setSelectedRegionId, currentExpedition, currentExpeditionTravelPath = {} } = useGame()
 
-    const { regionRepository, worldRepository, selectedRegionId, setSelectedRegionId } = useGame()
-    
     const worldSelected = Object.values(worldRepository)[0] // Add future code to take more than one map.
 
     const hide = false
-    
+
+    const { phase } = currentExpedition || {}
+    const { path } = currentExpeditionTravelPath
+
+    const regions = Object.values(regionRepository).map(region => {
+        region.expeditionInProgress = path && path.find(pathRegionId => pathRegionId === region.id) ? currentExpedition?.phase : ''
+        return region
+    })
+
     if (hide) return <img style={{ opacity: 0.3, marginBottom: '-8px' }} src={Water} position="absolute" width="100%" />
-    return <WorldMap world={worldSelected} selectedRegionId={selectedRegionId} setSelectedRegionId={setSelectedRegionId} regions={Object.values(regionRepository)} />
+    return <WorldMap world={worldSelected} selectedRegionId={selectedRegionId} setSelectedRegionId={setSelectedRegionId} regions={regions} />
 }
 
 export default Map

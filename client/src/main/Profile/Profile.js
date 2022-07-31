@@ -2,7 +2,7 @@ import { List, ListItem } from '@mui/material'
 import React from 'react'
 import TabsWrapper from '../../components/TabsWrapper'
 import { useGame } from '../../contexts/GameContext'
-
+import Survivors from './Survivors'
 
 const Party = () => {
 

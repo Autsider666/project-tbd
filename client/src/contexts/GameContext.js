@@ -39,6 +39,7 @@ const GameProvider = ({ children }) => {
 
     const [travelPaths, setTravelPaths] = useState({})
     const [selectedRegionTravelPath, setSelectedRegionTravelPath] = useState({})
+    const [currentExpeditionTravelPath, setCurrentExpeditionTravelPath] = useState({})
 
     const isLoaded = () => {
         // console.log({
@@ -158,6 +159,27 @@ const GameProvider = ({ children }) => {
     const currentExpedition = Object.values(expeditionRepository).find(expedition => expedition.party === controlledParty.id && expedition.phase !== "finished")
 
     const partySurvivors = controlledParty && Object.values(survivorRepository).filter(survivor => survivor.party === controlledParty.id)
+
+    const {origin: currentExpeditionOrigin, target: currentExpeditionTarget} = currentExpedition || {}  
+
+    useEffect(() => {
+        const originId = currentRegionId
+        const targetId = selectedRegionId
+        originId && targetId && socket.emit('travel:calculate', {
+            originId,
+            targetId,
+        }, data => {
+            setTravelPaths(prev => {
+                if (prev[originId]) {
+                    prev[originId][targetId] = data
+                } else {
+                    prev[originId] = { [targetId]: data }
+                }
+                return prev
+            })
+            setCurrentExpeditionTravelPath(data)
+        })
+    }, [currentExpeditionOrigin, currentExpeditionTarget])
     
     // console.log({ selectedRegionId, currentRegionId, travelPaths })
     // const selectedRegionTravelPath = selectedRegionId && currentRegionId && travelPaths[currentRegionId] && travelPaths[currentRegionId][selectedRegionId]
@@ -170,6 +192,7 @@ const GameProvider = ({ children }) => {
             originId,
             targetId,
         }, data => {
+            console.log(data)
             setTravelPaths(prev => {
                 if (prev[originId]) {
                     prev[originId][targetId] = data
@@ -195,7 +218,8 @@ const GameProvider = ({ children }) => {
         controlledParty,
         partySurvivors,
         currentSettlement, currentSettlementId,
-        currentExpedition, currentVoyage,
+        currentExpedition, currentExpeditionTravelPath, 
+        currentVoyage,
         selectedResourceNodes,
         selectedRegion, selectedRegionId, setSelectedRegionId, selectedSettlement,
         travelPaths, selectedRegionTravelPath,

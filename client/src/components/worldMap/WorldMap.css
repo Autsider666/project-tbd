@@ -30,10 +30,33 @@
 .mapRegion.selected {
     fill: lightgray !important;
     fill-opacity: 0.8 !important;
-    cursor: pointer !important;
     stroke-width: 2px !important;
     stroke-opacity: 1 !important;
 }
+.mapRegion.expedition.travel {
+    fill: lightgreen !important;
+    fill-opacity: 0.8 !important;
+}
+
+.mapRegion.expedition.gather {
+    fill: green !important;
+    fill-opacity: 0.8 !important;
+}
+
+.mapRegion.expedition.combat {
+    fill: red !important;
+    fill-opacity: 0.8 !important;
+}
+
+.mapRegion.expedition.returning {
+    fill: orange !important;
+    fill-opacity: 0.8 !important;
+}
+
+/* .mapRegion.expedition.finished {
+    fill: lightgreen !important;
+    fill-opacity: 0.8 !important;
+} */
 
 #mapSymbolsLayer {
     z-index: 25;
