@@ -331,6 +331,8 @@ export class ClientController {
 
 				settlement.transferSurvivorTo(survivor, party);
 
+				ClientNotifier.success(`${survivor.name} has been added to party "${party.name}"`, party.getUpdateRoomName());
+
 				return;
 			}
 
@@ -352,6 +354,8 @@ export class ClientController {
 				}
 
 				party.transferSurvivorTo(survivor, party.getSettlement());
+
+				ClientNotifier.success(`${survivor.name} has left party "${party.name}"`, party.getUpdateRoomName());
 
 				return;
 			}
