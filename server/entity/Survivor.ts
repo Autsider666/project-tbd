@@ -22,7 +22,7 @@ export class Survivor extends Entity<
 	SurvivorStateData,
 	SurvivorClientDate
 > {
-	private readonly name: string;
+	public readonly name: string;
 	public readonly hp: number;
 	public readonly damage: number;
 	public readonly carryCapacity: number;
