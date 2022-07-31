@@ -8,9 +8,8 @@ import { ExpeditionSites } from './ExpeditionSites';
 // const Party = () => <div>Party</div>
 
 const Region = () => {
-    const { regionRepository, selectedRegionId } = useGame()
+    const { selectedRegionId, selectedRegion : region } = useGame()
     if (selectedRegionId === null) return <div />
-    const region = regionRepository[selectedRegionId]
 
     const content = [
         { label: 'Expedition Sites', Component: ExpeditionSites,  },

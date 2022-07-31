@@ -104,7 +104,7 @@ const GameProvider = ({ children }) => {
     }
 
     const notificationUpdater = ({ message, severity }) => {
-        console.log({ message, severity })
+        // console.log({ message, severity })
         displaySnackbar(message, severity)
     }
 
@@ -151,10 +151,17 @@ const GameProvider = ({ children }) => {
     const currentSettlementId = currentSettlement && currentSettlement.id
     const currentRegionId = currentSettlement && currentSettlement.region
     const selectedRegion = regionRepository[selectedRegionId]
+    const selectedSettlement = selectedRegion && settlementRepository[selectedRegion.settlement]
+    const currentVoyage = Object.values(voyageRepository).find(voyage => voyage.party === controlledParty.id && voyage.finished === false)
+
     const selectedResourceNodes = Object.values(resourceNodeRepository).filter(resourceNode => resourceNode.region === selectedRegionId)
+    const currentExpedition = Object.values(expeditionRepository).find(expedition => expedition.party === controlledParty.id && expedition.phase !== "finished")
+
+    const partySurvivors = controlledParty && Object.values(survivorRepository).filter(survivor => survivor.party === controlledParty.id)
+    
     // console.log({ selectedRegionId, currentRegionId, travelPaths })
     // const selectedRegionTravelPath = selectedRegionId && currentRegionId && travelPaths[currentRegionId] && travelPaths[currentRegionId][selectedRegionId]
-
+    // console.log(survivorRepository)
 
     useEffect(() => {
         const originId = currentRegionId
@@ -185,8 +192,14 @@ const GameProvider = ({ children }) => {
         loaded,
         token,
         worldRepository, regionRepository, borderRepository, survivorRepository, partyRepository, resourceNodeRepository, settlementRepository, voyageRepository, expeditionRepository, resourceRepository,
-        selectedRegionId, setSelectedRegionId,
-        travelPaths, selectedRegionTravelPath
+        controlledParty,
+        partySurvivors,
+        currentSettlement, currentSettlementId,
+        currentExpedition, currentVoyage,
+        selectedResourceNodes,
+        selectedRegion, selectedRegionId, setSelectedRegionId, selectedSettlement,
+        travelPaths, selectedRegionTravelPath,
+
     };
 
     return (

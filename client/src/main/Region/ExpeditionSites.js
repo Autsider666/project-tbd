@@ -5,33 +5,22 @@ import { useGame } from '../../contexts/GameContext';
 
 export const ExpeditionSites = () => {
     const [resourceNodeButton, resourceNodeButtonSelected] = React.useState(null);
-    const { regionRepository, selectedRegionId, partyRepository, expeditionRepository, resourceNodeRepository, selectedRegionTravelPath = {} } = useGame()
 
-
-    if (selectedRegionId === null) return <div />
-
-    const region = regionRepository[selectedRegionId]
-    // const settlement = settlementRepository[region.settlement]
-    const party = Object.values(partyRepository).find(party => party.controllable === true)
-
-    const expedition = Object.values(expeditionRepository).find(expedition => expedition.party === party.id && expedition.phase !== "finished")
+    const {
+        selectedRegion: region = {}, controlledParty: party, currentExpedition: expedition, selectedResourceNodes : resourceNodes = [],
+         selectedRegionId, resourceNodeRepository,
+        selectedRegionTravelPath = {}
+    } = useGame()
+    
+    if (selectedRegionId === null || resourceNodes.length === 0 || Object.values(resourceNodeRepository).length === 0) return <div />
 
     const { name } = region;
-    const resourceNodes = Object.values(resourceNodeRepository).filter(resourceNode => region.nodes.find(regionNode => regionNode === resourceNode.id));
-
     const { cost = 0 } = selectedRegionTravelPath
 
-    const handleClick = (node) => () => {
+    const travelling = expedition && expedition.phase !== 'finished';
+    const handleClick = node => () => resourceNodeButtonSelected(prev => prev == node ? null : node)
 
-        resourceNodeButtonSelected(prev => {
-            if (prev === node)
-                return null;
-            return node;
-        });
 
-    };
-
-    // console.log({ name, nodes, settlement })
     return (
         <Box sx={{ flexGrow: 1 }}>
             <Grid container sx={{ padding: 0 }}>
@@ -53,7 +42,7 @@ export const ExpeditionSites = () => {
 
                 <Grid sx={{ margin: 1 }} item xs={12}>
                     <Button onClick={() => expeditionStart(party.id, resourceNodeButton)} disabled={(resourceNodeButton === null ? true : false) || (expedition && expedition.phase !== 'finished')} variant="contained" sx={{ width: 1 }}>
-                        {expedition && expedition.phase !== 'finished'
+                        {travelling
                             ? `Currently on expedition to ${resourceNodeRepository[expedition.target].name}`
                             : `Go on Expedition, it takes ${cost} seconds`}
                     </Button>

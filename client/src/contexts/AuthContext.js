@@ -37,7 +37,7 @@ const AuthProvider = ({ children }) => {
             return accum
         })
 
-        console.log({ selectedWorld, settlements, selectedSettlement })
+        // console.log({ selectedWorld, settlements, selectedSettlement })
 
         socket.emit('party:create', { name, settlementId: selectedSettlement.id }, token => setUser({ token }))
     }

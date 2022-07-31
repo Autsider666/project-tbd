@@ -4,23 +4,20 @@ import { voyageStart } from '../../functions/socketCalls';
 import { useGame } from '../../contexts/GameContext';
 
 export const Settlement = () => {
-    const { regionRepository, selectedRegionId, settlementRepository, partyRepository, voyageRepository, selectedRegionTravelPath} = useGame()
+    const {
+        controlledParty: party, selectedSettlement: settlement = {}, currentVoyage: voyage, 
+        selectedRegionId, settlementRepository, 
+        selectedRegionTravelPath
+    } = useGame()
 
     if (selectedRegionId === null) return <div />
 
-    const region = regionRepository[selectedRegionId]
-    const settlement = settlementRepository[region.settlement]
-    const party = Object.values(partyRepository).find(party => party.controllable === true)
-
-    const voyage = Object.values(voyageRepository).find(voyage => voyage.party === party.id && voyage.finished === false)
-
     const { cost = 0 } = selectedRegionTravelPath
-
     const { name } = settlement;
-    // console.log(voyage)
+
     const traveling = voyage && voyage.finished === false;
     voyage && console.log(voyage.finished);
-    // console.log(traveling)
+
     return (
         <Grid container sx={{ padding: 0 }}>
             <Grid sx={{ margin: 1 }} item xs={12}>
