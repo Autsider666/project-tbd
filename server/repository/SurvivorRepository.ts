@@ -10,6 +10,18 @@ export class SurvivorRepository extends Repository<
 	SurvivorId,
 	SurvivorStateData
 > {
+	constructor() {
+		super();
+
+		setInterval(() => {
+			for (const resource of Object.values(this.entities).filter(
+				(resource) => !resource.owner
+			)) {
+				console.error('Survivor without owner found:', resource);
+			}
+		}, 60000);
+	}
+
 	protected entity(): Constructor<Survivor> {
 		return Survivor;
 	}

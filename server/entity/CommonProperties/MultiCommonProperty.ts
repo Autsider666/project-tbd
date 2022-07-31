@@ -47,7 +47,7 @@ export class MultiCommonProperty<
 	}
 
 	public remove(id: TId): void {
-		this.property.delete(id);
+		this.property.delete(id); // check containers if adding repository removal.
 	}
 
 	public has(value: T | TId): boolean {

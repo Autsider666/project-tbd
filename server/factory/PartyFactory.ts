@@ -17,8 +17,6 @@ export class PartyFactory {
 		const party = this.partyRepository.create({
 			name,
 			settlement: settlement.getId(),
-			survivors: [],
-			inventory: [],
 		});
 
 		settlement.addParty(party);

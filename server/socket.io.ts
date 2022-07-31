@@ -4,6 +4,7 @@ import { PartyId } from './entity/Party.js';
 import { RegionId } from './entity/Region.js';
 import { ResourceNodeId } from './entity/ResourceNode.js';
 import { SettlementClientData, SettlementId } from './entity/Settlement.js';
+import { SurvivorId } from './entity/Survivor.js';
 import { WorldClientData, WorldId } from './entity/World.js';
 import { NotificationSeverity } from './helper/ClientNotifier.js';
 import { PathResult } from './helper/TravelTimeCalculator.js';
@@ -42,6 +43,14 @@ export interface ClientToServerEvents {
 		data: { originId: RegionId; targetId: RegionId },
 		callback: (path: PathResult | null) => void
 	) => void;
+	'survivor:recruit': (data: {
+		partyId: PartyId;
+		survivorId: SurvivorId;
+	}) => void;
+	'survivor:dismiss': (data: {
+		partyId: PartyId;
+		survivorId: SurvivorId;
+	}) => void;
 	//Default to keep PhpStorm calm
 	[event: string]: (...args: any[]) => void;
 }

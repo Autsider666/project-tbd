@@ -7,6 +7,7 @@ import { ResourcesProperty } from './CommonProperties/ResourcesProperty.js';
 import { SettlementProperty } from './CommonProperties/SettlementProperty.js';
 import { SurvivorsProperty } from './CommonProperties/SurvivorsProperty.js';
 import { VoyageProperty } from './CommonProperties/VoyageProperty.js';
+import { SurvivorContainer } from './CommonTypes/SurvivorContainer.js';
 import { Expedition, ExpeditionId } from './Expedition.js';
 import { Resource, ResourceId, ResourceType } from './Resource.js';
 import { Settlement, SettlementId } from './Settlement.js';
@@ -20,8 +21,8 @@ export type PartyId = Opaque<Uuid, 'PartyId'>;
 export type PartyStateData = {
 	name: string;
 	settlement: SettlementId;
-	survivors: SurvivorId[];
-	inventory: ResourceId[];
+	survivors?: SurvivorId[];
+	inventory?: ResourceId[];
 	currentVoyage?: VoyageId;
 	currentExpedition?: ExpeditionId;
 } & EntityStateData<PartyId>;
@@ -35,7 +36,10 @@ export type PartyClientData = {
 } & PartyStateData &
 	EntityClientData<PartyId>;
 
-export class Party extends Entity<PartyId, PartyStateData, PartyClientData> {
+export class Party
+	extends Entity<PartyId, PartyStateData, PartyClientData>
+	implements SurvivorContainer
+{
 	public name: string;
 	private readonly settlementProperty: SettlementProperty;
 	private readonly survivorsProperty: SurvivorsProperty;
@@ -49,8 +53,14 @@ export class Party extends Entity<PartyId, PartyStateData, PartyClientData> {
 
 		this.name = data.name;
 		this.settlementProperty = new SettlementProperty(data.settlement);
-		this.survivorsProperty = new SurvivorsProperty(data.survivors);
-		this.inventoryProperty = new ResourcesProperty(data.inventory, this);
+		this.survivorsProperty = new SurvivorsProperty(
+			data.survivors ?? [],
+			this
+		);
+		this.inventoryProperty = new ResourcesProperty(
+			data.inventory ?? [],
+			this
+		);
 		this.voyageProperty = data.currentVoyage
 			? new VoyageProperty(data.currentVoyage)
 			: null;
@@ -123,11 +133,6 @@ export class Party extends Entity<PartyId, PartyStateData, PartyClientData> {
 
 	public addSurvivor(survivor: Survivor): void {
 		this.survivorsProperty.add(survivor);
-		if (survivor.getParty()?.getId() === this.getId()) {
-			return;
-		}
-
-		survivor.setParty(this);
 	}
 
 	public getVoyage(): Voyage | null {
@@ -222,5 +227,12 @@ export class Party extends Entity<PartyId, PartyStateData, PartyClientData> {
 
 	public deleteResource(id: ResourceId): void {
 		this.inventoryProperty.remove(id);
+	}
+
+	transferSurvivorTo(
+		survivor: Survivor,
+		newContainer: SurvivorContainer
+	): void {
+		this.survivorsProperty.transferSurvivorTo(survivor, newContainer);
 	}
 }
