@@ -72,9 +72,8 @@ export class ExpeditionSystem implements System {
 		);
 
 		ClientNotifier.info(
-			`Party "${
-				party.name
-			}" has gathered the following resources: ${Object.entries(gathered)
+			`Party "${party.name}" has gathered: ${Object.entries(gathered)
+				.filter(([type, value]) => value > 0)
 				.map(([type, value]) => `${value} ${type}`)
 				.join(', ')}`,
 			expedition.getUpdateRoomName(),
