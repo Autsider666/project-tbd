@@ -6,7 +6,10 @@ import { ResourceNodeId } from './entity/ResourceNode.js';
 import { SettlementClientData, SettlementId } from './entity/Settlement.js';
 import { SurvivorId } from './entity/Survivor.js';
 import { WorldClientData, WorldId } from './entity/World.js';
-import { NotificationSeverity } from './helper/ClientNotifier.js';
+import {
+	NotificationCategory,
+	NotificationSeverity,
+} from './helper/ClientNotifier.js';
 import { PathResult } from './helper/TravelTimeCalculator.js';
 
 export interface ServerToClientEvents {
@@ -14,6 +17,7 @@ export interface ServerToClientEvents {
 	notification: (notification: {
 		message: string;
 		severity: NotificationSeverity;
+		categories: NotificationCategory[];
 	}) => void;
 
 	'server:turn': (data: { startedAt: Date; endsAt: Date }) => void;

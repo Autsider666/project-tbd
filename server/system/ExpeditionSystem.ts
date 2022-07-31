@@ -2,7 +2,10 @@ import { injectable } from 'tsyringe';
 import { ServerTickTime } from '../controller/ServerController.js';
 import { Expedition, ExpeditionPhase } from '../entity/Expedition.js';
 import { Resource, ResourceType } from '../entity/Resource.js';
-import { ClientNotifier } from '../helper/ClientNotifier.js';
+import {
+	ClientNotifier,
+	NotificationCategory,
+} from '../helper/ClientNotifier.js';
 import { TravelTimeCalculator } from '../helper/TravelTimeCalculator.js';
 import { ExpeditionRepository } from '../repository/ExpeditionRepository.js';
 import { System } from './System.js';
@@ -74,7 +77,8 @@ export class ExpeditionSystem implements System {
 			}" has gathered the following resources: ${Object.entries(gathered)
 				.map(([type, value]) => `${value} ${type}`)
 				.join(', ')}`,
-			expedition.getUpdateRoomName()
+			expedition.getUpdateRoomName(),
+			[NotificationCategory.expedition]
 		);
 
 		if (resources.length === 0) {

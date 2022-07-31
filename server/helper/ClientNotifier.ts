@@ -8,27 +8,49 @@ export enum NotificationSeverity {
 	error = 'error',
 }
 
+export enum NotificationCategory {
+	general = 'general',
+	expedition = 'expedition',
+}
+
 export class ClientNotifier {
-	public static success(message: string, room: string): void {
-		this.notify(message, room, NotificationSeverity.success);
+	public static success(
+		message: string,
+		room: string,
+		categories: NotificationCategory[] = [NotificationCategory.general]
+	): void {
+		this.notify(message, room, NotificationSeverity.success, categories);
 	}
 
-	public static info(message: string, room: string): void {
-		this.notify(message, room, NotificationSeverity.info);
+	public static info(
+		message: string,
+		room: string,
+		categories: NotificationCategory[] = [NotificationCategory.general]
+	): void {
+		this.notify(message, room, NotificationSeverity.info, categories);
 	}
 
-	public static warning(message: string, room: string): void {
-		this.notify(message, room, NotificationSeverity.warning);
+	public static warning(
+		message: string,
+		room: string,
+		categories: NotificationCategory[] = [NotificationCategory.general]
+	): void {
+		this.notify(message, room, NotificationSeverity.warning, categories);
 	}
 
-	public static error(message: string, room: string): void {
-		this.notify(message, room, NotificationSeverity.error);
+	public static error(
+		message: string,
+		room: string,
+		categories: NotificationCategory[] = [NotificationCategory.general]
+	): void {
+		this.notify(message, room, NotificationSeverity.error, categories);
 	}
 
 	private static notify(
 		message: string,
 		room: string,
-		severity: NotificationSeverity
+		severity: NotificationSeverity,
+		categories: NotificationCategory[]
 	): void {
 		container
 			.resolve(Server)
@@ -36,6 +58,7 @@ export class ClientNotifier {
 			.emit('notification', {
 				message,
 				severity,
+				categories,
 			} as any);
 	}
 }
