@@ -54,7 +54,8 @@ export class ServerController {
 		);
 
 		setInterval(() => {
-			this.systems.forEach(async (system) => await system.tick());
+			const now = new Date();
+			this.systems.forEach(async (system) => await system.tick(now));
 		}, ServerTickTime);
 	}
 }

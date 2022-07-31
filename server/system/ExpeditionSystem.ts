@@ -1,7 +1,7 @@
 import { injectable } from 'tsyringe';
 import { ServerTickTime } from '../controller/ServerController.js';
 import { Expedition, ExpeditionPhase } from '../entity/Expedition.js';
-import { Resource } from '../entity/Resource.js';
+import { Resource, ResourceType } from '../entity/Resource.js';
 import { ClientNotifier } from '../helper/ClientNotifier.js';
 import { TravelTimeCalculator } from '../helper/TravelTimeCalculator.js';
 import { ExpeditionRepository } from '../repository/ExpeditionRepository.js';
@@ -9,13 +9,15 @@ import { System } from './System.js';
 
 @injectable()
 export class ExpeditionSystem implements System {
+	private now: Date = new Date();
+
 	constructor(
 		private readonly expeditionRepository: ExpeditionRepository,
 		private readonly travelTimeCalculator: TravelTimeCalculator
 	) {}
 
-	async tick(): Promise<void> {
-		const now = new Date();
+	async tick(now: Date): Promise<void> {
+		this.now = now;
 
 		const activeExpedition = this.expeditionRepository
 			.getAll()
@@ -25,7 +27,7 @@ export class ExpeditionSystem implements System {
 
 		for (const expedition of activeExpedition) {
 			this.handleGathering(expedition);
-			this.handlePhaseChange(expedition, now);
+			this.handlePhaseChange(expedition);
 		}
 	}
 
@@ -38,17 +40,18 @@ export class ExpeditionSystem implements System {
 		const node = expedition.getTarget();
 		let resources = node.getResources();
 
+		const gathered: { [key in ResourceType]: number } = {
+			[ResourceType.iron]: 0,
+			[ResourceType.wood]: 0,
+			[ResourceType.stone]: 0,
+		};
+
 		let amountToGather = party.getGatheringSpeed();
 		while (amountToGather > 0) {
 			resources = resources.filter(
 				(resource) => resource.getAmount() > 0
 			);
 			if (resources.length === 0) {
-				expedition.nextPhaseAt = new Date();
-				ClientNotifier.info(
-					`${node.name} seems to be completely depleted, so party "${party.name}" is going to head back soon.`,
-					expedition.getUpdateRoomName()
-				);
 				break;
 			}
 
@@ -57,6 +60,29 @@ export class ExpeditionSystem implements System {
 			party.addResource(toTake, randomResource.type);
 			randomResource.removeAmount(toTake);
 			amountToGather -= toTake;
+			gathered[randomResource.type] += toTake;
+		}
+
+		ClientNotifier.info(
+			`${node.name} seems to be completely depleted, so party "${party.name}" is going to head back soon.`,
+			expedition.getUpdateRoomName()
+		);
+
+		ClientNotifier.info(
+			`Party "${
+				party.name
+			}" has gathered the following resources: ${Object.entries(gathered)
+				.map(([type, value]) => `${value} ${type}`)
+				.join(', ')}`,
+			expedition.getUpdateRoomName()
+		);
+
+		if (resources.length === 0) {
+			expedition.nextPhaseAt = new Date();
+			ClientNotifier.info(
+				`${node.name} seems to be completely depleted, so party "${party.name}" is going to head back soon.`,
+				expedition.getUpdateRoomName()
+			);
 		}
 	}
 
@@ -76,8 +102,8 @@ export class ExpeditionSystem implements System {
 		throw new Error('Now this is interesting');
 	}
 
-	private handlePhaseChange(expedition: Expedition, now: Date) {
-		if (expedition.nextPhaseAt >= now) {
+	private handlePhaseChange(expedition: Expedition) {
+		if (expedition.nextPhaseAt >= this.now) {
 			return;
 		}
 
@@ -106,9 +132,8 @@ export class ExpeditionSystem implements System {
 			throw new Error('Wait, no route between these two?');
 		}
 
-		const now = new Date();
 		expedition.nextPhaseAt = new Date(
-			now.getTime() + durationInSeconds * 1000
+			this.now.getTime() + durationInSeconds * 1000
 		);
 
 		const party = expedition.getParty();
@@ -144,9 +169,8 @@ export class ExpeditionSystem implements System {
 
 		const durationInSeconds =
 			party.getCarryCapacity() / party.getGatheringSpeed();
-		const now = new Date();
 		expedition.nextPhaseAt = new Date(
-			now.getTime() + durationInSeconds * ServerTickTime
+			this.now.getTime() + durationInSeconds * ServerTickTime
 		);
 
 		ClientNotifier.success(

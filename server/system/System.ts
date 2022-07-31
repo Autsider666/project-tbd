@@ -1,3 +1,3 @@
 export interface System {
-	tick(): Promise<void>;
+	tick(now: Date): Promise<void>;
 }

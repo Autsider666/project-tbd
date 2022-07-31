@@ -64,7 +64,7 @@ export class TravelTimeCalculator {
 			this.regionRepository.has(id as RegionId)
 		);
 		path.cost += goal.getTravelTime();
-		if (path.path === null && start.getId() === goal.getId() ) {
+		if (path.path === null && start.getId() === goal.getId()) {
 			path.path = [start.getId()];
 		}
 
