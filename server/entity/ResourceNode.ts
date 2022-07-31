@@ -1,11 +1,6 @@
-import { container } from 'tsyringe';
 import { Opaque } from 'type-fest';
 import { Client } from '../controller/ClientController.js';
 import { EntityUpdate } from '../controller/StateSyncController.js';
-import {
-	PathResult,
-	TravelTimeCalculator,
-} from '../helper/TravelTimeCalculator.js';
 import { Uuid } from '../helper/UuidHelper.js';
 import { RegionProperty } from './CommonProperties/RegionProperty.js';
 import { ResourcesProperty } from './CommonProperties/ResourcesProperty.js';
@@ -29,9 +24,7 @@ export type ResourceNodeStateData = {
 	resources?: ResourceId[];
 } & EntityStateData<ResourceNodeId>;
 
-export type ResourceNodeClientData = {
-	travelFromSettlement: { [key: string]: PathResult | null };
-} & ResourceNodeStateData &
+export type ResourceNodeClientData = ResourceNodeStateData &
 	EntityClientData<ResourceNodeId>;
 
 export class ResourceNode extends Entity<
@@ -43,8 +36,6 @@ export class ResourceNode extends Entity<
 	public readonly type: ResourceNodeType;
 	private readonly regionProperty: RegionProperty;
 	private readonly resourcesProperty: ResourcesProperty;
-	private readonly travelTimeCalculator: TravelTimeCalculator =
-		container.resolve(TravelTimeCalculator);
 
 	constructor(data: ResourceNodeStateData) {
 		super(data);
@@ -59,22 +50,8 @@ export class ResourceNode extends Entity<
 	}
 
 	normalize(forClient?: Client): ResourceNodeClientData {
-		const travelFromSettlement: { [key: string]: PathResult | null } = {};
-		if (forClient) {
-			const region = this.getRegion();
-			forClient.parties.forEach((party) => {
-				const settlement = party.getSettlement();
-				travelFromSettlement[settlement.getId()] =
-					this.travelTimeCalculator.calculateTravelTime(
-						region,
-						settlement.getRegion()
-					);
-			});
-		}
-
 		return {
 			entityType: this.getEntityType(),
-			travelFromSettlement,
 			...this.toJSON(),
 		};
 	}
