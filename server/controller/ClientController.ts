@@ -9,6 +9,7 @@ import { PartyFactory } from '../factory/PartyFactory.js';
 import { VoyageFactory } from '../factory/VoyageFactory.js';
 import { ClientNotifier } from '../helper/ClientNotifier.js';
 import { TravelTimeCalculator } from '../helper/TravelTimeCalculator.js';
+import { ExpeditionRepository } from '../repository/ExpeditionRepository.js';
 import { PartyRepository } from '../repository/PartyRepository.js';
 import { RegionRepository } from '../repository/RegionRepository.js';
 import { ResourceNodeRepository } from '../repository/ResourceNodeRepository.js';
@@ -43,6 +44,8 @@ export class ClientController {
 		container.resolve(ResourceNodeRepository);
 	private readonly regionRepository: RegionRepository =
 		container.resolve(RegionRepository);
+	private readonly expeditionRepository: ExpeditionRepository =
+		container.resolve(ExpeditionRepository);
 	private readonly voyageFactory: VoyageFactory =
 		container.resolve(VoyageFactory);
 	private readonly partyFactory: PartyFactory =
@@ -277,6 +280,19 @@ export class ClientController {
 			ClientNotifier.success(
 				`Party "${party.name}" is starting it's expedition to ${target.name}.`,
 				party.getUpdateRoomName()
+			);
+		});
+
+		this.socket.on('expedition:list', ({ partyId }, callback) => {
+			const party = this.getParty(partyId);
+			if (!party) {
+				return null;
+			}
+
+			callback(
+				this.expeditionRepository
+					.getAllByParty(partyId)
+					.map((expedition) => expedition.normalize(this.client))
 			);
 		});
 	}

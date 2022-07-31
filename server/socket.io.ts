@@ -1,5 +1,6 @@
 import { Client } from './controller/ClientController.js';
 import { EntityUpdate } from './controller/StateSyncController.js';
+import { ExpeditionClientData } from './entity/Expedition.js';
 import { PartyId } from './entity/Party.js';
 import { RegionId } from './entity/Region.js';
 import { ResourceNodeId } from './entity/ResourceNode.js';
@@ -40,6 +41,10 @@ export interface ClientToServerEvents {
 		partyId: PartyId;
 		targetId: ResourceNodeId;
 	}) => void;
+	'expedition:list': (
+		data: { partyId: PartyId },
+		callback: (expeditions: ExpeditionClientData[]) => void
+	) => void;
 	'world:list': (callback: (worlds: WorldClientData[]) => void) => void;
 	'settlement:list': (
 		data: { worldId: WorldId },
