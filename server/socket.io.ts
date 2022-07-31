@@ -16,6 +16,8 @@ export interface ServerToClientEvents {
 		severity: NotificationSeverity;
 	}) => void;
 
+	'server:turn': (data: { startedAt: Date; endsAt: Date }) => void;
+
 	//Default to keep PhpStorm calm
 	[event: string]: (...args: any[]) => void;
 }
@@ -51,6 +53,7 @@ export interface ClientToServerEvents {
 		partyId: PartyId;
 		survivorId: SurvivorId;
 	}) => void;
+
 	//Default to keep PhpStorm calm
 	[event: string]: (...args: any[]) => void;
 }

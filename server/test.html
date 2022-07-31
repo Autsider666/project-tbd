@@ -121,6 +121,10 @@
 				console.log('notification', messageData);
 			});
 
+			socket.on('server:turn', function (messageData) {
+				console.log('server:turn', messageData);
+			});
+
 			socket.on('entity:update', function (data) {
 				console.log(data);
 				Object.values(data).forEach((entity) => {

@@ -9,6 +9,7 @@ import { ExpeditionSystem } from '../system/ExpeditionSystem.js';
 import { StatusLoggerSystem } from '../system/StatusLoggerSystem.js';
 import { System } from '../system/System.js';
 import { VoyageSystem } from '../system/VoyageSystem.js';
+import { WorldTimestampSystem } from '../system/WorldTimestampSystem.js';
 import { ClientController } from './ClientController.js';
 import { Server, Socket } from 'socket.io';
 
@@ -19,6 +20,7 @@ export const ServerTickTime = 5000;
 	{ token: 'System', useClass: VoyageSystem },
 	{ token: 'System', useClass: ExpeditionSystem },
 	{ token: 'System', useClass: StatusLoggerSystem },
+	{ token: 'System', useClass: WorldTimestampSystem },
 ])
 @injectable()
 export class ServerController {
@@ -55,7 +57,7 @@ export class ServerController {
 
 		setInterval(() => {
 			const now = new Date();
-			this.systems.forEach(async (system) => await system.tick(now));
+			this.systems.forEach(async (system) => system.tick(now));
 		}, ServerTickTime);
 	}
 }
