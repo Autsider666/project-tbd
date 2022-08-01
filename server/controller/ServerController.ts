@@ -1,5 +1,7 @@
 import { SocketId } from 'socket.io-adapter';
 import { injectable, injectAll, registry } from 'tsyringe';
+import { WorldFactory } from '../factory/WorldFactory.js';
+import { WorldRepository } from '../repository/WorldRepository.js';
 import {
 	ClientToServerEvents,
 	ServerToClientEvents,
@@ -28,11 +30,18 @@ export class ServerController {
 
 	constructor(
 		protected readonly io: Server,
-		@injectAll('System') protected readonly systems: System[]
+		@injectAll('System') protected readonly systems: System[],
+		private readonly worldRepository: WorldRepository,
+		private readonly worldFactory: WorldFactory
 	) {}
 
 	async start(): Promise<void> {
 		console.info(`Sockets enabled`);
+
+		if ((await this.worldRepository.getAll()).length === 0) {
+			console.log('Creating world!');
+			await this.worldFactory.create();
+		}
 
 		this.io.on(
 			'connection',

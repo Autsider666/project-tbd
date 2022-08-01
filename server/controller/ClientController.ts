@@ -99,8 +99,8 @@ export class ClientController {
 				);
 				return;
 			}
-
 			const settlements: SettlementClientData[] = [];
+
 			for (const region of await world.getRegions()) {
 				const settlement = await region.getSettlement();
 				if (settlement === null) {

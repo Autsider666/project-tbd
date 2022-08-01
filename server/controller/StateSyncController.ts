@@ -107,6 +107,7 @@ export class StateSyncController {
 	}
 
 	private async emitEntities(): Promise<void> {
+		console.log(this.entityUpdateQueue);
 		this.entityUpdateQueue.forEach((update, room) => {
 			if (room === '') {
 				return;

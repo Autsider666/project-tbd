@@ -57,6 +57,7 @@ export class ExpeditionSystem implements System {
 			}
 
 			const randomResource = this.getRandomResource(resources);
+			randomResource.owner = node; //TODO why is this needed? Why is owner null?
 			const toTake = Math.min(amountToGather, randomResource.getAmount());
 			await party.addResource(toTake, randomResource.type);
 			randomResource.removeAmount(toTake);

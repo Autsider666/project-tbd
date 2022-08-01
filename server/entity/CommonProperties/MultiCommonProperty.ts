@@ -8,7 +8,7 @@ export class MultiCommonProperty<
 	TId extends Uuid,
 	T extends Entity<TId, any, any>
 > {
-	protected readonly property = new Map<TId, T | null>();
+	protected readonly property: { [key: string]: T | null } = {};
 	protected readonly repository: Repository<T, TId, any>;
 
 	constructor(
@@ -21,44 +21,47 @@ export class MultiCommonProperty<
 	}
 
 	public async getAll(): Promise<T[]> {
-		for (const [id, region] of this.property) {
-			if (region != null) {
-				continue;
-			}
+		try {
+			for (const [id, region] of Object.entries(this.property)) {
+				if (region != null) {
+					continue;
+				}
 
-			console.log('getAll before');
-			const value = await this.repository.get(id);
-			console.log('getAll after');
-			if (value === null) {
-				throw new Error('.... uhm.....');
-			}
+				const value = await this.repository.get(id as TId);
+				if (value === null) {
+					console.log('getAll error');
+					throw new Error('.... uhm.....');
+				}
 
-			this.property.set(id, value);
+				this.property[id] = value;
+			}
+		} catch (e) {
+			console.error(e);
 		}
 
-		return Array.from(this.property.values()) as T[];
+		return Object.values(this.property) as T[];
 	}
 
 	public async add(value: T | TId) {
 		const key = typeof value === 'string' ? value : (value as T).getId();
-		if (this.property.has(key)) {
+		if (this.property.hasOwnProperty(key)) {
 			return;
 		}
 
-		await this.property.set(key, null);
+		this.property[key] = null;
 	}
 
 	public async remove(id: TId) {
-		this.property.delete(id); // check containers if adding repository removal.
+		delete this.property[id]; // check containers if adding repository removal.
 	}
 
 	public has(value: T | TId): boolean {
-		return this.property.has(
+		return this.property.hasOwnProperty(
 			typeof value === 'string' ? value : (value as T).getId()
 		);
 	}
 
 	public toJSON(): TId[] {
-		return Array.from(this.property.keys());
+		return Object.keys(this.property) as TId[];
 	}
 }

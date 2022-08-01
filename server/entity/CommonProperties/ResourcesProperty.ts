@@ -14,10 +14,19 @@ export class ResourcesProperty extends MultiCommonProperty<
 		super(resources, ResourceRepository);
 	}
 
-	public async add(value: Resource) {
+	public override async add(value: Resource | ResourceId) {
 		await super.add(value);
 
-		value.owner = this.owner;
+		if (typeof value === 'string') {
+			const resource = await this.repository.get(value as ResourceId);
+			if (resource === null) {
+				throw new Error('Weird af');
+			}
+
+			resource.owner = this.owner;
+		} else {
+			(value as Resource).owner = this.owner;
+		}
 	}
 
 	public async addResource(

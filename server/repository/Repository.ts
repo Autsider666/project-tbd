@@ -1,5 +1,5 @@
 import EventEmitter from 'events';
-import { Collection, Db, OptionalUnlessRequiredId } from 'mongodb';
+import { Collection, Db, Filter, OptionalUnlessRequiredId } from 'mongodb';
 import onChange from 'on-change';
 import { container } from 'tsyringe';
 import { generateUUID, Uuid } from '../helper/UuidHelper.js';
@@ -14,9 +14,8 @@ export abstract class Repository<
 	protected entities: { [key: string]: T } = {};
 	protected readonly eventEmitter: EventEmitter =
 		container.resolve(EventEmitter);
-	// private readonly database: Db =
-	// 	container.resolve(Db);
-	// private collection: Collection<TStateData>;
+	private readonly database: Db = container.resolve(Db);
+	private collection: Collection<TStateData>;
 
 	public constructor() {
 		this.eventEmitter.on(
@@ -27,12 +26,17 @@ export abstract class Repository<
 		this.eventEmitter.on(
 			'update:entity:' + this.entity().name.toLowerCase(),
 			async (entity: T) => {
-				// await this.collection.replaceOne({id: entity.getId()}, entity.toJSON())
+				await this.collection.replaceOne(
+					{ id: entity.getId() },
+					entity.toJSON()
+				);
 				this.emitEntity(entity);
 			}
 		);
 
-		// this.collection = this.database.collection<TStateData>(this.entity().name);
+		this.collection = this.database.collection<TStateData>(
+			this.entity().name
+		);
 	}
 
 	protected emitEntity(entity: T): void {
@@ -50,18 +54,30 @@ export abstract class Repository<
 			return this.entities[id];
 		}
 
-		return null;
+		try {
+			const data = await this.collection.findOne({
+				id,
+			} as Filter<TStateData>);
+			if (data == null) {
+				return null;
+			}
 
-		// const data = await this.collection.findOne({id});
-		// // console.log(data);
-		// if (data === null) {
-		// 	return null;
-		// }
-		//
-		// return this.createEntityFromStateData(data as TStateData);
+			return this.createEntityFromStateData(data as TStateData);
+		} catch (e) {
+			console.error(e);
+		}
+		return null;
 	}
 
-	public async getAll(): Promise<T[]> {
+	public async getAll(filter: Filter<TStateData> = {}): Promise<T[]> {
+		try {
+			await this.load(
+				(await this.collection.find(filter).toArray()) as TStateData[]
+			);
+		} catch (e) {
+			console.error(123, e);
+		}
+
 		return Object.values(this.entities);
 	}
 
@@ -83,6 +99,8 @@ export abstract class Repository<
 
 		const ClassName = this.entity();
 		const entity = new ClassName(stateData);
+		// return entity;
+
 		return onChange(
 			entity,
 			function (
@@ -105,12 +123,26 @@ export abstract class Repository<
 				}
 
 				entity.onUpdate(this);
+			},
+			{
+				isShallow: true as false,
+				ignoreSymbols: true,
 			}
 		);
 	}
 
 	protected async addEntity(stateData: TStateData): Promise<T> {
+		if (this.has(stateData.id)) {
+			return this.entities[stateData.id];
+		}
+
 		const entity = this.createEntityFromStateData(stateData);
+
+		if (!stateData.hasOwnProperty('_id')) {
+			await this.collection.insertOne(
+				stateData as OptionalUnlessRequiredId<TStateData>
+			);
+		}
 
 		this.entities[entity.getId()] = entity;
 		// await this.collection.insertOne(entity.toJSON() as OptionalUnlessRequiredId<TStateData>);
@@ -123,16 +155,6 @@ export abstract class Repository<
 	}
 
 	public async load(stateData: TStateData[]): Promise<void> {
-		// console.log('load?');
-		// const collections = await this.database.listCollections().toArray();
-		// console.log(collections);
-		// if (collections.filter((collection)=> collection.name === this.entity().name).length === 0) {
-		// 	this.collection = await this.database.createCollection<TStateData>(this.entity().name);
-		// } else {
-		// 	this.collection = this.database.collection<TStateData>(this.entity().name);
-		// }
-		// console.log(2);
-
 		for (let entityData of stateData) {
 			await this.addEntity(entityData);
 		}
@@ -142,5 +164,23 @@ export abstract class Repository<
 
 	public async toJSON(): Promise<T[]> {
 		return this.getAll();
+	}
+
+	public async init() {
+		console.log('Initializing repository for', this.entity().name);
+		const collections = await this.database.listCollections().toArray();
+		if (
+			collections.filter(
+				(collection) => collection.name === this.entity().name
+			).length === 0
+		) {
+			this.collection = await this.database.createCollection<TStateData>(
+				this.entity().name
+			);
+		} else {
+			this.collection = this.database.collection<TStateData>(
+				this.entity().name
+			);
+		}
 	}
 }

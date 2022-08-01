@@ -31,7 +31,7 @@ export class ResourceNodeFactory {
 				type: mappedType as ResourceType,
 				amount,
 			});
-
+			console.log(99999, resource);
 			await node.addResource(resource);
 		}
 
