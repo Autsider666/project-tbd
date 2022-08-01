@@ -19,9 +19,16 @@ export class ExpeditionRepository extends Repository<
 		return Expedition;
 	}
 
-	public getAllByParty(id: PartyId): Expedition[] {
-		return this.getAll().filter((expedition) => {
-			return expedition.getParty().getId() === id;
-		});
+	public async getAllByParty(id: PartyId): Promise<Expedition[]> {
+		const expeditions: Expedition[] = [];
+		for (const expedition of await this.getAll()) {
+			if ((await expedition.getParty()).getId() !== id) {
+				continue;
+			}
+
+			expeditions.push(expedition);
+		}
+
+		return expeditions;
 	}
 }

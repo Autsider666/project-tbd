@@ -13,28 +13,28 @@ export class PartyFactory {
 		private readonly survivorFactory: SurvivorFactory
 	) {}
 
-	public create(name: string, settlement: Settlement): Party {
-		const party = this.partyRepository.create({
+	public async create(name: string, settlement: Settlement): Promise<Party> {
+		const party = await this.partyRepository.create({
 			name,
 			settlement: settlement.getId(),
 		});
 
-		settlement.addParty(party);
+		await settlement.addParty(party);
 
 		party.addSurvivor(
-			this.survivorFactory.create(SurvivorType.villager, party)
+			await this.survivorFactory.create(SurvivorType.villager, party)
 		);
 		party.addSurvivor(
-			this.survivorFactory.create(SurvivorType.villager, party)
+			await this.survivorFactory.create(SurvivorType.villager, party)
 		);
 		party.addSurvivor(
-			this.survivorFactory.create(SurvivorType.villager, party)
+			await this.survivorFactory.create(SurvivorType.villager, party)
 		);
 		party.addSurvivor(
-			this.survivorFactory.create(SurvivorType.villager, party)
+			await this.survivorFactory.create(SurvivorType.villager, party)
 		);
 		party.addSurvivor(
-			this.survivorFactory.create(SurvivorType.villager, party)
+			await this.survivorFactory.create(SurvivorType.villager, party)
 		);
 
 		return party;

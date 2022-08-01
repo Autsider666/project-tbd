@@ -10,9 +10,7 @@ export interface HasTravelTime {
 
 	getTravelTime(): number;
 
-	getNextTravelDestinations(): HasTravelTime[];
-
-	getWorld(): World;
+	getWorld(): Promise<World>;
 }
 
 export interface PathResult {
@@ -30,19 +28,19 @@ export class TravelTimeCalculator {
 		private readonly regionRepository: Readonly<RegionRepository>
 	) {}
 
-	calculateTravelTime(
+	async calculateTravelTime(
 		start: HasTravelTime,
 		goal: HasTravelTime
-	): PathResult | null {
-		const world = start.getWorld();
+	): Promise<PathResult | null> {
+		const world = await start.getWorld();
 		const key = world.getId();
-		if (key !== goal.getWorld().getId()) {
+		if (key !== (await goal.getWorld()).getId()) {
 			return null;
 		}
 
 		let graph = this.worldCache.get(key);
 		if (!graph) {
-			graph = this.cacheWorld(world);
+			graph = await this.cacheWorld(world);
 		}
 
 		let worldPaths = this.pathCache.get(world.getId());
@@ -74,22 +72,22 @@ export class TravelTimeCalculator {
 		return path;
 	}
 
-	cacheWorld(world: World): Graph {
+	async cacheWorld(world: World): Promise<Graph> {
 		const data: {
 			[key: string]: {
 				[key: string]: number;
 			};
 		} = {};
-		for (const region of world.getRegions()) {
+		for (const region of await world.getRegions()) {
 			data[region.getId()] = {};
-			for (const border of region.getBorders()) {
+			for (const border of await region.getBorders()) {
 				data[region.getId()][border.getId()] = region.getTravelTime();
 				if (data[border.getId()]) {
 					continue;
 				}
 
 				data[border.getId()] = {};
-				for (const neighbor of border.getRegions()) {
+				for (const neighbor of await border.getRegions()) {
 					data[border.getId()][neighbor.getId()] =
 						border.getTravelTime();
 				}

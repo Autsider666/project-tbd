@@ -12,19 +12,21 @@ export class ExpeditionFactory {
 		private readonly travelTimeCalculator: TravelTimeCalculator
 	) {}
 
-	public create(party: Party, node: ResourceNode): Expedition {
-		if (party.getVoyage() !== null) {
+	public async create(party: Party, node: ResourceNode): Promise<Expedition> {
+		if ((await party.getVoyage()) !== null) {
 			throw new Error('Party is already traveling to another city.');
 		}
 
-		if (party.getExpedition() !== null) {
+		if ((await party.getExpedition()) !== null) {
 			throw new Error('Party is already on an expedition.');
 		}
 
 		const durationInSeconds =
-			this.travelTimeCalculator.calculateTravelTime(
-				party.getSettlement().getRegion(),
-				node.getRegion()
+			(
+				await this.travelTimeCalculator.calculateTravelTime(
+					await (await party.getSettlement()).getRegion(),
+					await node.getRegion()
+				)
 			)?.cost ?? null;
 		if (durationInSeconds === null) {
 			throw new Error('Could not find a route to target resource node.');
@@ -34,10 +36,10 @@ export class ExpeditionFactory {
 			startedAt.getTime() + durationInSeconds * 1000
 		);
 
-		const expedition = this.expeditionRepository.create({
+		const expedition = await this.expeditionRepository.create({
 			party: party.getId(),
 			phase: ExpeditionPhase.travel,
-			origin: party.getSettlement().getId(),
+			origin: (await party.getSettlement()).getId(),
 			target: node.getId(),
 			startedAt,
 			nextPhaseAt,

@@ -23,12 +23,15 @@ const survivorTemplates: {
 export class SurvivorFactory {
 	constructor(private readonly repository: SurvivorRepository) {}
 
-	public create(type: SurvivorType, container: SurvivorContainer): Survivor {
-		const survivor = this.repository.create({
+	public async create(
+		type: SurvivorType,
+		container: SurvivorContainer
+	): Promise<Survivor> {
+		const survivor = await this.repository.create({
 			...survivorTemplates[type],
 		});
 
-		container.addSurvivor(survivor);
+		await container.addSurvivor(survivor);
 
 		return survivor;
 	}

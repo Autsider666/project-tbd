@@ -6,7 +6,7 @@ export interface SurvivorContainer {
 	transferSurvivorTo(
 		survivor: Survivor,
 		newContainer: SurvivorContainer
-	): void;
+	): Promise<void>;
 
 	getEntityRoomName(): string;
 }

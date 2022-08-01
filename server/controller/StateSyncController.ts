@@ -37,13 +37,14 @@ export class StateSyncController {
 			'emit:entity',
 			async (entity: Entity<any, any, any>) => {
 				const entityUpdate =
-					this.entityUpdateQueue.get(entity.getUpdateRoomName()) ??
-					({} as EntityUpdatePrep);
+					this.entityUpdateQueue.get(
+						await entity.getUpdateRoomName()
+					) ?? ({} as EntityUpdatePrep);
 
 				entityUpdate[entity.getEntityRoomName()] = entity;
 
 				this.entityUpdateQueue.set(
-					entity.getUpdateRoomName(),
+					await entity.getUpdateRoomName(),
 					entityUpdate
 				);
 
@@ -56,8 +57,9 @@ export class StateSyncController {
 			'emit:entity:delete',
 			async (entity: Entity<any, any, any>) => {
 				const entityUpdate =
-					this.entityUpdateQueue.get(entity.getUpdateRoomName()) ??
-					({} as EntityUpdatePrep);
+					this.entityUpdateQueue.get(
+						await entity.getUpdateRoomName()
+					) ?? ({} as EntityUpdatePrep);
 
 				console.log(
 					'Queued for delete emit:',
@@ -67,7 +69,7 @@ export class StateSyncController {
 				entityUpdate[entity.getEntityRoomName()] = null;
 
 				this.entityUpdateQueue.set(
-					entity.getUpdateRoomName(),
+					await entity.getUpdateRoomName(),
 					entityUpdate
 				);
 
@@ -92,7 +94,7 @@ export class StateSyncController {
 
 		if (room.startsWith('entity:world:')) {
 			const worldId = room.replace('entity:world:', '') as WorldId;
-			const world = this.worldRepository.get(worldId);
+			const world = await this.worldRepository.get(worldId);
 			if (world === null || world.constructor !== World) {
 				throw new Error('Tried to initialize a non-existent world');
 			}

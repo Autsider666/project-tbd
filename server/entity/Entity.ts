@@ -27,11 +27,11 @@ export abstract class Entity<
 		this.id = data.id;
 	}
 
-	public abstract normalize(forClient?: Client): TClientData;
+	public abstract normalize(forClient?: Client): Promise<TClientData>;
 
 	public abstract toJSON(): TStateData;
 
-	public abstract getUpdateRoomName(): string;
+	public abstract getUpdateRoomName(): Promise<string>;
 
 	public getEntityTypeIdentifier(): string {
 		return 'entity:' + this.constructor.name.toLowerCase();
@@ -71,7 +71,9 @@ export abstract class Entity<
 		forClient?: Client
 	): Promise<EntityUpdate> {
 		if (!(this.getEntityRoomName() in updateObject)) {
-			updateObject[this.getEntityRoomName()] = this.normalize(forClient);
+			updateObject[this.getEntityRoomName()] = await this.normalize(
+				forClient
+			);
 		}
 
 		return updateObject;

@@ -17,9 +17,9 @@ export class SingleCommonProperty<
 		this.repository = container.resolve(repositoryIdentifier);
 	}
 
-	public get(): T {
+	public async get(): Promise<T> {
 		if (typeof this.property === 'string') {
-			const value = this.repository.get(this.property as TId);
+			const value = await this.repository.get(this.property as TId);
 			if (value === null) {
 				throw new Error('.... uhm.....');
 			}
@@ -30,7 +30,7 @@ export class SingleCommonProperty<
 		return this.property as T;
 	}
 
-	public set(entity: T): void {
+	public async set(entity: T) {
 		if (
 			entity.getId() === this.property ||
 			(typeof this.property !== 'string' &&
@@ -39,7 +39,7 @@ export class SingleCommonProperty<
 			return;
 		}
 
-		const proxy = this.repository.get(entity.getId());
+		const proxy = await this.repository.get(entity.getId());
 		if (proxy === null) {
 			throw new Error('Uhm..');
 		}

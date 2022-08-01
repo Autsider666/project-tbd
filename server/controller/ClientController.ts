@@ -2,7 +2,11 @@ import { Socket } from 'socket.io';
 import jwt from 'jsonwebtoken';
 import { container } from 'tsyringe';
 import { Party, PartyId } from '../entity/Party.js';
-import { Settlement, SettlementId } from '../entity/Settlement.js';
+import {
+	Settlement,
+	SettlementClientData,
+	SettlementId,
+} from '../entity/Settlement.js';
 import { WorldId } from '../entity/World.js';
 import { ExpeditionFactory } from '../factory/ExpeditionFactory.js';
 import { PartyFactory } from '../factory/PartyFactory.js';
@@ -76,16 +80,18 @@ export class ClientController {
 		this.handleTravel();
 		this.handleExpedition();
 
-		this.socket.on('world:list', (callback) => {
+		this.socket.on('world:list', async (callback) => {
+			const worlds = await this.worldRepository.getAll();
+
 			callback(
-				this.worldRepository
-					.getAll()
-					.map((world) => world.normalize(this.client))
+				await Promise.all(
+					worlds.map((world) => world.normalize(this.client))
+				)
 			);
 		});
 
-		this.socket.on('settlement:list', ({ worldId }, callback) => {
-			const world = this.worldRepository.get(worldId);
+		this.socket.on('settlement:list', async ({ worldId }, callback) => {
+			const world = await this.worldRepository.get(worldId);
 			if (world === null) {
 				ClientNotifier.error(
 					'This world does not exist',
@@ -94,37 +100,44 @@ export class ClientController {
 				return;
 			}
 
-			const regionsWithSettlement = world
-				.getRegions()
-				.filter((region) => region.getSettlement());
-			const settlements = regionsWithSettlement.map((region) =>
-				(region.getSettlement() as Settlement).normalize(this.client)
-			);
+			const settlements: SettlementClientData[] = [];
+			for (const region of await world.getRegions()) {
+				const settlement = await region.getSettlement();
+				if (settlement === null) {
+					continue;
+				}
+
+				settlements.push(await settlement.normalize(this.client));
+			}
+
 			callback(settlements);
 		});
 
 		this.socket.on(
 			'travel:calculate',
-			({ originId, targetId }, callback) => {
-				const origin = this.regionRepository.get(originId);
+			async ({ originId, targetId }, callback) => {
+				const origin = await this.regionRepository.get(originId);
 				if (!origin) {
 					callback(null);
 					return; //todo handle error
 				}
 
-				const target = this.regionRepository.get(targetId);
+				const target = await this.regionRepository.get(targetId);
 				if (!target) {
 					callback(null);
 					return; //todo handle error
 				}
 
-				if (origin.getWorld().getId() !== target.getWorld().getId()) {
+				if (
+					(await origin.getWorld()).getId() !==
+					(await target.getWorld()).getId()
+				) {
 					callback(null);
 					return;
 				}
 
 				callback(
-					this.travelTimeCalculator.calculateTravelTime(
+					await this.travelTimeCalculator.calculateTravelTime(
 						origin,
 						target
 					)
@@ -134,32 +147,32 @@ export class ClientController {
 	}
 
 	private handlePartyInitialization(): void {
-		this.socket.on('party:init', (token: string) => {
+		this.socket.on('party:init', async (token: string) => {
 			if (token.length === 0) {
 				return; //TODO add error handling
 			}
 
 			const payload = jwt.verify(token, secret) as PartyPayload; //TODO add error handling
 
-			const party = this.partyRepository.get(payload.party);
+			const party = await this.partyRepository.get(payload.party);
 			if (party === null) {
 				return; //TODO error handling
 			}
 
-			this.initializeParty(party);
+			await this.initializeParty(party);
 		});
 	}
 
 	private handlePartyCreation(): void {
 		this.socket.on(
 			'party:create',
-			(
+			async (
 				data: { name: string; settlementId: SettlementId },
 				callback: (token: string) => void
 			) => {
 				console.log('create party', data);
 
-				const settlement = this.settlementRepository.get(
+				const settlement = await this.settlementRepository.get(
 					data.settlementId ?? ('a' as SettlementId)
 				);
 				if (settlement === null) {
@@ -171,11 +184,11 @@ export class ClientController {
 				}
 
 				const name = data.name;
-				const world = settlement.getRegion().getWorld();
-				for (const region of world.getRegions()) {
-					for (const existingParty of region
-						.getSettlement()
-						?.getParties() ?? []) {
+				const world = await (await settlement.getRegion()).getWorld();
+				for (const region of await world.getRegions()) {
+					for (const existingParty of (await (
+						await region.getSettlement()
+					)?.getParties()) ?? []) {
 						if (existingParty.name === name) {
 							ClientNotifier.error(
 								'Party name is already in use in this world.',
@@ -186,7 +199,10 @@ export class ClientController {
 					}
 				}
 
-				const newParty = this.partyFactory.create(name, settlement);
+				const newParty = await this.partyFactory.create(
+					name,
+					settlement
+				);
 
 				const payload: PartyPayload = {
 					party: newParty.getId(),
@@ -196,12 +212,12 @@ export class ClientController {
 				const token = jwt.sign(payload, secret);
 				callback(token);
 
-				this.initializeParty(newParty as Party);
+				await this.initializeParty(newParty as Party);
 			}
 		);
 	}
 
-	private initializeParty(party: Party): void {
+	private async initializeParty(party: Party) {
 		if (this.client.parties.has(party.getId())) {
 			ClientNotifier.warning(
 				'This party is already added to this session',
@@ -219,9 +235,9 @@ export class ClientController {
 		this.client.parties.set(party.getId(), party);
 		party.sockets.push(this.socket); //TODO remove after disconnect
 
-		const settlement = party.getSettlement();
-		const region = settlement.getRegion();
-		const world = region.getWorld();
+		const settlement = await party.getSettlement();
+		const region = await settlement.getRegion();
+		const world = await region.getWorld();
 
 		this.socket.join(party.getEntityRoomName());
 		this.socket.join(settlement.getEntityRoomName());
@@ -230,74 +246,79 @@ export class ClientController {
 	}
 
 	private handleTravel(): void {
-		this.socket.on('voyage:start', ({ partyId, targetId }): void => {
-			const party = this.validatePartyForActivity(partyId);
+		this.socket.on('voyage:start', async ({ partyId, targetId }) => {
+			const party = await this.validatePartyForActivity(partyId);
 			if (party === null) {
 				return;
 			}
 
-			if (party.getSettlement().getId() === targetId) {
+			if ((await party.getSettlement()).getId() === targetId) {
 				ClientNotifier.error(
 					'Party is already in this settlement',
-					party.getUpdateRoomName()
+					await party.getUpdateRoomName()
 				);
 				return;
 			}
 
-			const target = this.settlementRepository.get(targetId);
+			const target = await this.settlementRepository.get(targetId);
 			if (target === null) {
 				ClientNotifier.error(
 					'This settlement does not exist.',
-					party.getUpdateRoomName()
+					await party.getUpdateRoomName()
 				);
 				return;
 			}
 
-			this.voyageFactory.create(party, target);
+			await this.voyageFactory.create(party, target);
 			ClientNotifier.success(
 				`Party "${party.name}" is starting it's voyage to settlement "${target.name}".`,
-				party.getUpdateRoomName()
+				await party.getUpdateRoomName()
 			);
 		});
 	}
 
 	private handleExpedition(): void {
-		this.socket.on('expedition:start', ({ partyId, targetId }): void => {
-			const party = this.validatePartyForActivity(partyId);
+		this.socket.on('expedition:start', async ({ partyId, targetId }) => {
+			const party = await this.validatePartyForActivity(partyId);
 			if (party === null) {
 				return;
 			}
-			const target = this.resourceNodeRepository.get(targetId);
+			const target = await this.resourceNodeRepository.get(targetId);
 			if (target === null) {
 				ClientNotifier.error(
 					'This resource node does not exist.',
-					party.getUpdateRoomName()
+					await party.getUpdateRoomName()
 				);
 				return;
 			}
 
-			this.expeditionFactory.create(party, target);
+			await this.expeditionFactory.create(party, target);
 			ClientNotifier.success(
 				`Party "${party.name}" is starting it's expedition to ${target.name}.`,
-				party.getUpdateRoomName()
+				await party.getUpdateRoomName()
 			);
 		});
 
-		this.socket.on('expedition:list', ({ partyId }, callback) => {
+		this.socket.on('expedition:list', async ({ partyId }, callback) => {
 			const party = this.getParty(partyId);
 			if (!party) {
 				return null;
 			}
 
+			const expeditions = await this.expeditionRepository.getAllByParty(
+				partyId
+			);
 			callback(
-				this.expeditionRepository
-					.getAllByParty(partyId)
-					.map((expedition) => expedition.normalize(this.client))
+				await Promise.all(
+					expeditions.map(async (expedition) =>
+						expedition.normalize(this.client)
+					)
+				)
 			);
 		});
 	}
 
-	private validatePartyForActivity(id: PartyId): Party | null {
+	private async validatePartyForActivity(id: PartyId): Promise<Party | null> {
 		const party =
 			this.client.parties.get(id) ?? id === 'test'
 				? Array.from(this.client.parties.values())[0]
@@ -311,19 +332,19 @@ export class ClientController {
 			return null;
 		}
 
-		if (party.getVoyage() !== null) {
+		if ((await party.getVoyage()) !== null) {
 			ClientNotifier.error(
 				`Party "${party.name}" is on a voyage.`,
-				party.getUpdateRoomName()
+				await party.getUpdateRoomName()
 			);
 
 			return null;
 		}
 
-		if (party.getExpedition() !== null) {
+		if ((await party.getExpedition()) !== null) {
 			ClientNotifier.error(
 				`Party "${party.name}" is on an expedition.`,
-				party.getUpdateRoomName()
+				await party.getUpdateRoomName()
 			);
 
 			return null;
@@ -333,23 +354,23 @@ export class ClientController {
 	}
 
 	private handleSurvivorManagement(): void {
-		this.socket.on('survivor:recruit', ({ partyId, survivorId }) => {
-			const party = this.validatePartyForActivity(partyId);
+		this.socket.on('survivor:recruit', async ({ partyId, survivorId }) => {
+			const party = await this.validatePartyForActivity(partyId);
 			if (party === null) {
 				return;
 			}
 
-			const settlement = party.getSettlement();
-			for (const survivor of settlement.getSurvivors()) {
+			const settlement = await party.getSettlement();
+			for (const survivor of await settlement.getSurvivors()) {
 				if (survivor.getId() !== survivorId) {
 					continue;
 				}
 
-				settlement.transferSurvivorTo(survivor, party);
+				await settlement.transferSurvivorTo(survivor, party);
 
 				ClientNotifier.success(
 					`${survivor.name} has been added to party "${party.name}"`,
-					party.getUpdateRoomName()
+					await party.getUpdateRoomName()
 				);
 
 				return;
@@ -357,26 +378,29 @@ export class ClientController {
 
 			ClientNotifier.error(
 				'This survivor is not accessible to this party.',
-				party.getUpdateRoomName()
+				await party.getUpdateRoomName()
 			);
 		});
 
-		this.socket.on('survivor:dismiss', ({ partyId, survivorId }) => {
-			const party = this.validatePartyForActivity(partyId);
+		this.socket.on('survivor:dismiss', async ({ partyId, survivorId }) => {
+			const party = await this.validatePartyForActivity(partyId);
 			if (party === null) {
 				return;
 			}
 
-			for (const survivor of party.getSurvivors()) {
+			for (const survivor of await party.getSurvivors()) {
 				if (survivor.getId() !== survivorId) {
 					continue;
 				}
 
-				party.transferSurvivorTo(survivor, party.getSettlement());
+				await party.transferSurvivorTo(
+					survivor,
+					await party.getSettlement()
+				);
 
 				ClientNotifier.success(
 					`${survivor.name} has left party "${party.name}"`,
-					party.getUpdateRoomName()
+					await party.getUpdateRoomName()
 				);
 
 				return;
@@ -384,7 +408,7 @@ export class ClientController {
 
 			ClientNotifier.error(
 				'This survivor is not accessible to this party.',
-				party.getUpdateRoomName()
+				await party.getUpdateRoomName()
 			);
 		});
 	}

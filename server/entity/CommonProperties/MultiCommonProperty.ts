@@ -20,13 +20,15 @@ export class MultiCommonProperty<
 		this.repository = container.resolve(repositoryIdentifier);
 	}
 
-	public getAll(): T[] {
+	public async getAll(): Promise<T[]> {
 		for (const [id, region] of this.property) {
 			if (region != null) {
 				continue;
 			}
 
-			const value = this.repository.get(id);
+			console.log('getAll before');
+			const value = await this.repository.get(id);
+			console.log('getAll after');
 			if (value === null) {
 				throw new Error('.... uhm.....');
 			}
@@ -37,16 +39,16 @@ export class MultiCommonProperty<
 		return Array.from(this.property.values()) as T[];
 	}
 
-	public add(value: T | TId): void {
+	public async add(value: T | TId) {
 		const key = typeof value === 'string' ? value : (value as T).getId();
 		if (this.property.has(key)) {
 			return;
 		}
 
-		this.property.set(key, null);
+		await this.property.set(key, null);
 	}
 
-	public remove(id: TId): void {
+	public async remove(id: TId) {
 		this.property.delete(id); // check containers if adding repository removal.
 	}
 

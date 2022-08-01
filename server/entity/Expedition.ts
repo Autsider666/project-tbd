@@ -54,7 +54,7 @@ export class Expedition extends Entity<
 		this.nextPhaseAt = data.nextPhaseAt;
 	}
 
-	normalize(forClient?: Client): ExpeditionClientData {
+	async normalize(forClient?: Client): Promise<ExpeditionClientData> {
 		return {
 			entityType: this.getEntityType(),
 			...this.toJSON(),
@@ -73,19 +73,19 @@ export class Expedition extends Entity<
 		};
 	}
 
-	getUpdateRoomName(): string {
-		return this.getParty().getEntityRoomName();
+	async getUpdateRoomName(): Promise<string> {
+		return (await this.getParty()).getEntityRoomName();
 	}
 
-	public getParty(): Party {
+	public async getParty(): Promise<Party> {
 		return this.partyProperty.get();
 	}
 
-	public getTarget(): ResourceNode {
+	public async getTarget(): Promise<ResourceNode> {
 		return this.targetProperty.get();
 	}
 
-	public getOrigin(): Settlement {
+	public async getOrigin(): Promise<Settlement> {
 		return this.originProperty.get();
 	}
 }

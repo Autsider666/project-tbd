@@ -49,7 +49,7 @@ export class ResourceNode extends Entity<
 		);
 	}
 
-	normalize(forClient?: Client): ResourceNodeClientData {
+	async normalize(forClient?: Client): Promise<ResourceNodeClientData> {
 		return {
 			entityType: this.getEntityType(),
 			...this.toJSON(),
@@ -66,15 +66,15 @@ export class ResourceNode extends Entity<
 		};
 	}
 
-	getUpdateRoomName(): string {
-		return this.regionProperty.get().getUpdateRoomName();
+	async getUpdateRoomName(): Promise<string> {
+		return (await this.getRegion()).getUpdateRoomName();
 	}
 
 	async prepareNestedEntityUpdate(
 		updateObject: EntityUpdate = {},
 		forClient?: Client
 	): Promise<EntityUpdate> {
-		for (const resource of this.resourcesProperty.getAll()) {
+		for (const resource of await this.getResources()) {
 			updateObject = await resource.prepareNestedEntityUpdate(
 				updateObject,
 				forClient
@@ -84,19 +84,19 @@ export class ResourceNode extends Entity<
 		return super.prepareNestedEntityUpdate(updateObject, forClient);
 	}
 
-	getRegion(): Region {
+	async getRegion(): Promise<Region> {
 		return this.regionProperty.get();
 	}
 
-	setRegion(region: Region): void {
-		this.regionProperty.set(region);
+	async setRegion(region: Region) {
+		await this.regionProperty.set(region);
 	}
 
-	getResources(): Resource[] {
+	async getResources(): Promise<Resource[]> {
 		return this.resourcesProperty.getAll();
 	}
 
-	addResource(resource: Resource): void {
-		this.resourcesProperty.add(resource);
+	async addResource(resource: Resource) {
+		await this.resourcesProperty.add(resource);
 	}
 }

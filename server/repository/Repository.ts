@@ -1,4 +1,5 @@
 import EventEmitter from 'events';
+import { Collection, Db, OptionalUnlessRequiredId } from 'mongodb';
 import onChange from 'on-change';
 import { container } from 'tsyringe';
 import { generateUUID, Uuid } from '../helper/UuidHelper.js';
@@ -13,6 +14,9 @@ export abstract class Repository<
 	protected entities: { [key: string]: T } = {};
 	protected readonly eventEmitter: EventEmitter =
 		container.resolve(EventEmitter);
+	// private readonly database: Db =
+	// 	container.resolve(Db);
+	// private collection: Collection<TStateData>;
 
 	public constructor() {
 		this.eventEmitter.on(
@@ -22,8 +26,13 @@ export abstract class Repository<
 
 		this.eventEmitter.on(
 			'update:entity:' + this.entity().name.toLowerCase(),
-			(entity: T) => this.emitEntity(entity)
+			async (entity: T) => {
+				// await this.collection.replaceOne({id: entity.getId()}, entity.toJSON())
+				this.emitEntity(entity);
+			}
 		);
+
+		// this.collection = this.database.collection<TStateData>(this.entity().name);
 	}
 
 	protected emitEntity(entity: T): void {
@@ -36,11 +45,23 @@ export abstract class Repository<
 		return this.entities.hasOwnProperty(id);
 	}
 
-	public get(id: TId): T | null {
-		return this.entities[id] ?? null;
+	public async get(id: TId): Promise<T | null> {
+		if (this.has(id)) {
+			return this.entities[id];
+		}
+
+		return null;
+
+		// const data = await this.collection.findOne({id});
+		// // console.log(data);
+		// if (data === null) {
+		// 	return null;
+		// }
+		//
+		// return this.createEntityFromStateData(data as TStateData);
 	}
 
-	public getAll(): T[] {
+	public async getAll(): Promise<T[]> {
 		return Object.values(this.entities);
 	}
 
@@ -48,18 +69,21 @@ export abstract class Repository<
 		delete this.entities[id];
 	}
 
-	public create(data: Omit<TStateData, 'id'>): T {
-		const ClassName = this.entity();
-		const entity = new ClassName({
+	public async create(data: Omit<TStateData, 'id'>): Promise<T> {
+		return this.addEntity({
 			id: generateUUID(),
 			...data,
-		});
-
-		return this.addEntity(entity);
+		} as TStateData);
 	}
 
-	protected addEntity(entity: T): T {
-		const proxy = onChange(
+	private createEntityFromStateData(stateData: TStateData): T {
+		if (this.has(stateData.id)) {
+			return this.entities[stateData.id];
+		}
+
+		const ClassName = this.entity();
+		const entity = new ClassName(stateData);
+		return onChange(
 			entity,
 			function (
 				path: string,
@@ -83,27 +107,40 @@ export abstract class Repository<
 				entity.onUpdate(this);
 			}
 		);
-
-		this.entities[entity.getId()] = proxy;
-
-		proxy.onCreate(proxy);
-
-		this.onAdd(proxy);
-
-		return proxy;
 	}
 
-	public load(stateData: TStateData[]): void {
+	protected async addEntity(stateData: TStateData): Promise<T> {
+		const entity = this.createEntityFromStateData(stateData);
+
+		this.entities[entity.getId()] = entity;
+		// await this.collection.insertOne(entity.toJSON() as OptionalUnlessRequiredId<TStateData>);
+
+		entity.onCreate(entity);
+
+		this.onAdd(entity);
+
+		return entity;
+	}
+
+	public async load(stateData: TStateData[]): Promise<void> {
+		// console.log('load?');
+		// const collections = await this.database.listCollections().toArray();
+		// console.log(collections);
+		// if (collections.filter((collection)=> collection.name === this.entity().name).length === 0) {
+		// 	this.collection = await this.database.createCollection<TStateData>(this.entity().name);
+		// } else {
+		// 	this.collection = this.database.collection<TStateData>(this.entity().name);
+		// }
+		// console.log(2);
+
 		for (let entityData of stateData) {
-			const ClassName = this.entity();
-			const entity = new ClassName(entityData);
-			this.addEntity(entity);
+			await this.addEntity(entityData);
 		}
 	}
 
 	protected onAdd(entity: T): void {}
 
-	public toJSON(): T[] {
+	public async toJSON(): Promise<T[]> {
 		return this.getAll();
 	}
 }

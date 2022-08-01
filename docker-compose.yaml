@@ -1,29 +1,40 @@
 version: '3.8'
 services:
-  node:
-    build:
-      context: .
-      target: dev
-    volumes:
-      - .:/src:rw,cached
-    ports:
-      - '5000:5000'
-    environment:
-      NODE_ENV: development
-      MONGO_URL: mongodb://mongodb:27017
-      MONGO_DB: tbd
+  #  node:
+  #    build:
+  #      context: .
+  #      target: node-dev
+  #    volumes:
+  #      - .:/src:rw,cached
+  #    ports:
+  #      - '5000:5000'
+  #    environment:
+  #      NODE_ENV: development
+  #      MONGO_URL: mongodb://mongodb:27017
+  #      MONGO_DB: tbd
 
-#  mongodb:
-#    image: mongo:5
-#    volumes:
-#      - mongodb:/data/db
-#
-#  mongoexpress:
-#    image: mongo-express
-#    ports:
-#      - "8081:8081"
-#    environment:
-#      ME_CONFIG_MONGODB_URL: mongodb://mongodb:27017
-#
-#volumes:
-#  mongodb:
+  #  react:
+  #    build:
+  #      context: .
+  #      target: react-dev
+  #    volumes:
+  #      - .:/src:rw,cached
+  #    ports:
+  #      - '3000:3000'
+
+  mongodb:
+    image: mongo:5
+    volumes:
+      - mongodb:/data/db
+    ports:
+      - '27017:27017'
+
+  mongoexpress:
+    image: mongo-express
+    ports:
+      - '8081:8081'
+    environment:
+      ME_CONFIG_MONGODB_URL: mongodb://mongodb:27017
+
+volumes:
+  mongodb:

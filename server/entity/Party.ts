@@ -79,18 +79,18 @@ export class Party
 		};
 	}
 
-	getUpdateRoomName(): string {
-		return this.getSettlement().getUpdateRoomName();
+	async getUpdateRoomName(): Promise<string> {
+		return (await this.getSettlement()).getUpdateRoomName();
 	}
 
-	public override normalize(forClient?: Client): PartyClientData {
+	public async normalize(forClient?: Client): Promise<PartyClientData> {
 		return {
 			entityType: this.constructor.name.toLowerCase(),
 			controllable: forClient?.parties.has(this.id) ?? false,
-			hp: this.getHp(),
-			damage: this.getDamage(),
-			gatheringSpeed: this.getGatheringSpeed(),
-			carryCapacity: this.getCarryCapacity(),
+			hp: await this.getHp(),
+			damage: await this.getDamage(),
+			gatheringSpeed: await this.getGatheringSpeed(),
+			carryCapacity: await this.getCarryCapacity(),
 			...this.toJSON(),
 		};
 	}
@@ -99,7 +99,7 @@ export class Party
 		updateObject: EntityUpdate = {},
 		forClient?: Client
 	): Promise<EntityUpdate> {
-		for (const survivor of this.getSurvivors()) {
+		for (const survivor of await this.getSurvivors()) {
 			updateObject = await survivor.prepareNestedEntityUpdate(
 				updateObject,
 				forClient
@@ -109,25 +109,26 @@ export class Party
 		return super.prepareNestedEntityUpdate(updateObject, forClient);
 	}
 
-	public getSettlement(): Settlement {
+	public async getSettlement(): Promise<Settlement> {
 		return this.settlementProperty.get();
 	}
 
-	public setSettlement(settlement: Settlement): void {
+	public async setSettlement(settlement: Settlement) {
 		if (
-			this.settlementProperty.get().getUpdateRoomName() !==
-			settlement.getUpdateRoomName()
+			(await (
+				await this.settlementProperty.get()
+			).getUpdateRoomName()) !== (await settlement.getUpdateRoomName())
 		) {
 			throw new Error('Settlement is not in the same world');
 		}
 
-		const currentSettlement = this.settlementProperty.get();
-		this.settlementProperty.set(settlement);
-		currentSettlement.removeParty(this);
-		settlement.addParty(this);
+		const currentSettlement = await this.settlementProperty.get();
+		await this.settlementProperty.set(settlement);
+		await currentSettlement.removeParty(this);
+		await settlement.addParty(this);
 	}
 
-	public getSurvivors(): Survivor[] {
+	public async getSurvivors(): Promise<Survivor[]> {
 		return this.survivorsProperty.getAll();
 	}
 
@@ -135,11 +136,11 @@ export class Party
 		this.survivorsProperty.add(survivor);
 	}
 
-	public getVoyage(): Voyage | null {
+	public async getVoyage(): Promise<Voyage | null> {
 		return this.voyageProperty?.get() ?? null;
 	}
 
-	public setVoyage(voyage: Voyage | null): boolean {
+	public async setVoyage(voyage: Voyage | null): Promise<boolean> {
 		if (voyage !== null && this.voyageProperty !== null) {
 			return false;
 		}
@@ -152,13 +153,13 @@ export class Party
 		if (this.voyageProperty === null) {
 			this.voyageProperty = new VoyageProperty(voyage);
 		} else {
-			this.voyageProperty.set(voyage); //TODO handle setting party in voyage
+			await this.voyageProperty.set(voyage); //TODO handle setting party in voyage
 		}
 
 		return true;
 	}
 
-	public getExpedition(): Expedition | null {
+	public async getExpedition(): Promise<Expedition | null> {
 		return this.expeditionProperty?.get() ?? null;
 	}
 
@@ -181,47 +182,54 @@ export class Party
 		return true;
 	}
 
-	public getHp(): number {
+	public async getHp(): Promise<number> {
 		let hp = 0;
-		this.getSurvivors().forEach((survivor) => (hp += survivor.hp));
+		for (const survivor of await this.getSurvivors()) {
+			hp += survivor.hp;
+		}
 
 		return hp;
 	}
 
-	public getDamage(): number {
+	public async getDamage(): Promise<number> {
 		let damage = 0;
-		this.getSurvivors().forEach((survivor) => (damage += survivor.damage));
+		for (const survivor of await this.getSurvivors()) {
+			damage += survivor.damage;
+		}
 
 		return damage;
 	}
 
-	public getGatheringSpeed(): number {
+	public async getGatheringSpeed(): Promise<number> {
 		let gatheringSpeed = 0;
-		this.getSurvivors().forEach(
-			(survivor) => (gatheringSpeed += survivor.gatheringSpeed)
-		);
+		for (const survivor of await this.getSurvivors()) {
+			gatheringSpeed += survivor.gatheringSpeed;
+		}
 
 		return gatheringSpeed;
 	}
 
-	public getCarryCapacity(): number {
+	public async getCarryCapacity(): Promise<number> {
 		let carryCapacity = 0;
-		this.getSurvivors().forEach(
-			(survivor) => (carryCapacity += survivor.carryCapacity)
-		);
+		for (const survivor of await this.getSurvivors()) {
+			carryCapacity += survivor.carryCapacity;
+		}
 
 		return carryCapacity;
 	}
 
-	public getInventory(): Resource[] {
+	public async getInventory(): Promise<Resource[]> {
 		return this.inventoryProperty.getAll();
 	}
 
-	public addResource(amount: number, type: ResourceType): void {
-		this.inventoryProperty.addResource(amount, type);
+	public async addResource(
+		amount: number,
+		type: ResourceType
+	): Promise<void> {
+		await this.inventoryProperty.addResource(amount, type);
 	}
 
-	public getResources(): Resource[] {
+	public async getResources(): Promise<Resource[]> {
 		return this.inventoryProperty.getAll();
 	}
 
@@ -229,10 +237,10 @@ export class Party
 		this.inventoryProperty.remove(id);
 	}
 
-	transferSurvivorTo(
+	async transferSurvivorTo(
 		survivor: Survivor,
 		newContainer: SurvivorContainer
-	): void {
-		this.survivorsProperty.transferSurvivorTo(survivor, newContainer);
+	) {
+		await this.survivorsProperty.transferSurvivorTo(survivor, newContainer);
 	}
 }

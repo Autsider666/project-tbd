@@ -27,8 +27,11 @@
 	"homepage": "https://github.com/Autsider666/project-tbd#readme",
 	"dependencies": {
 		"debounce": "^1.2.1",
+		"dotenv": "^16.0.1",
 		"express": "^4.18.1",
 		"jsonwebtoken": "^8.5.1",
+		"loud-rejection": "^2.2.0",
+		"mongodb": "^4.8.1",
 		"node-dijkstra": "^2.5.0",
 		"on-change": "^4.0.1",
 		"reflect-metadata": "^0.1.13",

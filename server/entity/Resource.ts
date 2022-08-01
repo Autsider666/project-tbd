@@ -36,7 +36,7 @@ export class Resource extends Entity<
 		this.amount = data.amount;
 	}
 
-	normalize(forClient?: Client): ResourceClientData {
+	async normalize(forClient?: Client): Promise<ResourceClientData> {
 		return {
 			entityType: this.getEntityType(),
 			...this.toJSON(),
@@ -51,7 +51,7 @@ export class Resource extends Entity<
 		};
 	}
 
-	getUpdateRoomName(): string {
+	async getUpdateRoomName(): Promise<string> {
 		return this.owner?.getUpdateRoomName() ?? ''; //TODO fix asap
 	}
 

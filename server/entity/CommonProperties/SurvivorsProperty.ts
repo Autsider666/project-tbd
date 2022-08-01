@@ -15,21 +15,21 @@ export class SurvivorsProperty extends MultiCommonProperty<
 		super(survivors, SurvivorRepository);
 	}
 
-	public add(value: Survivor) {
-		super.add(value);
+	public async add(value: Survivor) {
+		await super.add(value);
 
 		value.owner = this.owner;
 	}
 
-	transferSurvivorTo(
+	async transferSurvivorTo(
 		survivor: Survivor,
 		newContainer: SurvivorContainer
-	): void {
+	) {
 		if (!this.has(survivor)) {
 			return;
 		}
 
-		this.remove(survivor.getId());
+		await this.remove(survivor.getId());
 		newContainer.addSurvivor(survivor);
 	}
 }

@@ -88,11 +88,11 @@ export class Region
 		};
 	}
 
-	override getUpdateRoomName(): string {
-		return this.getWorld().getUpdateRoomName();
+	async getUpdateRoomName(): Promise<string> {
+		return (await this.getWorld()).getUpdateRoomName();
 	}
 
-	public override normalize(forClient?: Client): RegionClientData {
+	public async normalize(forClient?: Client): Promise<RegionClientData> {
 		return {
 			entityType: this.getEntityType(),
 			travelTime: this.getTravelTime(),
@@ -108,21 +108,21 @@ export class Region
 			return updateObject;
 		}
 
-		for (const border of this.getBorders()) {
+		for (const border of await this.getBorders()) {
 			updateObject = await border.prepareNestedEntityUpdate(
 				updateObject,
 				forClient
 			);
 		}
 
-		for (const node of this.getResourceNodes()) {
+		for (const node of await this.getResourceNodes()) {
 			updateObject = await node.prepareNestedEntityUpdate(
 				updateObject,
 				forClient
 			);
 		}
 
-		const settlement = this.getSettlement();
+		const settlement = await this.getSettlement();
 		if (settlement != null) {
 			updateObject = await settlement.prepareNestedEntityUpdate(
 				updateObject,
@@ -133,9 +133,9 @@ export class Region
 		return super.prepareNestedEntityUpdate(updateObject, forClient);
 	}
 
-	public getWorld(): World {
+	public async getWorld(): Promise<World> {
 		if (typeof this.world === 'string') {
-			const world = this.worldRepository.get(this.world as WorldId);
+			const world = await this.worldRepository.get(this.world as WorldId);
 			if (world === null) {
 				throw new Error('.... uhm.....');
 			}
@@ -146,7 +146,7 @@ export class Region
 		return this.world as World;
 	}
 
-	public getBorders(): Border[] {
+	public async getBorders(): Promise<Border[]> {
 		return this.borders.getAll();
 	}
 
@@ -160,34 +160,30 @@ export class Region
 		border.addRegion(this);
 	}
 
-	public getSettlement(): Settlement | null {
+	public async getSettlement(): Promise<Settlement | null> {
 		return this.settlementProperty?.get() ?? null;
 	}
 
-	public setSettlement(settlement: Settlement): void {
+	public async setSettlement(settlement: Settlement) {
 		if (this.settlementProperty === null) {
 			this.settlementProperty = new SettlementProperty(settlement);
 			return;
 		}
 
-		this.settlementProperty.set(settlement);
+		await this.settlementProperty.set(settlement);
 	}
 
-	public addResourceNode(node: ResourceNode): void {
-		this.resourceNodesProperty.add(node);
+	public async addResourceNode(node: ResourceNode) {
+		await this.resourceNodesProperty.add(node);
 
-		node.setRegion(this);
+		await node.setRegion(this);
 	}
 
 	public getTravelTime(): number {
 		return BaseRegionTravelTimeMapping[this.type];
 	}
 
-	getNextTravelDestinations(): HasTravelTime[] {
-		return this.borders.getAll();
-	}
-
-	public getResourceNodes(): ResourceNode[] {
+	public async getResourceNodes(): Promise<ResourceNode[]> {
 		return this.resourceNodesProperty.getAll();
 	}
 }

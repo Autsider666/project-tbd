@@ -40,7 +40,7 @@ export class Survivor extends Entity<
 		this.gatheringSpeed = data.gatheringSpeed;
 	}
 
-	normalize(forClient: Client): SurvivorClientDate {
+	async normalize(forClient: Client): Promise<SurvivorClientDate> {
 		return {
 			entityType: this.getEntityType(),
 			...this.toJSON(),
@@ -58,7 +58,7 @@ export class Survivor extends Entity<
 		};
 	}
 
-	getUpdateRoomName(): string {
+	async getUpdateRoomName(): Promise<string> {
 		return this.owner?.getEntityRoomName() ?? '';
 	}
 }

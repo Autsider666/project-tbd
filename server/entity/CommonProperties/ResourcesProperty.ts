@@ -12,20 +12,19 @@ export class ResourcesProperty extends MultiCommonProperty<
 		private readonly owner: Entity<any, any, any>
 	) {
 		super(resources, ResourceRepository);
-
-		for (const resource of this.getAll()) {
-			resource.owner = this.owner;
-		}
 	}
 
-	public add(value: Resource) {
-		super.add(value);
+	public async add(value: Resource) {
+		await super.add(value);
 
 		value.owner = this.owner;
 	}
 
-	public addResource(amount: number, type: ResourceType): void {
-		for (const resource of this.getAll()) {
+	public async addResource(
+		amount: number,
+		type: ResourceType
+	): Promise<void> {
+		for (const resource of await this.getAll()) {
 			if (resource.type !== type) {
 				continue;
 			}
@@ -34,11 +33,11 @@ export class ResourcesProperty extends MultiCommonProperty<
 			return;
 		}
 
-		this.add(this.repository.create({ type, amount }));
+		await this.add(await this.repository.create({ type, amount }));
 	}
 
-	public remove(id: ResourceId) {
-		super.remove(id);
+	public async remove(id: ResourceId) {
+		await super.remove(id);
 
 		this.repository.removeEntity(id);
 	}

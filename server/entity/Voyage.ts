@@ -43,11 +43,11 @@ export class Voyage extends Entity<
 		this.finished = data.finished;
 	}
 
-	getUpdateRoomName(): string {
-		return this.partyProperty.get().getUpdateRoomName();
+	async getUpdateRoomName(): Promise<string> {
+		return (await this.getParty()).getUpdateRoomName();
 	}
 
-	normalize(forClient?: Client): VoyageClientData {
+	async normalize(forClient?: Client): Promise<VoyageClientData> {
 		return {
 			entityType: this.getEntityType(),
 			...this.toJSON(),
@@ -66,11 +66,11 @@ export class Voyage extends Entity<
 		};
 	}
 
-	public getParty(): Party {
+	public async getParty(): Promise<Party> {
 		return this.partyProperty.get();
 	}
 
-	public getTarget(): Settlement {
+	public async getTarget(): Promise<Settlement> {
 		return this.targetProperty.get();
 	}
 }

@@ -1,6 +1,8 @@
 import 'reflect-metadata';
+import 'loud-rejection/register.js';
 import EventEmitter from 'events';
-import { container } from 'tsyringe';
+import { Db, MongoClient } from 'mongodb';
+import { container, registry } from 'tsyringe';
 import { ServerController } from './controller/ServerController.js';
 import { StateSyncController } from './controller/StateSyncController.js';
 import { WorldFactory } from './factory/WorldFactory.js';
@@ -35,23 +37,32 @@ const io = new Server<
 	},
 });
 
+const client = new MongoClient(
+	process.env.MONGO_URL ?? 'mongodb://localhost:27017'
+);
+await client.connect();
+const database = client.db(process.env.MONGO_DB);
+
+container.register(MongoClient, { useValue: client });
+container.register(Db, { useValue: database });
+
 container.register(Server, { useValue: io });
 container.register(EventEmitter, { useValue: new EventEmitter() });
 
 app.get('/', (_, res) => res.sendFile(path.resolve('./server/test.html')));
 
 const worldFactory = container.resolve(WorldFactory);
-app.get('/state', (_, res) =>
+app.get('/state', async (_, res) =>
 	res.send(
 		`<pre>${JSON.stringify(
-			worldFactory.create().prepareNestedEntityUpdate(),
+			await (await worldFactory.create()).prepareNestedEntityUpdate(),
 			null,
 			4
 		)}</pre>`
 	)
 );
 
-worldFactory.create();
+await worldFactory.create();
 
 instrument(io, {
 	auth: false,

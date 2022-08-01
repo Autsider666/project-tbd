@@ -49,7 +49,9 @@ export class Settlement
 		);
 	}
 
-	normalize(forClient: Client | undefined): SettlementClientData {
+	async normalize(
+		forClient: Client | undefined
+	): Promise<SettlementClientData> {
 		return {
 			entityType: this.getEntityType(),
 			...this.toJSON(),
@@ -66,8 +68,8 @@ export class Settlement
 		};
 	}
 
-	getUpdateRoomName(): string {
-		return this.getRegion().getUpdateRoomName();
+	async getUpdateRoomName(): Promise<string> {
+		return (await this.getRegion()).getUpdateRoomName();
 	}
 
 	async prepareNestedEntityUpdate(
@@ -80,14 +82,14 @@ export class Settlement
 
 		// this.getRegion().prepareUpdate(updateObject, forClient); //TODO add later when it works
 
-		for (const party of this.getParties()) {
+		for (const party of await this.getParties()) {
 			updateObject = await party.prepareNestedEntityUpdate(
 				updateObject,
 				forClient
 			);
 		}
 
-		for (const survivor of this.getSurvivors()) {
+		for (const survivor of await this.getSurvivors()) {
 			updateObject = await survivor.prepareNestedEntityUpdate(
 				updateObject,
 				forClient
@@ -97,48 +99,48 @@ export class Settlement
 		return super.prepareNestedEntityUpdate(updateObject, forClient);
 	}
 
-	public getRegion(): Region {
+	public async getRegion(): Promise<Region> {
 		return this.regionProperty.get();
 	}
 
-	public addParty(party: Party): void {
+	public async addParty(party: Party) {
 		if (this.partiesProperty.has(party)) {
 			return;
 		}
 
-		this.partiesProperty.add(party);
+		await this.partiesProperty.add(party);
 
-		if (party.getSettlement().getId() === this.getId()) {
+		if ((await party.getSettlement()).getId() === this.getId()) {
 			return;
 		}
 
-		party.getSettlement().removeParty(party);
+		await (await party.getSettlement()).removeParty(party);
 	}
 
-	public removeParty(party: Party): void {
-		this.partiesProperty.remove(party.getId());
+	public async removeParty(party: Party) {
+		await this.partiesProperty.remove(party.getId());
 	}
 
-	public getParties(): Party[] {
+	public async getParties(): Promise<Party[]> {
 		return this.partiesProperty.getAll();
 	}
 
-	public addResource(amount: number, type: ResourceType): void {
-		this.storage.addResource(amount, type);
+	public async addResource(amount: number, type: ResourceType) {
+		await this.storage.addResource(amount, type);
 	}
 
-	addSurvivor(survivor: Survivor): void {
-		this.survivorsProperty.add(survivor);
+	async addSurvivor(survivor: Survivor) {
+		await this.survivorsProperty.add(survivor);
 	}
 
-	transferSurvivorTo(
+	async transferSurvivorTo(
 		survivor: Survivor,
 		newContainer: SurvivorContainer
-	): void {
-		this.survivorsProperty.transferSurvivorTo(survivor, newContainer);
+	) {
+		await this.survivorsProperty.transferSurvivorTo(survivor, newContainer);
 	}
 
-	getSurvivors(): Survivor[] {
+	async getSurvivors(): Promise<Survivor[]> {
 		return this.survivorsProperty.getAll();
 	}
 }

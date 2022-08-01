@@ -8,22 +8,22 @@ export class VoyageSystem implements System {
 	constructor(private readonly voyageRepository: VoyageRepository) {}
 
 	async tick(now: Date): Promise<void> {
-		this.voyageRepository.getAll().forEach((voyage) => {
+		for (const voyage of await this.voyageRepository.getAll()) {
 			if (voyage.finished || voyage.arrivalAt > now) {
 				return;
 			}
 
-			const party = voyage.getParty();
-			const target = voyage.getTarget();
-			party.setSettlement(target);
-			party.setVoyage(null);
+			const party = await voyage.getParty();
+			const target = await voyage.getTarget();
+			await party.setSettlement(target);
+			await party.setVoyage(null);
 
 			voyage.finished = true;
 
 			ClientNotifier.success(
 				`Party "${party.name}" has arrived at settlement "${target.name}".`,
-				party.getUpdateRoomName()
+				await party.getUpdateRoomName()
 			);
-		});
+		}
 	}
 }

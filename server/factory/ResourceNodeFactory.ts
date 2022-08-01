@@ -13,23 +13,29 @@ export class ResourceNodeFactory {
 		private readonly resourceRepository: ResourceRepository
 	) {}
 
-	create(name: string, type: ResourceNodeType, region: Region): ResourceNode {
-		const node = this.nodeRepository.create({
+	async create(
+		name: string,
+		type: ResourceNodeType,
+		region: Region
+	): Promise<ResourceNode> {
+		const node = await this.nodeRepository.create({
 			name,
 			type,
 			region: region.getId(),
 		});
 
-		Object.entries(ResourceNodeMapping[type]).forEach(([type, amount]) => {
-			const resource = this.resourceRepository.create({
-				type: type as ResourceType,
+		for (const [mappedType, amount] of Object.entries(
+			ResourceNodeMapping[type]
+		)) {
+			const resource = await this.resourceRepository.create({
+				type: mappedType as ResourceType,
 				amount,
 			});
 
-			node.addResource(resource);
-		});
+			await node.addResource(resource);
+		}
 
-		region.addResourceNode(node);
+		await region.addResourceNode(node);
 
 		return node;
 	}

@@ -1,4 +1,4 @@
-import { injectable } from 'tsyringe';
+import { delay, inject, injectable } from 'tsyringe';
 import WorldTemplates, {
 	SettlementTemplate,
 	WorldTemplate,
@@ -16,35 +16,41 @@ import { ResourceNodeFactory } from './ResourceNodeFactory.js';
 @injectable()
 export class WorldFactory {
 	constructor(
-		private readonly worldRepository: WorldRepository,
+		@inject(delay(() => WorldRepository))
+		private readonly worldRepository: Readonly<WorldRepository>,
+		@inject(delay(() => RegionRepository))
 		private readonly regionRepository: RegionRepository,
+		@inject(delay(() => ResourceNodeRepository))
 		private readonly nodeRepository: ResourceNodeRepository,
+		@inject(delay(() => BorderRepository))
 		private readonly borderRepository: BorderRepository,
+		@inject(delay(() => SettlementRepository))
 		private readonly settlementRepository: SettlementRepository,
+		@inject(delay(() => ResourceNodeFactory))
 		private readonly resourceNodeFactory: ResourceNodeFactory
 	) {}
 
-	create(template: string = 'default'): World {
+	async create(template: string = 'default'): Promise<World> {
 		const worldTemplate = WorldTemplates[template] ?? null;
 		if (worldTemplate === null) {
 			throw new Error('World template with this name does not exist');
 		}
 
-		const world = this.worldRepository.create({
+		const world = await this.worldRepository.create({
 			name: worldTemplate.name ?? template,
 			regions: [],
 		});
 
-		this.createRegionsAndBorders(worldTemplate, world, template);
+		await this.createRegionsAndBorders(worldTemplate, world, template);
 
 		return world;
 	}
 
-	private createRegionsAndBorders(
+	private async createRegionsAndBorders(
 		worldTemplate: WorldTemplate,
 		world: World,
 		fallbackName: string
-	): void {
+	): Promise<void> {
 		const regions = new Map<string, Region>();
 		const borders = new Map<
 			string,
@@ -54,106 +60,108 @@ export class WorldFactory {
 				expectedType: BorderType;
 			}[]
 		>();
-		Object.entries(worldTemplate.regions).forEach(
-			([regionId, regionTemplate]) => {
-				const region = this.regionRepository.create({
-					name: regionTemplate.name ?? fallbackName,
-					type: regionTemplate.type ?? RegionType.plain,
-					dimensions: regionTemplate.dimensions,
-					world: world.getId(),
-				});
+		for (const [regionId, regionTemplate] of Object.entries(
+			worldTemplate.regions
+		)) {
+			const region = await this.regionRepository.create({
+				name: regionTemplate.name ?? fallbackName,
+				type: regionTemplate.type ?? RegionType.plain,
+				dimensions: regionTemplate.dimensions,
+				world: world.getId(),
+			});
 
-				world.addRegion(region);
+			await world.addRegion(region);
 
-				this.createSettlement(
-					regionTemplate.settlement,
-					region,
-					fallbackName
-				);
+			await this.createSettlement(
+				regionTemplate.settlement,
+				region,
+				fallbackName
+			);
 
-				regions.set(regionId, region);
-				Object.entries(regionTemplate.borders).forEach(
-					([targetId, borderType]) => {
-						if (targetId === regionId) {
-							throw new Error(
-								`Region ${regionId} references to itself as a neighbour.`
-							);
-						}
-
-						let linkedBorders = borders.get(targetId) ?? [];
-
-						linkedBorders.push({
-							neighbour: region,
-							neighbourTemplateId: regionId,
-							expectedType: borderType,
-						});
-
-						borders.set(targetId, linkedBorders);
-					}
-				);
-
-				regionTemplate.nodes.forEach((nodeTemplate) => {
-					this.resourceNodeFactory.create(
-						nodeTemplate.name ?? fallbackName,
-						nodeTemplate.type,
-						region
-					);
-				});
-			}
-		);
-
-		const createdBorders = new Map<string, BorderType>();
-		regions.forEach((region, templateId) => {
-			const linkedBorders = borders.get(templateId) ?? [];
-			linkedBorders.forEach(
-				({ neighbourTemplateId, neighbour, expectedType }) => {
-					if (templateId === neighbourTemplateId) {
-						throw new Error('Ah, I messed up'); //TODO remove
-					}
-
-					const compare = createdBorders.get(
-						`${region.getId()}-${neighbour.getId()}`
-					);
-					if (compare) {
-						if (compare !== expectedType) {
-							throw new Error(
-								`The following regions don't have a correct border config: ${templateId} - ${neighbourTemplateId}`
-							);
-						}
-						return;
-					}
-
-					const border = this.borderRepository.create({
-						type: expectedType,
-						regions: [],
-					});
-
-					border.addRegion(region);
-					border.addRegion(neighbour);
-
-					createdBorders.set(
-						`${neighbour.getId()}-${region.getId()}`,
-						expectedType
+			regions.set(regionId, region);
+			for (const [targetId, borderType] of Object.entries(
+				regionTemplate.borders
+			)) {
+				if (targetId === regionId) {
+					throw new Error(
+						`Region ${regionId} references to itself as a neighbour.`
 					);
 				}
-			);
-		});
+
+				let linkedBorders = borders.get(targetId) ?? [];
+
+				linkedBorders.push({
+					neighbour: region,
+					neighbourTemplateId: regionId,
+					expectedType: borderType,
+				});
+
+				borders.set(targetId, linkedBorders);
+			}
+
+			for (const nodeTemplate of regionTemplate.nodes) {
+				await this.resourceNodeFactory.create(
+					nodeTemplate.name ?? fallbackName,
+					nodeTemplate.type,
+					region
+				);
+			}
+		}
+
+		const createdBorders = new Map<string, BorderType>();
+		for (const [templateId, region] of regions) {
+			const linkedBorders = borders.get(templateId) ?? [];
+			for (const {
+				neighbourTemplateId,
+				neighbour,
+				expectedType,
+			} of linkedBorders) {
+				if (templateId === neighbourTemplateId) {
+					throw new Error('Ah, I messed up'); //TODO remove
+				}
+
+				const compare = createdBorders.get(
+					`${region.getId()}-${neighbour.getId()}`
+				);
+				if (compare) {
+					if (compare !== expectedType) {
+						throw new Error(
+							`The following regions don't have a correct border config: ${templateId} - ${neighbourTemplateId}`
+						);
+					}
+					return;
+				}
+
+				const border = await this.borderRepository.create({
+					type: expectedType,
+					regions: [],
+				});
+
+				border.addRegion(region);
+				border.addRegion(neighbour);
+
+				createdBorders.set(
+					`${neighbour.getId()}-${region.getId()}`,
+					expectedType
+				);
+			}
+		}
 	}
 
-	private createSettlement(
+	private async createSettlement(
 		template: SettlementTemplate | null | undefined,
 		region: Region,
 		fallbackName: string
-	): void {
+	): Promise<void> {
 		if (!template) {
 			return;
 		}
 
-		const settlement = this.settlementRepository.create({
+		const settlement = await this.settlementRepository.create({
 			name: template.name ?? fallbackName,
 			region: region.getId(),
 		});
 
-		region.setSettlement(settlement);
+		await region.setSettlement(settlement);
 	}
 }

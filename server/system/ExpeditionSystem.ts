@@ -22,26 +22,24 @@ export class ExpeditionSystem implements System {
 	async tick(now: Date): Promise<void> {
 		this.now = now;
 
-		const activeExpedition = this.expeditionRepository
-			.getAll()
-			.filter(
-				(expedition) => expedition.phase !== ExpeditionPhase.finished
-			);
+		const activeExpedition = (
+			await this.expeditionRepository.getAll()
+		).filter((expedition) => expedition.phase !== ExpeditionPhase.finished);
 
 		for (const expedition of activeExpedition) {
-			this.handleGathering(expedition);
-			this.handlePhaseChange(expedition);
+			await this.handleGathering(expedition);
+			await this.handlePhaseChange(expedition);
 		}
 	}
 
-	private handleGathering(expedition: Expedition): void {
+	private async handleGathering(expedition: Expedition) {
 		if (expedition.phase !== ExpeditionPhase.gather) {
 			return;
 		}
 
-		const party = expedition.getParty();
-		const node = expedition.getTarget();
-		let resources = node.getResources();
+		const party = await expedition.getParty();
+		const node = await expedition.getTarget();
+		let resources = await node.getResources();
 
 		const gathered: { [key in ResourceType]: number } = {
 			[ResourceType.iron]: 0,
@@ -49,7 +47,7 @@ export class ExpeditionSystem implements System {
 			[ResourceType.stone]: 0,
 		};
 
-		let amountToGather = party.getGatheringSpeed();
+		let amountToGather = await party.getGatheringSpeed();
 		while (amountToGather > 0) {
 			resources = resources.filter(
 				(resource) => resource.getAmount() > 0
@@ -60,7 +58,7 @@ export class ExpeditionSystem implements System {
 
 			const randomResource = this.getRandomResource(resources);
 			const toTake = Math.min(amountToGather, randomResource.getAmount());
-			party.addResource(toTake, randomResource.type);
+			await party.addResource(toTake, randomResource.type);
 			randomResource.removeAmount(toTake);
 			amountToGather -= toTake;
 			gathered[randomResource.type] += toTake;
@@ -68,7 +66,7 @@ export class ExpeditionSystem implements System {
 
 		ClientNotifier.info(
 			`${node.name} seems to be completely depleted, so party "${party.name}" is going to head back soon.`,
-			expedition.getUpdateRoomName()
+			await expedition.getUpdateRoomName()
 		);
 
 		ClientNotifier.info(
@@ -76,7 +74,7 @@ export class ExpeditionSystem implements System {
 				.filter(([type, value]) => value > 0)
 				.map(([type, value]) => `${value} ${type}`)
 				.join(', ')}`,
-			expedition.getUpdateRoomName(),
+			await expedition.getUpdateRoomName(),
 			[NotificationCategory.expedition]
 		);
 
@@ -84,7 +82,7 @@ export class ExpeditionSystem implements System {
 			expedition.nextPhaseAt = new Date();
 			ClientNotifier.info(
 				`${node.name} seems to be completely depleted, so party "${party.name}" is going to head back soon.`,
-				expedition.getUpdateRoomName()
+				await expedition.getUpdateRoomName()
 			);
 		}
 	}
@@ -105,31 +103,33 @@ export class ExpeditionSystem implements System {
 		throw new Error('Now this is interesting');
 	}
 
-	private handlePhaseChange(expedition: Expedition) {
+	private async handlePhaseChange(expedition: Expedition) {
 		if (expedition.nextPhaseAt >= this.now) {
 			return;
 		}
 
 		switch (expedition.phase) {
 			case ExpeditionPhase.gather:
-				this.handleEndOfGathering(expedition);
+				await this.handleEndOfGathering(expedition);
 				break;
 			case ExpeditionPhase.travel:
 			case ExpeditionPhase.returning:
-				this.handleEndOfTravel(expedition);
+				await this.handleEndOfTravel(expedition);
 				break;
 			default:
 				throw new Error('Should never happen'); //TODO
 		}
 	}
 
-	private handleEndOfGathering(expedition: Expedition): void {
+	private async handleEndOfGathering(expedition: Expedition) {
 		expedition.phase = ExpeditionPhase.returning;
 
 		const durationInSeconds =
-			this.travelTimeCalculator.calculateTravelTime(
-				expedition.getOrigin().getRegion(),
-				expedition.getTarget().getRegion()
+			(
+				await this.travelTimeCalculator.calculateTravelTime(
+					await (await expedition.getOrigin()).getRegion(),
+					await (await expedition.getTarget()).getRegion()
+				)
 			)?.cost ?? null;
 		if (durationInSeconds === null) {
 			throw new Error('Wait, no route between these two?');
@@ -139,29 +139,29 @@ export class ExpeditionSystem implements System {
 			this.now.getTime() + durationInSeconds * 1000
 		);
 
-		const party = expedition.getParty();
-		const target = expedition.getTarget();
+		const party = await expedition.getParty();
+		const target = await expedition.getTarget();
 		ClientNotifier.success(
 			`Party "${party.name}" finished gathering at ${target.name} and are on their way back home.`,
-			party.getUpdateRoomName()
+			await party.getUpdateRoomName()
 		);
 	}
 
-	private handleEndOfTravel(expedition: Expedition): void {
-		const party = expedition.getParty();
-		const target = expedition.getTarget();
+	private async handleEndOfTravel(expedition: Expedition): Promise<void> {
+		const party = await expedition.getParty();
+		const target = await expedition.getTarget();
 		if (expedition.phase === ExpeditionPhase.returning) {
 			party.setExpedition(null);
 			expedition.phase = ExpeditionPhase.finished;
 
 			ClientNotifier.success(
 				`Party "${party.name}" returned from their expedition to ${target.name}.`,
-				party.getUpdateRoomName()
+				await party.getUpdateRoomName()
 			);
 
-			const settlement = expedition.getOrigin();
-			for (const item of party.getInventory()) {
-				settlement.addResource(item.getAmount(), item.type);
+			const settlement = await expedition.getOrigin();
+			for (const item of await party.getInventory()) {
+				await settlement.addResource(item.getAmount(), item.type);
 				party.deleteResource(item.getId());
 			}
 
@@ -171,14 +171,15 @@ export class ExpeditionSystem implements System {
 		expedition.phase = ExpeditionPhase.gather;
 
 		const durationInSeconds =
-			party.getCarryCapacity() / party.getGatheringSpeed();
+			(await party.getCarryCapacity()) /
+			(await party.getGatheringSpeed());
 		expedition.nextPhaseAt = new Date(
 			this.now.getTime() + durationInSeconds * ServerTickTime
 		);
 
 		ClientNotifier.success(
 			`Party "${party.name}" arrived at ${target.name} and will start to gather.`,
-			party.getUpdateRoomName()
+			await party.getUpdateRoomName()
 		);
 	}
 }

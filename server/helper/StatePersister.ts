@@ -37,9 +37,12 @@ export class StatePersister {
 			container.resolveAll<Constructor<Repository<any, any, any>>>(
 				'Repository'
 			);
-		repositories.forEach((identifier) => {
+
+		for (const identifier of repositories) {
 			const repository = container.resolve(identifier);
-			repository.load(loadedState[repository.constructor.name] ?? []);
-		});
+			await repository.load(
+				loadedState[repository.constructor.name] ?? []
+			);
+		}
 	}
 }

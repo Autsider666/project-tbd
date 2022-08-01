@@ -39,7 +39,7 @@ export class World extends Entity<WorldId, WorldStateData, WorldClientData> {
 		};
 	}
 
-	getUpdateRoomName(): string {
+	async getUpdateRoomName(): Promise<string> {
 		return this.getEntityRoomName();
 	}
 
@@ -53,7 +53,7 @@ export class World extends Entity<WorldId, WorldStateData, WorldClientData> {
 	// 	super.onUpdate(proxy);
 	// }
 
-	public override normalize(forClient?: Client): WorldClientData {
+	public async normalize(forClient?: Client): Promise<WorldClientData> {
 		return {
 			entityType: this.getEntityType(),
 			...this.toJSON(),
@@ -64,7 +64,7 @@ export class World extends Entity<WorldId, WorldStateData, WorldClientData> {
 		updateObject: EntityUpdate = {},
 		forClient?: Client
 	): Promise<EntityUpdate> {
-		for (const region of this.getRegions()) {
+		for (const region of await this.getRegions()) {
 			updateObject = await region.prepareNestedEntityUpdate(
 				updateObject,
 				forClient
@@ -74,11 +74,11 @@ export class World extends Entity<WorldId, WorldStateData, WorldClientData> {
 		return super.prepareNestedEntityUpdate(updateObject, forClient);
 	}
 
-	public getRegions(): Region[] {
+	public async getRegions(): Promise<Region[]> {
 		return this.regions.getAll();
 	}
 
-	public addRegion(region: Region): void {
-		this.regions.add(region);
+	public async addRegion(region: Region) {
+		await this.regions.add(region);
 	}
 }

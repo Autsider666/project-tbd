@@ -56,16 +56,16 @@ export class Border
 		};
 	}
 
-	getUpdateRoomName(): string {
-		const regions = this.getRegions();
+	async getUpdateRoomName(): Promise<string> {
+		const regions = await this.getRegions();
 		if (regions.length === 0) {
 			return '';
 		}
 
-		return this.getRegions()[0].getUpdateRoomName();
+		return regions[0].getUpdateRoomName();
 	}
 
-	public override normalize(forClient?: Client): BorderClientData {
+	public async normalize(forClient?: Client): Promise<BorderClientData> {
 		return {
 			entityType: this.getEntityType(),
 			travelTime: this.getTravelTime(),
@@ -73,7 +73,7 @@ export class Border
 		};
 	}
 
-	public getRegions(): Region[] {
+	public async getRegions(): Promise<Region[]> {
 		return this.regions.getAll();
 	}
 
@@ -91,12 +91,8 @@ export class Border
 		return BaseBorderTravelTimeMapping[this.type];
 	}
 
-	getNextTravelDestinations(): HasTravelTime[] {
-		return this.regions.getAll();
-	}
-
-	getWorld(): World {
-		const region = this.regions.getAll()[0] ?? null;
+	async getWorld(): Promise<World> {
+		const region = (await this.getRegions())[0] ?? null;
 		if (region === null) {
 			throw new Error("Can't get world id in a border without regions.");
 		}
