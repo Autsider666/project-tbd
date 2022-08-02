@@ -13,10 +13,10 @@ const columns = [
 const Survivors = () => {
 
     const { partySurvivors: survivors, dismissSurvivor, controlledParty } = useGame()
-    const { partyId } = controlledParty | {}
+    const { id: partyId } = controlledParty || {}
 
     const dismissHandler = survivorId => () => {
-        console.log({survivorId, controlledParty})
+        console.log({ survivorId, controlledParty })
         dismissSurvivor(survivorId, partyId)
     }
 
@@ -40,7 +40,7 @@ const Survivors = () => {
                             survivors.map(({ id, name, damage, hp, gatheringSpeed }) => {
                                 return (
                                     <TableRow key={id} sx={{
-                                        "&:last-child td, &:last-child th": { border: 0, width: '20px' }
+                                        "&:last-child td, &:last-child th": { border: 0, width: "80px" }
                                     }}>
                                         <TableCell component="td" scope='row' >{name}</TableCell>
                                         <TableCell align="right">{hp}</TableCell>
