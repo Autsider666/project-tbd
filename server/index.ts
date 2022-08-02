@@ -15,6 +15,8 @@ import {
 	SocketData,
 } from './socket.io.js';
 
+Error.stackTraceLimit = 25;
+
 const port = 5000;
 const host = '0.0.0.0';
 const corsOrigin = ['http://localhost:3000', 'https://admin.socket.io'];
@@ -50,8 +52,6 @@ app.get('/state', (_, res) =>
 		)}</pre>`
 	)
 );
-
-worldFactory.create();
 
 instrument(io, {
 	auth: false,

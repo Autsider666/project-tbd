@@ -4,6 +4,7 @@ import { SocketId } from 'socket.io-adapter';
 import { injectable } from 'tsyringe';
 import { Entity, EntityClientData } from '../entity/Entity.js';
 import { World, WorldId } from '../entity/World.js';
+import { StatePersister } from '../helper/StatePersister.js';
 import { WorldRepository } from '../repository/WorldRepository.js';
 import {
 	ClientToServerEvents,
