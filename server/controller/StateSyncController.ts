@@ -110,6 +110,8 @@ export class StateSyncController {
 				return;
 			}
 
+			console.log({ room, update });
+
 			console.log(
 				'emitting',
 				Object.values(update).length,

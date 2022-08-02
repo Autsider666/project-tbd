@@ -128,6 +128,13 @@ export class ExpeditionPhaseChangeSystem implements System {
 			}
 		}
 
+		const encountersEnemy =
+			Math.floor(Math.random() * 101) <=
+			this.config.get('expeditionCombatChance');
+		if (!encountersEnemy) {
+			return;
+		}
+
 		expedition.enemy = {
 			name: 'Zombie',
 			hp: 100,
