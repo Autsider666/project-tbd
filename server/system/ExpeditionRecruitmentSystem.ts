@@ -2,13 +2,8 @@ import { injectable } from 'tsyringe';
 import { SurvivorFactory } from '../factory/SurvivorFactory.js';
 import { getRandomItem } from '../helper/Randomizer.js';
 import { ServerConfig } from '../serverConfig.js';
-import { Expedition, ExpeditionPhase } from '../entity/Expedition.js';
-import { Resource, ResourceType } from '../entity/Resource.js';
-import {
-	ClientNotifier,
-	NotificationCategory,
-} from '../helper/ClientNotifier.js';
-import { TravelTimeCalculator } from '../helper/TravelTimeCalculator.js';
+import { ExpeditionPhase } from '../entity/Expedition.js';
+import { ClientNotifier } from '../helper/ClientNotifier.js';
 import { ExpeditionRepository } from '../repository/ExpeditionRepository.js';
 import { System } from './System.js';
 
@@ -30,14 +25,16 @@ export class ExpeditionRecruitmentSystem implements System {
 		const activeExpedition = this.expeditionRepository
 			.getAll()
 			.filter(
-				(expedition) => expedition.phase !== ExpeditionPhase.finished
+				(expedition) =>
+					expedition.getCurrentPhase() !== ExpeditionPhase.finished &&
+					expedition.getCurrentPhase() !== ExpeditionPhase.combat
 			);
 		for (const expedition of activeExpedition) {
 			const willRecruit =
 				Math.floor(Math.random() * 101) <=
 				this.config.get('expeditionRecruitmentChance');
 			if (!willRecruit) {
-				return;
+				continue;
 			}
 
 			const party = expedition.getParty();

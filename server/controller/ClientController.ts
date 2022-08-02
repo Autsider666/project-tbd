@@ -316,6 +316,14 @@ export class ClientController {
 
 			return null;
 		}
+		if (party.dead) {
+			ClientNotifier.error(
+				"This party has been defeated and can't do anything anymore.",
+				this.socket.id
+			);
+
+			return null;
+		}
 
 		if (checkPartySize && party.getSurvivors().length > this.maxPartySize) {
 			ClientNotifier.error(

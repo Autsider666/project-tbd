@@ -25,6 +25,7 @@ export type PartyStateData = {
 	inventory?: ResourceId[];
 	currentVoyage?: VoyageId;
 	currentExpedition?: ExpeditionId;
+	dead?: boolean;
 } & EntityStateData<PartyId>;
 
 export type PartyClientData = {
@@ -41,6 +42,7 @@ export class Party
 	implements SurvivorContainer
 {
 	public name: string;
+	public dead: boolean;
 	private readonly settlementProperty: SettlementProperty;
 	private readonly survivorsProperty: SurvivorsProperty;
 	private readonly inventoryProperty: ResourcesProperty;
@@ -52,6 +54,7 @@ export class Party
 		super(data);
 
 		this.name = data.name;
+		this.dead = data.dead ?? false;
 		this.settlementProperty = new SettlementProperty(data.settlement);
 		this.survivorsProperty = new SurvivorsProperty(
 			data.survivors ?? [],
@@ -73,6 +76,7 @@ export class Party
 		return {
 			id: this.id,
 			name: this.name,
+			dead: this.dead,
 			settlement: this.settlementProperty.toJSON(),
 			survivors: this.survivorsProperty.toJSON(),
 			inventory: this.inventoryProperty.toJSON(),

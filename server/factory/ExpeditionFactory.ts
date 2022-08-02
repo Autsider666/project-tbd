@@ -30,17 +30,17 @@ export class ExpeditionFactory {
 			throw new Error('Could not find a route to target resource node.');
 		}
 		const startedAt = new Date();
-		const nextPhaseAt = new Date(
+		const currentPhaseEndsAt = new Date(
 			startedAt.getTime() + durationInSeconds * 1000
 		);
 
 		const expedition = this.expeditionRepository.create({
 			party: party.getId(),
-			phase: ExpeditionPhase.travel,
+			currentPhase: ExpeditionPhase.travel,
 			origin: party.getSettlement().getId(),
 			target: node.getId(),
 			startedAt,
-			nextPhaseAt,
+			currentPhaseEndsAt,
 		});
 
 		if (!party.setExpedition(expedition)) {
