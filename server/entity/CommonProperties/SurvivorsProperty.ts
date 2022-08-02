@@ -12,6 +12,10 @@ export class SurvivorsProperty extends MultiCommonProperty<
 		private readonly owner: SurvivorContainer
 	) {
 		super(survivors, SurvivorRepository);
+
+		for (const resource of this.getAll()) {
+			resource.owner = this.owner;
+		}
 	}
 
 	public add(value: Survivor | SurvivorId) {
