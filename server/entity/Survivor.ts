@@ -1,4 +1,6 @@
+import { container } from 'tsyringe';
 import { Opaque } from 'type-fest';
+import { Config } from '../config.js';
 import { Client } from '../controller/ClientController.js';
 import { Uuid } from '../helper/UuidHelper.js';
 import { SurvivorContainer } from './CommonTypes/SurvivorContainer.js';
@@ -27,6 +29,9 @@ export class Survivor extends Entity<
 	public readonly damage: number;
 	public readonly carryCapacity: number;
 	public readonly gatheringSpeed: number;
+	private readonly gatheringSpeedMultiplier: number = container
+		.resolve(Config)
+		.get('gatherSpeedMultiplier');
 
 	public owner: SurvivorContainer | null = null;
 
@@ -37,7 +42,8 @@ export class Survivor extends Entity<
 		this.hp = data.hp;
 		this.damage = data.hp;
 		this.carryCapacity = data.carryCapacity;
-		this.gatheringSpeed = data.gatheringSpeed;
+		this.gatheringSpeed =
+			data.gatheringSpeed * this.gatheringSpeedMultiplier;
 	}
 
 	normalize(forClient: Client): SurvivorClientDate {

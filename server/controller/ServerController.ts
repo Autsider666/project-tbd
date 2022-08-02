@@ -1,5 +1,6 @@
 import { SocketId } from 'socket.io-adapter';
 import { injectable, injectAll, registry } from 'tsyringe';
+import { Config } from '../config.js';
 import { WorldFactory } from '../factory/WorldFactory.js';
 import { StatePersister } from '../helper/StatePersister.js';
 import { WorldRepository } from '../repository/WorldRepository.js';
@@ -16,8 +17,6 @@ import { WorldTimestampSystem } from '../system/WorldTimestampSystem.js';
 import { ClientController } from './ClientController.js';
 import { Server, Socket } from 'socket.io';
 
-export const ServerTickTime = 5000;
-
 // TODO move to config file?
 @registry([
 	{ token: 'System', useClass: VoyageSystem },
@@ -33,7 +32,8 @@ export class ServerController {
 		protected readonly io: Server,
 		@injectAll('System') protected readonly systems: System[],
 		private readonly worldRepository: WorldRepository,
-		private readonly worldFactory: WorldFactory
+		private readonly worldFactory: WorldFactory,
+		private readonly config: Config
 	) {}
 
 	async start(): Promise<void> {
@@ -70,6 +70,6 @@ export class ServerController {
 		setInterval(() => {
 			const now = new Date();
 			this.systems.forEach(async (system) => system.tick(now));
-		}, ServerTickTime);
+		}, this.config.get('serverTickTime'));
 	}
 }

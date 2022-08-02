@@ -15,7 +15,7 @@ const survivorTemplates: {
 		hp: 50,
 		damage: 10,
 		carryCapacity: 50,
-		gatheringSpeed: 10,
+		gatheringSpeed: 1,
 	},
 };
 

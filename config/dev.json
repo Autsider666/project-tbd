@@ -1,0 +1,5 @@
+{
+	"stackTraceLimit": 50,
+	"corsOrigin": ["http://localhost:3000", "https://admin.socket.io"],
+	"gatherSpeedMultiplier": 10
+}

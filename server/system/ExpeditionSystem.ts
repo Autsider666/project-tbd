@@ -1,5 +1,5 @@
 import { injectable } from 'tsyringe';
-import { ServerTickTime } from '../controller/ServerController.js';
+import { Config } from '../config.js';
 import { Expedition, ExpeditionPhase } from '../entity/Expedition.js';
 import { Resource, ResourceType } from '../entity/Resource.js';
 import {
@@ -16,7 +16,8 @@ export class ExpeditionSystem implements System {
 
 	constructor(
 		private readonly expeditionRepository: ExpeditionRepository,
-		private readonly travelTimeCalculator: TravelTimeCalculator
+		private readonly travelTimeCalculator: TravelTimeCalculator,
+		private readonly config: Config
 	) {}
 
 	async tick(now: Date): Promise<void> {
@@ -173,7 +174,8 @@ export class ExpeditionSystem implements System {
 		const durationInSeconds =
 			party.getCarryCapacity() / party.getGatheringSpeed();
 		expedition.nextPhaseAt = new Date(
-			this.now.getTime() + durationInSeconds * ServerTickTime
+			this.now.getTime() +
+				durationInSeconds * this.config.get('serverTickTime')
 		);
 
 		ClientNotifier.success(

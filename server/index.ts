@@ -1,6 +1,7 @@
 import 'reflect-metadata';
 import EventEmitter from 'events';
 import { container } from 'tsyringe';
+import { Config } from './config.js';
 import { ServerController } from './controller/ServerController.js';
 import { StateSyncController } from './controller/StateSyncController.js';
 import { WorldFactory } from './factory/WorldFactory.js';
@@ -15,11 +16,8 @@ import {
 	SocketData,
 } from './socket.io.js';
 
-Error.stackTraceLimit = 25;
-
-const port = 5000;
-const host = '0.0.0.0';
-const corsOrigin = ['http://localhost:3000', 'https://admin.socket.io'];
+const config = container.resolve(Config);
+Error.stackTraceLimit = config.get('stackTraceLimit');
 
 const app = express();
 
@@ -32,7 +30,7 @@ const io = new Server<
 	SocketData
 >(httpServer, {
 	cors: {
-		origin: corsOrigin,
+		origin: config.get('corsOrigin'),
 		// credentials: true,
 	},
 });
@@ -56,6 +54,9 @@ app.get('/state', (_, res) =>
 instrument(io, {
 	auth: false,
 });
+
+const port = config.get('port');
+const host = config.get('host');
 
 httpServer.listen(port, host, async () => {
 	console.info(`🚀 Server is listening 🚀`);
