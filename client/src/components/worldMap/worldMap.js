@@ -1,4 +1,4 @@
-import { Box } from '@mui/material'
+import { Box, Tooltip } from '@mui/material'
 import React from 'react'
 import WorldMap1 from './Map1/Map1.js'
 import "./WorldMap.css"
@@ -10,7 +10,7 @@ const WorldMaps = [
 ]
 
 const WorldMap = ({ world, regions, selectedRegionId, setSelectedRegionId }) => {
-    
+
     const worldMapSelected = WorldMaps[0]
 
     const dev = true
@@ -22,16 +22,18 @@ const WorldMap = ({ world, regions, selectedRegionId, setSelectedRegionId }) => 
             <svg className="mapRegionWrapper" width="100%" viewBox="0 0 1440 1080" >
                 <g id="g8">
                     {regions.map(region => (
-                        <path
-                            key={region.id}
-                            className={`
+                        <Tooltip title={`Region: ${region.name}`}>
+                            <path
+                                key={region.id}
+                                className={`
                                 mapRegion 
                                 ${selectedRegionId === region.id ? 'selected' : ''}
                                 ${region.expeditionInProgress !== '' ? `expedition ${region.expeditionInProgress}` : ''}
                                 `}
-                            d={region.dimensions}
-                            onClick={() => setSelectedRegionId(region.id)}
-                        />
+                                d={region.dimensions}
+                                onClick={() => setSelectedRegionId(region.id)}
+                            />
+                        </Tooltip>
                     ))}
                 </g>
             </svg>
