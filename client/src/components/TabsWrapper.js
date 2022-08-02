@@ -18,7 +18,7 @@ function TabPanel(props) {
       {...other}
     >
       {value === index && (
-        <Box sx={{ p: 3, height: 'calc(100% - 48px)' }}>
+        <Box sx={{ p: 1, height: 'calc(100% - 48px)' }}>
           {children}
         </Box>
       )}

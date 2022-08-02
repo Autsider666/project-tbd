@@ -3,6 +3,7 @@ import { socket } from '../functions/SocketAPI';
 import { useApp } from './AppContext';
 // import { EVENT_NAMES, EMIT_NAMES} from '../functions/SocketAPI'
 import { useAuth } from './AuthContext';
+import { DateTime } from 'luxon'
 
 const GameContext = createContext();
 
@@ -14,6 +15,13 @@ const getSettlements = (originId, targetId) => new Promise(resolve => {
     })
 })
 
+const transferSurvivor = (type, survivorId, partyId) => {
+    socket.emit('survivor:' + type, { survivorId, partyId })
+}
+
+const recruitSurvivor = (survivorId, partyId) => transferSurvivor('recruit', survivorId, partyId)
+const dismissSurvivor = (survivorId, partyId) => transferSurvivor('dismiss', survivorId, partyId)
+
 
 
 const GameProvider = ({ children }) => {
@@ -22,9 +30,14 @@ const GameProvider = ({ children }) => {
     const { token = null } = user
     const { displaySnackbar } = useApp()
 
-    // const [loaded, setLoaded] = useState(false)
-
     const [allEntities, setAllEntities] = useState()
+    const [currentTick, setCurrentTick] = useState({})
+    const { startedAt, endsAt } = currentTick
+
+    const lStartedAt = (startedAt && endsAt) && DateTime.fromISO(startedAt)
+    const lEndsAt = (startedAt && endsAt) && DateTime.fromISO(endsAt)
+    const tickLength = (startedAt && endsAt) && lStartedAt.diff(lEndsAt, 'seconds').toObject()
+
 
     const [worldRepository, setWorldRepository] = useState({})
     const [regionRepository, setRegionRepository] = useState({})
@@ -139,11 +152,13 @@ const GameProvider = ({ children }) => {
         if (!socket.hasListeners('entity:update')) {
             socket.on('entity:update', entityUpdater)
             socket.on('notification', notificationUpdater)
+            socket.on('server:turn', setCurrentTick)
         }
         // token && socket.emit('party:init', token, data => console.log(data))
         return () => {
             socket.off('entity:update', entityUpdater)
             socket.off('notification', notificationUpdater)
+            socket.off('server:turn,', setCurrentTick)
         }
     }, [])
 
@@ -158,10 +173,19 @@ const GameProvider = ({ children }) => {
     const selectedResourceNodes = Object.values(resourceNodeRepository).filter(resourceNode => resourceNode.region === selectedRegionId)
     const currentExpedition = Object.values(expeditionRepository).find(expedition => expedition.party === controlledParty.id && expedition.phase !== "finished")
 
-    const partySurvivors = controlledParty && Object.values(survivorRepository).filter(survivor => survivor.party === controlledParty.id)
+    const partySurvivors = controlledParty && controlledParty.survivors.map(survivorId => survivorRepository[survivorId])
+    // console.log({controlledParty, survivorRepository, partySurvivors})
+    const partyInventory = controlledParty && controlledParty.inventory.map(resourceId => resourceRepository[resourceId])
+    const currentSettlementStorage = currentSettlement && currentSettlement.storage.map(resourceId => resourceRepository[resourceId])
 
-    const {origin: currentExpeditionOrigin, target: currentExpeditionTarget} = currentExpedition || {}  
 
+    // console.log({partyInventory, currentSettlementStorage})
+
+
+
+
+
+    const { origin: currentExpeditionOrigin, target: currentExpeditionTarget } = currentExpedition || {}
     useEffect(() => {
         const originId = currentRegionId
         const targetId = selectedRegionId
@@ -180,7 +204,7 @@ const GameProvider = ({ children }) => {
             setCurrentExpeditionTravelPath(data)
         })
     }, [currentExpeditionOrigin, currentExpeditionTarget])
-    
+
     // console.log({ selectedRegionId, currentRegionId, travelPaths })
     // const selectedRegionTravelPath = selectedRegionId && currentRegionId && travelPaths[currentRegionId] && travelPaths[currentRegionId][selectedRegionId]
     // console.log(survivorRepository)
@@ -215,14 +239,15 @@ const GameProvider = ({ children }) => {
         loaded,
         token,
         worldRepository, regionRepository, borderRepository, survivorRepository, partyRepository, resourceNodeRepository, settlementRepository, voyageRepository, expeditionRepository, resourceRepository,
-        controlledParty,
-        partySurvivors,
-        currentSettlement, currentSettlementId,
-        currentExpedition, currentExpeditionTravelPath, 
+        controlledParty, partyInventory, partySurvivors,
+        currentSettlement, currentSettlementId, currentSettlementStorage,
+        currentExpedition, currentExpeditionTravelPath,
         currentVoyage,
         selectedResourceNodes,
         selectedRegion, selectedRegionId, setSelectedRegionId, selectedSettlement,
         travelPaths, selectedRegionTravelPath,
+        tickLength,
+        recruitSurvivor, dismissSurvivor,
 
     };
 

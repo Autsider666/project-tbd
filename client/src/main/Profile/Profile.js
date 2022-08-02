@@ -1,4 +1,4 @@
-import { List, ListItem } from '@mui/material'
+import { List, ListItem, ListItemText } from '@mui/material'
 import React from 'react'
 import TabsWrapper from '../../components/TabsWrapper'
 import { useGame } from '../../contexts/GameContext'
@@ -6,21 +6,50 @@ import Survivors from './Survivors'
 
 const Party = () => {
 
-    const { survivorRepository, partyRepository } = useGame()
+    const { controlledParty: party, partyInventory } = useGame()
 
-    const party = Object.values(partyRepository).find(party => party.controllable)
-    const survivors = Object.values(survivorRepository).filter(survivor => survivor.party = party.id)
-    // console.log({ survivorRepository, partyRepository })
-    // console.log({ party, survivors })
+    if (party === null) return <div />
+
+    console.log(party)
+
+    // console.log({ party, partyInventory })
+    const resourceTypes = [
+        { type: 'wood', },
+        { type: 'stone', },
+        { type: 'iron', },
+    ]
+
+    const statTypes = [
+        { key: 'hp', label: 'Health', },
+        { key: 'damage', label: 'Damage', },
+        { key: 'gatheringSpeed', label: 'Gathering', },
+    ]
+
+
 
     return (
-            <List>
-                {survivors.map(survivor => {
-                    <ListItem>
-                        {survivor.name}
-                    </ListItem>
-                })}
-            </List>
+        <List>
+            <ListItem >
+                <ListItemText sx={{minWidth: '100px'}} primary="Inventory" />
+                {resourceTypes.map(({ type }) => {
+
+
+                    const resourceFound = partyInventory.find(resource => resource.type === type)
+                    const { amount = 0 } = resourceFound || {}
+                    return (
+                        <ListItemText key={type} primary={amount} secondary={type} />
+                    )
+                })
+                }
+            </ListItem>
+            <ListItem>
+                <ListItemText sx={{minWidth: '100px'}} primary="Stats" />
+                {statTypes.map(({ key, label }) => (
+                    <ListItemText primary={party[key]} secondary={label} />
+                ))}
+            </ListItem>
+        </List>
+
     )
 }
 const Upgrades = () => <div>Upgrades</div>
@@ -28,6 +57,7 @@ const Upgrades = () => <div>Upgrades</div>
 
 const content = [
     { label: 'Party', Component: Party },
+    { label: 'Survivors', Component: Survivors },
     { label: 'Upgrades', Component: Upgrades },
     // { label: 'RandomTest', Component: RandomTest },
 ]

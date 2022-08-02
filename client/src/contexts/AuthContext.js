@@ -17,6 +17,14 @@ const getSettlements = worldId => new Promise(resolve => {
     })
 })
 
+// useEffect(() => {
+//     setCount(JSON.parse(window.localStorage.getItem('count')));
+// }, []);
+
+// useEffect(() => {
+//     window.localStorage.setItem('count', count);
+// }, [count]);
+
 
 const AuthProvider = ({ children }) => {
 
@@ -29,11 +37,11 @@ const AuthProvider = ({ children }) => {
         // })
 
         const worlds = await getWorlds()
-        const selectedWorld = worlds.find(world => world.id !== "a" )
-        const settlements = await getSettlements({worldId: selectedWorld.id})
+        const selectedWorld = worlds.find(world => world.id !== "a")
+        const settlements = await getSettlements({ worldId: selectedWorld.id })
 
-        const selectedSettlement = settlements.reduce((accum,value)=>{
-            if(value.parties.length < accum.parties.length ) accum = value
+        const selectedSettlement = settlements.reduce((accum, value) => {
+            if (value.parties.length < accum.parties.length) accum = value
             return accum
         })
 

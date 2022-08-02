@@ -1,91 +1,82 @@
 import * as React from 'react';
-import Accordion from '@mui/material/Accordion';
-import AccordionDetails from '@mui/material/AccordionDetails';
-import AccordionSummary from '@mui/material/AccordionSummary';
-import Typography from '@mui/material/Typography';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { IconButton, List, ListItem, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
+import { useGame } from '../../contexts/GameContext';
+import DeleteIcon from '@mui/icons-material/Delete'
 
-export default function ControlledAccordions() {
-  const [expanded, setExpanded] = React.useState(false);
+const columns = [
+    { field: 'name', headerName: 'Name', width: 100 },
+    { field: 'hp', headerName: 'Health', width: 80 },
+    { field: 'damage', headerName: 'Damage', width: 80 },
+    { field: 'gatheringSpeed', headerName: 'Gathering', width: 80 },
+];
 
-  const handleChange = (panel) => (event, isExpanded) => {
-    setExpanded(isExpanded ? panel : false);
-  };
+const Survivors = () => {
 
-  return (
-    <div>
-      <Accordion expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>
-        <AccordionSummary
-          expandIcon={<ExpandMoreIcon />}
-          aria-controls="panel1bh-content"
-          id="panel1bh-header"
-        >
-          <Typography sx={{ width: '33%', flexShrink: 0 }}>
-            General settings
-          </Typography>
-          <Typography sx={{ color: 'text.secondary' }}>I am an accordion</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <Typography>
-            Nulla facilisi. Phasellus sollicitudin nulla et quam mattis feugiat.
-            Aliquam eget maximus est, id dignissim quam.
-          </Typography>
-        </AccordionDetails>
-      </Accordion>
-      <Accordion expanded={expanded === 'panel2'} onChange={handleChange('panel2')}>
-        <AccordionSummary
-          expandIcon={<ExpandMoreIcon />}
-          aria-controls="panel2bh-content"
-          id="panel2bh-header"
-        >
-          <Typography sx={{ width: '33%', flexShrink: 0 }}>Users</Typography>
-          <Typography sx={{ color: 'text.secondary' }}>
-            You are currently not an owner
-          </Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <Typography>
-            Donec placerat, lectus sed mattis semper, neque lectus feugiat lectus,
-            varius pulvinar diam eros in elit. Pellentesque convallis laoreet
-            laoreet.
-          </Typography>
-        </AccordionDetails>
-      </Accordion>
-      <Accordion expanded={expanded === 'panel3'} onChange={handleChange('panel3')}>
-        <AccordionSummary
-          expandIcon={<ExpandMoreIcon />}
-          aria-controls="panel3bh-content"
-          id="panel3bh-header"
-        >
-          <Typography sx={{ width: '33%', flexShrink: 0 }}>
-            Advanced settings
-          </Typography>
-          <Typography sx={{ color: 'text.secondary' }}>
-            Filtering has been entirely disabled for whole web server
-          </Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <Typography>
-            Nunc vitae orci ultricies, auctor nunc in, volutpat nisl. Integer sit
-            amet egestas eros, vitae egestas augue. Duis vel est augue.
-          </Typography>
-        </AccordionDetails>
-      </Accordion>
-      <Accordion expanded={expanded === 'panel4'} onChange={handleChange('panel4')}>
-        <AccordionSummary
-          expandIcon={<ExpandMoreIcon />}
-          aria-controls="panel4bh-content"
-          id="panel4bh-header"
-        >
-          <Typography sx={{ width: '33%', flexShrink: 0 }}>Personal data</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <Typography>
-            Nunc vitae orci ultricies, auctor nunc in, volutpat nisl. Integer sit
-            amet egestas eros, vitae egestas augue. Duis vel est augue.
-          </Typography>
-        </AccordionDetails>
-      </Accordion>
-    </div>
-  );
+    const { partySurvivors: survivors, dismissSurvivor, controlledParty } = useGame()
+    const { partyId } = controlledParty | {}
+
+    const dismissHandler = survivorId => () => {
+        console.log({survivorId, controlledParty})
+        dismissSurvivor(survivorId, partyId)
+    }
+
+
+    return (
+        <div style={{ height: 300, width: '100%' }}>
+            <TableContainer>
+
+                <Table size="small">
+                    <TableHead >
+                        <TableRow sx={{ width: '200px' }}>
+                            <TableCell >Name</TableCell>
+                            <TableCell>HP</TableCell>
+                            <TableCell>DMG</TableCell>
+                            <TableCell>Gather</TableCell>
+                            <TableCell></TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {
+                            survivors.map(({ id, name, damage, hp, gatheringSpeed }) => {
+                                return (
+                                    <TableRow key={id} sx={{
+                                        "&:last-child td, &:last-child th": { border: 0, width: '20px' }
+                                    }}>
+                                        <TableCell component="td" scope='row' >{name}</TableCell>
+                                        <TableCell align="right">{hp}</TableCell>
+                                        <TableCell align="right">{damage}</TableCell>
+                                        <TableCell align="right">{gatheringSpeed}</TableCell>
+                                        <TableCell align="right">
+                                            <IconButton onClick={dismissHandler(id)} >
+                                                <DeleteIcon />
+                                            </IconButton>
+                                        </TableCell>
+                                    </TableRow>
+                                )
+                            })
+                        }
+
+
+                    </TableBody>
+
+                </Table>
+
+            </TableContainer>
+
+            {/* <List>
+                {
+                    survivors.map(survivor => {
+                        return (
+                            <ListItem key={survivor.id}>
+                                {survivor.name}
+                            </ListItem>
+                        )
+                    })
+                }
+            </List> */}
+        </div>
+    )
 }
+
+export default Survivors
+
