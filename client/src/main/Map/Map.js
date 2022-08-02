@@ -1,16 +1,18 @@
+import { Divider, Typography } from '@mui/material'
+import { Box } from '@mui/system'
 import React from 'react'
 import Water from '../../components/worldMap/Map1/water.png'
 import WorldMap from '../../components/worldMap/worldMap.js'
 import { useGame } from '../../contexts/GameContext.js'
+import { capitalizeFirstLetter } from '../../functions/utils'
 
 const Map = () => {
-    const { regionRepository, worldRepository, selectedRegionId, setSelectedRegionId, currentExpedition, currentExpeditionTravelPath = {} } = useGame()
+    const { regionRepository, worldRepository, selectedRegionId, setSelectedRegionId, currentExpedition, currentExpeditionTravelPath = {}, selectedSettlement = {}, selectedRegion = {} } = useGame()
 
     const worldSelected = Object.values(worldRepository)[0] // Add future code to take more than one map.
 
     const hide = false
 
-    const { phase } = currentExpedition || {}
     const { path } = currentExpeditionTravelPath
 
     const regions = Object.values(regionRepository).map(region => {
@@ -18,8 +20,30 @@ const Map = () => {
         return region
     })
 
-    if (hide) return <img style={{ opacity: 0.3, marginBottom: '-8px' }} src={Water} position="absolute" width="100%" />
-    return <WorldMap world={worldSelected} selectedRegionId={selectedRegionId} setSelectedRegionId={setSelectedRegionId} regions={regions} />
+    const travelling = currentExpedition && currentExpedition.phase !== 'finished';
+    console.log(currentExpedition)
+
+    if (hide) return <img style={{ opacity: 0.3, marginBottom: '-16px' }} src={Water} position="absolute" width="100%" />
+    return (
+        <Box>
+            <Box sx={{ height: 48, display: 'flex' }}>
+                <Typography color="primary" sx={{ m: 1 }} textAlign={"center"} variant="h5">{`Region: ${selectedRegion?.name}`}</Typography>
+                {selectedSettlement.id
+                    && <>
+                        <Divider sx={{ backgroundColor: theme => theme.palette.primary, my: 1, width: 4 }} orientation="vertical" flexItem />
+                        <Typography color="primary" sx={{ m: 1 }} textAlign={"center"} variant="h5">{`Settlement: ${selectedSettlement?.name}`}</Typography>
+                    </>
+                }
+                {travelling
+                    && <>
+                        <Divider sx={{ backgroundColor: theme => theme.palette.primary, my: 1, width: 4 }} orientation="vertical" flexItem />
+                        <Typography color="primary" sx={{ m: 1 }} textAlign={"center"} variant="h5">{`Expedition Status: ${capitalizeFirstLetter(currentExpedition?.phase)}`}</Typography>
+                    </>
+                }
+            </Box>
+            <WorldMap world={worldSelected} selectedRegionId={selectedRegionId} setSelectedRegionId={setSelectedRegionId} regions={regions} />
+        </Box>
+    )
 }
 
 export default Map

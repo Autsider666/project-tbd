@@ -45,7 +45,7 @@ const Main = ({ marginAmount }) => {
                 sm: '1fr 1fr',
                 md: '1.5fr 1.5fr 5fr',
                 lg: '1.5fr 1.5fr 5fr',
-                xl: '1.5fr 1.5fr 5fr',
+                xl: '1.4fr 1.4fr 4fr',
             },
             gridTemplateRows: {
                 xs: '1fr 1fr',

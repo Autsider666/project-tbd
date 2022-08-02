@@ -24,10 +24,10 @@ export const ExpeditionSites = () => {
     return (
         <Box sx={{ flexGrow: 1 }}>
             <Grid container sx={{ padding: 0 }}>
-                <Grid sx={{ margin: 1 }} item xs={12}>
+                {/* <Grid sx={{ margin: 1 }} item xs={12}>
                     <Typography textAlign={"center"} variant="h5">Region of {`${name}`}</Typography>
 
-                </Grid>
+                </Grid> */}
                 <Grid sx={{ margin: 1, justifyContent: 'center' }} item xs={12}>
                     <Typography textAlign={"center"} variant="h5">Resource Sites:</Typography>
                 </Grid>

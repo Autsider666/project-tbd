@@ -19,6 +19,10 @@ export const Settlement = () => {
     const { name } = settlement;
 
     const traveling = voyage && voyage.finished === false;
+    const isInSettlement = settlement.id === party.settlement
+    console.log(isInSettlement)
+
+
     voyage && console.log(voyage.finished);
 
     const resourceTypes = [
@@ -29,30 +33,26 @@ export const Settlement = () => {
 
     return (
         <Grid container sx={{ padding: 0 }}>
+            {/* <Grid sx={{ margin: 1 }} item xs={12}>
+                <Typography textAlign={"center"} variant="h5">Settlement of {`${name}`}</Typography>
+            </Grid> */}
             <Grid sx={{ margin: 1 }} item xs={12}>
-                <div>Name of Settlement: {name}</div>
-            </Grid>
-            {settlement.id !== party.settlement &&
-                <Grid sx={{ margin: 1 }} item xs={12}>
-                    <Button disabled={traveling} onClick={() => voyageStart(party.id, settlement.id)} variant="contained">
-                        {traveling
+                <Button disabled={traveling || isInSettlement} onClick={() => voyageStart(party.id, settlement.id)} variant="contained">
+                    {isInSettlement
+                        ? `You're already in ${name}!`
+                        : traveling
                             ? `Travelling to ${settlementRepository[voyage.target].name}`
                             : `Travel to ${name}. It takes ${cost} seconds.`}
-                    </Button>
-                </Grid>}
-            {settlement.id === party.settlement &&
-                <Grid sx={{ margin: 1 }} item xs={12}>
-                    <Typography> You are here! </Typography>
-                </Grid>}
+                </Button>
+            </Grid>
+
             <Grid item xs={12}>
 
 
                 <ListItem >
                     <ListItemText sx={{ minWidth: '100px' }} primary="Inventory" />
                     {resourceTypes.map(({ type }) => {
-
-
-                        const resourceFound = currentSettlementStorage.find(resource => resource.type === type)
+                        const resourceFound = currentSettlementStorage.find(resource => resource && resource.type === type)
                         const { amount = 0 } = resourceFound || {}
                         return (
                             <ListItemText key={type} primary={amount} secondary={type} />

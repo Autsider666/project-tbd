@@ -15,10 +15,8 @@ const Survivors = () => {
     const { partySurvivors: survivors, dismissSurvivor, controlledParty } = useGame()
     const { id: partyId } = controlledParty || {}
 
-    const dismissHandler = survivorId => () => {
-        console.log({ survivorId, controlledParty })
-        dismissSurvivor(survivorId, partyId)
-    }
+    const dismissHandler = survivorId => () => dismissSurvivor(survivorId, partyId)
+    
 
 
     return (

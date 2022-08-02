@@ -12,11 +12,16 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
+import { useGame } from '../contexts/GameContext';
+import { Divider } from '@mui/material';
 
 const pages = ['Test1', 'Test2', 'Test3'];
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
 const ResponsiveAppBar = () => {
+
+  const { controlledParty, currentSettlement } = useGame()
+
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
 
@@ -37,8 +42,26 @@ const ResponsiveAppBar = () => {
 
   return (
     <AppBar position="static">
-      <Container maxWidth="xl">
-        <Toolbar disableGutters>
+      <Container sx={{marginLeft: 0}} maxWidth="xl">
+        <Toolbar disableGutters sx={{ position: 'relative' }} >
+          {
+            controlledParty && <Box sx={{ mx: 1 }}>
+              <Typography>
+                {`Party: ${controlledParty.name}`}
+              </Typography>
+            </Box>
+          }
+          {
+            currentSettlement
+            && <>
+              <Divider sx={{backgroundColor: 'white', my: 2, width: 2 }} orientation="vertical" flexItem  />
+              <Box sx={{ mx: 1 }}>
+                <Typography>
+                  {`Settlement: ${currentSettlement.name}`}
+                </Typography>
+              </Box>
+            </>
+          }
           {/* <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
             <IconButton
               size="large"
@@ -86,9 +109,8 @@ const ResponsiveAppBar = () => {
               </Button>
             ))}
           </Box> */}
-          <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'flex' } }}>
+          <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'flex' } }} />
 
-          </Box>
           {/* <AdbIcon sx={{ display: { xs: 'flex', md: 'flex' }, mr: 1 }} /> */}
           <Typography
             variant="h4"
@@ -97,7 +119,11 @@ const ResponsiveAppBar = () => {
             href="/"
             sx={{
               mr: 2,
-              display: { xs: 'flex', md: 'flex' },
+              // display: { xs: 'flex', md: 'flex' },
+              // position: 'absolute',
+              // top: '50%',
+              // width: '100%',
+              textAlign: 'center',
               fontFamily: 'monospace',
               fontWeight: 700,
               letterSpacing: '.3rem',
@@ -107,9 +133,7 @@ const ResponsiveAppBar = () => {
           >
             Project TBD
           </Typography>
-          <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'flex' } }}>
-
-          </Box>
+          <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'flex' } }} />
 
 
           {/* <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} /> */}

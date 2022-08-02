@@ -7,10 +7,7 @@ import Survivors from './Survivors'
 const Party = () => {
 
     const { controlledParty: party, partyInventory } = useGame()
-
     if (party === null) return <div />
-
-    console.log(party)
 
     // console.log({ party, partyInventory })
     const resourceTypes = [
@@ -45,7 +42,7 @@ const Party = () => {
             <ListItem>
                 <ListItemText sx={{minWidth: '100px'}} primary="Stats" />
                 {statTypes.map(({ key, label }) => (
-                    <ListItemText primary={party[key]} secondary={label} />
+                    <ListItemText key={key} primary={party[key]} secondary={label} />
                 ))}
             </ListItem>
         </List>
