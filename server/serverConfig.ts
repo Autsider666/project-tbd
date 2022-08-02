@@ -18,6 +18,7 @@ type ConfigTemplate = {
 	expeditionRecruitment: {
 		0: number;
 	};
+	maxPartySize: number;
 };
 
 @singleton()
@@ -75,6 +76,10 @@ export class ServerConfig {
 					format: Number,
 					default: 100,
 				},
+			},
+			maxPartySize: {
+				format: Number,
+				default: 10,
 			},
 		});
 

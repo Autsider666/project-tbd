@@ -15,6 +15,7 @@ import { RegionRepository } from '../repository/RegionRepository.js';
 import { ResourceNodeRepository } from '../repository/ResourceNodeRepository.js';
 import { SettlementRepository } from '../repository/SettlementRepository.js';
 import { WorldRepository } from '../repository/WorldRepository.js';
+import { ServerConfig } from '../serverConfig.js';
 import {
 	ClientToServerEvents,
 	ServerToClientEvents,
@@ -54,6 +55,8 @@ export class ClientController {
 		container.resolve(ExpeditionFactory);
 	private readonly travelTimeCalculator: TravelTimeCalculator =
 		container.resolve(TravelTimeCalculator);
+	private readonly config: ServerConfig = container.resolve(ServerConfig);
+	private readonly maxPartySize = this.config.get('maxPartySize');
 
 	constructor(
 		private readonly socket: Socket<
@@ -297,7 +300,10 @@ export class ClientController {
 		});
 	}
 
-	private validatePartyForActivity(id: PartyId): Party | null {
+	private validatePartyForActivity(
+		id: PartyId,
+		checkPartySize: boolean = true
+	): Party | null {
 		const party =
 			this.client.parties.get(id) ?? id === 'test'
 				? Array.from(this.client.parties.values())[0]
@@ -306,6 +312,15 @@ export class ClientController {
 			ClientNotifier.error(
 				"You don't control this party.",
 				this.socket.id
+			);
+
+			return null;
+		}
+
+		if (checkPartySize && party.getSurvivors().length > this.maxPartySize) {
+			ClientNotifier.error(
+				`Party "${party.name}" can't do this because it has more than ${this.maxPartySize} survivors.`,
+				party.getUpdateRoomName()
 			);
 
 			return null;
@@ -362,7 +377,7 @@ export class ClientController {
 		});
 
 		this.socket.on('survivor:dismiss', ({ partyId, survivorId }) => {
-			const party = this.validatePartyForActivity(partyId);
+			const party = this.validatePartyForActivity(partyId, false);
 			if (party === null) {
 				return;
 			}
