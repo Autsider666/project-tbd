@@ -14,10 +14,14 @@ type ConfigTemplate = {
 	corsOrigin: string[];
 	serverTickTime: number;
 	gatherSpeedMultiplier: number;
+	expeditionRecruitmentChange: number;
+	expeditionRecruitment: {
+		0: number;
+	};
 };
 
 @singleton()
-export class Config {
+export class ServerConfig {
 	private readonly config: convict.Config<ConfigTemplate>;
 
 	constructor() {
@@ -61,6 +65,16 @@ export class Config {
 				default: 1,
 				arg: 'gatherSpeedMultiplier',
 				env: 'GATHER_SPEED_MULTIPLIER',
+			},
+			expeditionRecruitmentChange: {
+				format: Number,
+				default: 5,
+			},
+			expeditionRecruitment: {
+				0: {
+					format: Number,
+					default: 100,
+				},
 			},
 		});
 

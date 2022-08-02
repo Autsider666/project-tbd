@@ -1,5 +1,6 @@
 import { injectable } from 'tsyringe';
-import { Config } from '../config.js';
+import { getRandomItem } from '../helper/Randomizer.js';
+import { ServerConfig } from '../serverConfig.js';
 import { Expedition, ExpeditionPhase } from '../entity/Expedition.js';
 import { Resource, ResourceType } from '../entity/Resource.js';
 import {
@@ -11,13 +12,13 @@ import { ExpeditionRepository } from '../repository/ExpeditionRepository.js';
 import { System } from './System.js';
 
 @injectable()
-export class ExpeditionSystem implements System {
+export class ExpeditionPhaseSystem implements System {
 	private now: Date = new Date();
 
 	constructor(
 		private readonly expeditionRepository: ExpeditionRepository,
 		private readonly travelTimeCalculator: TravelTimeCalculator,
-		private readonly config: Config
+		private readonly config: ServerConfig
 	) {}
 
 	async tick(now: Date): Promise<void> {
@@ -30,97 +31,21 @@ export class ExpeditionSystem implements System {
 			);
 
 		for (const expedition of activeExpedition) {
-			this.handleGathering(expedition);
-			this.handlePhaseChange(expedition);
-		}
-	}
-
-	private handleGathering(expedition: Expedition): void {
-		if (expedition.phase !== ExpeditionPhase.gather) {
-			return;
-		}
-
-		const party = expedition.getParty();
-		const node = expedition.getTarget();
-		let resources = node.getResources();
-
-		const gathered: { [key in ResourceType]: number } = {
-			[ResourceType.iron]: 0,
-			[ResourceType.wood]: 0,
-			[ResourceType.stone]: 0,
-		};
-
-		let amountToGather = party.getGatheringSpeed();
-		while (amountToGather > 0) {
-			resources = resources.filter(
-				(resource) => resource.getAmount() > 0
-			);
-			if (resources.length === 0) {
-				break;
+			if (expedition.nextPhaseAt >= this.now) {
+				return;
 			}
 
-			const randomResource = this.getRandomResource(resources);
-			const toTake = Math.min(amountToGather, randomResource.getAmount());
-			party.addResource(toTake, randomResource.type);
-			randomResource.removeAmount(toTake);
-			amountToGather -= toTake;
-			gathered[randomResource.type] += toTake;
-		}
-
-		ClientNotifier.info(
-			`${node.name} seems to be completely depleted, so party "${party.name}" is going to head back soon.`,
-			expedition.getUpdateRoomName()
-		);
-
-		ClientNotifier.info(
-			`Party "${party.name}" has gathered: ${Object.entries(gathered)
-				.filter(([type, value]) => value > 0)
-				.map(([type, value]) => `${value} ${type}`)
-				.join(', ')}`,
-			expedition.getUpdateRoomName(),
-			[NotificationCategory.expedition]
-		);
-
-		if (resources.length === 0) {
-			expedition.nextPhaseAt = new Date();
-			ClientNotifier.info(
-				`${node.name} seems to be completely depleted, so party "${party.name}" is going to head back soon.`,
-				expedition.getUpdateRoomName()
-			);
-		}
-	}
-
-	private getRandomResource(resources: Resource[]): Resource {
-		const weights: number[] = [];
-		for (let i = 0; i < resources.length; i++) {
-			weights[i] = resources[i].getAmount() + (weights[i - 1] || 0);
-		}
-
-		const random = Math.random() * weights[weights.length - 1];
-		for (let i = 0; i < weights.length; i++) {
-			if (weights[i] > random) {
-				return resources[i];
+			switch (expedition.phase) {
+				case ExpeditionPhase.gather:
+					this.handleEndOfGathering(expedition);
+					break;
+				case ExpeditionPhase.travel:
+				case ExpeditionPhase.returning:
+					this.handleEndOfTravel(expedition);
+					break;
+				default:
+					throw new Error('Should never happen'); //TODO
 			}
-		}
-
-		throw new Error('Now this is interesting');
-	}
-
-	private handlePhaseChange(expedition: Expedition) {
-		if (expedition.nextPhaseAt >= this.now) {
-			return;
-		}
-
-		switch (expedition.phase) {
-			case ExpeditionPhase.gather:
-				this.handleEndOfGathering(expedition);
-				break;
-			case ExpeditionPhase.travel:
-			case ExpeditionPhase.returning:
-				this.handleEndOfTravel(expedition);
-				break;
-			default:
-				throw new Error('Should never happen'); //TODO
 		}
 	}
 

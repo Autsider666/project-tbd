@@ -7,6 +7,10 @@ export enum SurvivorType {
 	villager = 'villager',
 }
 
+enum SurvivorTree {
+	generic = 'generic',
+}
+
 const survivorTemplates: {
 	[key in SurvivorType]: Omit<SurvivorStateData, 'id' | 'party'>;
 } = {
@@ -31,5 +35,13 @@ export class SurvivorFactory {
 		container.addSurvivor(survivor);
 
 		return survivor;
+	}
+
+	public randomCreate(
+		container: SurvivorContainer,
+		tier: number,
+		tree?: SurvivorTree
+	): Survivor {
+		return this.create(SurvivorType.villager, container);
 	}
 }

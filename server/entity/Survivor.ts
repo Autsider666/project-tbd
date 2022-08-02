@@ -1,6 +1,6 @@
 import { container } from 'tsyringe';
 import { Opaque } from 'type-fest';
-import { Config } from '../config.js';
+import { ServerConfig } from '../serverConfig.js';
 import { Client } from '../controller/ClientController.js';
 import { Uuid } from '../helper/UuidHelper.js';
 import { SurvivorContainer } from './CommonTypes/SurvivorContainer.js';
@@ -30,7 +30,7 @@ export class Survivor extends Entity<
 	public readonly carryCapacity: number;
 	public readonly gatheringSpeed: number;
 	private readonly gatheringSpeedMultiplier: number = container
-		.resolve(Config)
+		.resolve(ServerConfig)
 		.get('gatherSpeedMultiplier');
 
 	public owner: SurvivorContainer | null = null;

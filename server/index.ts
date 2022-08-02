@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 import EventEmitter from 'events';
 import { container } from 'tsyringe';
-import { Config } from './config.js';
+import { ServerConfig } from './serverConfig.js';
 import { ServerController } from './controller/ServerController.js';
 import { StateSyncController } from './controller/StateSyncController.js';
 import { WorldFactory } from './factory/WorldFactory.js';
@@ -16,7 +16,7 @@ import {
 	SocketData,
 } from './socket.io.js';
 
-const config = container.resolve(Config);
+const config = container.resolve(ServerConfig);
 Error.stackTraceLimit = config.get('stackTraceLimit');
 
 const app = express();
