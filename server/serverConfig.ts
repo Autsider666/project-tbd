@@ -14,7 +14,7 @@ type ConfigTemplate = {
 	corsOrigin: string[];
 	serverTickTime: number;
 	gatherSpeedMultiplier: number;
-	expeditionRecruitmentChange: number;
+	expeditionRecruitmentChance: number;
 	expeditionRecruitment: {
 		0: number;
 	};
@@ -67,9 +67,11 @@ export class ServerConfig {
 				arg: 'gatherSpeedMultiplier',
 				env: 'GATHER_SPEED_MULTIPLIER',
 			},
-			expeditionRecruitmentChange: {
+			expeditionRecruitmentChance: {
 				format: Number,
 				default: 5,
+				arg: 'expeditionRecruitmentChance',
+				env: 'EXPEDITION_RECRUITMENT_CHANCE',
 			},
 			expeditionRecruitment: {
 				0: {
@@ -80,6 +82,8 @@ export class ServerConfig {
 			maxPartySize: {
 				format: Number,
 				default: 10,
+				arg: 'maxPartySize',
+				env: 'MAX_PARTY_SIZE',
 			},
 		});
 

@@ -35,7 +35,7 @@ export class ExpeditionRecruitmentSystem implements System {
 		for (const expedition of activeExpedition) {
 			const willRecruit =
 				Math.floor(Math.random() * 101) <=
-				this.config.get('expeditionRecruitmentChange');
+				this.config.get('expeditionRecruitmentChance');
 			if (!willRecruit) {
 				return;
 			}
