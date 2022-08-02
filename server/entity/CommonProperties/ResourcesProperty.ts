@@ -9,7 +9,7 @@ export class ResourcesProperty extends MultiCommonProperty<
 > {
 	constructor(
 		resources: ResourceId[],
-		private readonly owner: Entity<any, any, any>
+		protected readonly owner: Entity<any, any, any>
 	) {
 		super(resources, ResourceRepository);
 
@@ -18,10 +18,23 @@ export class ResourcesProperty extends MultiCommonProperty<
 		}
 	}
 
-	public add(value: Resource) {
+	public override add(value: Resource | ResourceId) {
 		super.add(value);
 
-		value.owner = this.owner;
+		if (!this.owner) {
+			return;
+		}
+
+		if (typeof value === 'string') {
+			const resource = this.repository.get(value as ResourceId);
+			if (resource === null) {
+				throw new Error('Weird af');
+			}
+
+			resource.owner = this.owner;
+		} else {
+			(value as Resource).owner = this.owner;
+		}
 	}
 
 	public addResource(amount: number, type: ResourceType): void {

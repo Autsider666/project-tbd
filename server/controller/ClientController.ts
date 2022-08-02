@@ -367,7 +367,16 @@ export class ClientController {
 				return;
 			}
 
-			for (const survivor of party.getSurvivors()) {
+			const survivors = party.getSurvivors();
+			if (survivors.length === 1) {
+				ClientNotifier.warning(
+					`Cannot remove the last survivor of party "${party.name}`,
+					party.getUpdateRoomName()
+				);
+				return;
+			}
+
+			for (const survivor of survivors) {
 				if (survivor.getId() !== survivorId) {
 					continue;
 				}
