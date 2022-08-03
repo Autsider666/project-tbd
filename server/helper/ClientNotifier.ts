@@ -11,6 +11,7 @@ export enum NotificationSeverity {
 export enum NotificationCategory {
 	general = 'general',
 	expedition = 'expedition',
+	combat = 'combat',
 }
 
 export class ClientNotifier {

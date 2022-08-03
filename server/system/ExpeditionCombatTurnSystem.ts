@@ -36,7 +36,7 @@ export class ExpeditionCombatTurnSystem implements System {
 			ClientNotifier.info(
 				`Party "${party.name}" has attacked ${enemy.name} for ${damageDealt} damage.`,
 				party.getUpdateRoomName(),
-				[NotificationCategory.expedition]
+				[NotificationCategory.combat]
 			);
 			if (enemy.damageTaken >= enemy.hp) {
 				const previousPhase = expedition.previousPhase;
@@ -61,7 +61,10 @@ export class ExpeditionCombatTurnSystem implements System {
 				ClientNotifier.success(
 					`Party "${party.name}" has killed ${enemy.name} and continues its expedition.`,
 					party.getUpdateRoomName(),
-					[NotificationCategory.expedition]
+					[
+						NotificationCategory.expedition,
+						NotificationCategory.combat,
+					]
 				);
 				continue;
 			}
@@ -72,7 +75,7 @@ export class ExpeditionCombatTurnSystem implements System {
 			ClientNotifier.info(
 				`Party "${party.name}" has taken ${damageTaken} damage from ${enemy.name}.`,
 				party.getUpdateRoomName(),
-				[NotificationCategory.expedition]
+				[NotificationCategory.combat]
 			);
 			if (expedition.damageTaken < party.getHp()) {
 				continue;
@@ -82,7 +85,7 @@ export class ExpeditionCombatTurnSystem implements System {
 			ClientNotifier.error(
 				`Party "${party.name}" has died fighting a ${enemy.name}`,
 				party.getUpdateRoomName(),
-				[NotificationCategory.general, NotificationCategory.expedition]
+				[NotificationCategory.general, NotificationCategory.combat]
 			);
 
 			expedition.setCurrentPhase(ExpeditionPhase.finished, this.now);
