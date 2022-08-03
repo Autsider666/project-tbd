@@ -1,6 +1,7 @@
 import 'reflect-metadata';
 import EventEmitter from 'events';
 import { container } from 'tsyringe';
+import { TestController } from './controller/TestController.js';
 import { ServerConfig } from './serverConfig.js';
 import { ServerController } from './controller/ServerController.js';
 import { StateSyncController } from './controller/StateSyncController.js';
@@ -63,6 +64,9 @@ httpServer.listen(port, host, async () => {
 	console.info(`http://${host}:${port}`);
 
 	await container.resolve(ServerController).start();
+	if (config.get('env') === 'dev') {
+		await container.resolve(TestController).start();
+	}
 
 	container.resolve(StateSyncController);
 });

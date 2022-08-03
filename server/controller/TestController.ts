@@ -1,5 +1,5 @@
-import { read } from 'fs';
 import { Server, Socket } from 'socket.io';
+import { injectable } from 'tsyringe';
 import { ResourceContainer } from '../entity/CommonTypes/ResourceContainer.js';
 import { SurvivorContainer } from '../entity/CommonTypes/SurvivorContainer.js';
 import { PartyId } from '../entity/Party.js';
@@ -15,6 +15,7 @@ import {
 	SocketData,
 } from '../socket.io.js';
 
+@injectable()
 export class TestController {
 	constructor(
 		private readonly config: ServerConfig,
