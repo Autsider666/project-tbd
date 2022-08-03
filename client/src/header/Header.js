@@ -42,20 +42,23 @@ const ResponsiveAppBar = () => {
 
   return (
     <AppBar position="static">
-      <Container sx={{marginLeft: 0}} maxWidth="xl">
+      <Container sx={{ marginLeft: 0 }} maxWidth="xl">
         <Toolbar disableGutters sx={{ position: 'relative' }} >
           {
-            controlledParty && <Box sx={{ mx: 1 }}>
+            controlledParty && <Box sx={{ mx: 1, display: 'flex' }}>
               <Typography>
-                {`Party: ${controlledParty.name}`}
+                {`Party: ${controlledParty.name} `}
+              </Typography>
+              <Typography sx={{mx: 1, color: controlledParty.survivors.length > 10 ? 'red' : 'white' }}>
+                {`(${controlledParty.survivors.length} / 10)`}
               </Typography>
             </Box>
           }
           {
             currentSettlement
             && <>
-              <Divider sx={{backgroundColor: 'white', my: 2, width: 2 }} orientation="vertical" flexItem  />
-              <Box onClick={()=>setSelectedRegionId(currentSettlement.region)} sx={{ mx: 1, cursor: 'pointer' }}>
+              <Divider sx={{ backgroundColor: 'white', my: 2, width: 2 }} orientation="vertical" flexItem />
+              <Box onClick={() => setSelectedRegionId(currentSettlement.region)} sx={{ mx: 1, cursor: 'pointer' }}>
                 <Typography>
                   {`Settlement: ${currentSettlement.name}`}
                 </Typography>
