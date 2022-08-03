@@ -63,6 +63,7 @@ export class Settlement
 			region: this.regionProperty.toJSON(),
 			parties: this.partiesProperty.toJSON(),
 			storage: this.storage.toJSON(),
+			survivors: this.survivorsProperty.toJSON(),
 		};
 	}
 
