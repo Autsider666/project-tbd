@@ -1,12 +1,14 @@
 import { Client } from './controller/ClientController.js';
 import { EntityUpdate } from './controller/StateSyncController.js';
-import { ExpeditionClientData } from './entity/Expedition.js';
+import { Enemy, ExpeditionClientData } from './entity/Expedition.js';
 import { PartyId } from './entity/Party.js';
 import { RegionId } from './entity/Region.js';
+import { ResourceType } from './entity/Resource.js';
 import { ResourceNodeId } from './entity/ResourceNode.js';
 import { SettlementClientData, SettlementId } from './entity/Settlement.js';
 import { SurvivorId } from './entity/Survivor.js';
 import { WorldClientData, WorldId } from './entity/World.js';
+import { SurvivorType } from './factory/SurvivorFactory.js';
 import {
 	NotificationCategory,
 	NotificationSeverity,
@@ -62,6 +64,24 @@ export interface ClientToServerEvents {
 		partyId: PartyId;
 		survivorId: SurvivorId;
 	}) => void;
+
+	// 'test:raid:start': (data: {
+	// 	settlementId: SettlementId;
+	// 	enemy: Enemy;
+	// }) => void;
+	// 'test:raid:stop': (data: { settlementId: SettlementId }) => void;
+	'test:resource:add': (data: {
+		containerId: SettlementId | PartyId;
+		amount: number;
+		resource: ResourceType;
+	}) => void;
+	// 'test:resource:remove': (data: { settlementId: SettlementId, amount: number, resource: ResourceType }) => void;
+	'test:settlement:upgrade': (data: { settlementId: SettlementId }) => void;
+	'test:survivor:add': (data: {
+		containerId: SettlementId | PartyId;
+		template: SurvivorType;
+	}) => void;
+	'test:survivor:remove': (data: { survivorId: SurvivorId }) => void;
 
 	//Default to keep PhpStorm calm
 	[event: string]: (...args: any[]) => void;

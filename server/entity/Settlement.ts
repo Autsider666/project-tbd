@@ -6,11 +6,12 @@ import { PartiesProperty } from './CommonProperties/PartiesProperty.js';
 import { RegionProperty } from './CommonProperties/RegionProperty.js';
 import { ResourcesProperty } from './CommonProperties/ResourcesProperty.js';
 import { SurvivorsProperty } from './CommonProperties/SurvivorsProperty.js';
+import { ResourceContainer } from './CommonTypes/ResourceContainer.js';
 import { SurvivorContainer } from './CommonTypes/SurvivorContainer.js';
 import { Entity, EntityClientData, EntityStateData } from './Entity.js';
 import { Party, PartyId } from './Party.js';
 import { Region, RegionId } from './Region.js';
-import { ResourceId, ResourceType } from './Resource.js';
+import { Resource, ResourceId, ResourceType } from './Resource.js';
 import { Survivor, SurvivorId } from './Survivor.js';
 
 export type SettlementId = Opaque<Uuid, 'SettlementId'>;
@@ -28,7 +29,7 @@ export type SettlementClientData = SettlementStateData &
 
 export class Settlement
 	extends Entity<SettlementId, SettlementStateData, SettlementClientData>
-	implements SurvivorContainer
+	implements SurvivorContainer, ResourceContainer
 {
 	public name: string;
 	private readonly regionProperty: RegionProperty;
@@ -132,6 +133,10 @@ export class Settlement
 		this.survivorsProperty.add(survivor);
 	}
 
+	removeSurvivor(survivor: Survivor): void {
+		this.survivorsProperty.remove(survivor.getId());
+	}
+
 	transferSurvivorTo(
 		survivor: Survivor,
 		newContainer: SurvivorContainer
@@ -141,5 +146,9 @@ export class Settlement
 
 	getSurvivors(): Survivor[] {
 		return this.survivorsProperty.getAll();
+	}
+
+	removeResource(resource: Resource): void {
+		this.storage.remove(resource.getId());
 	}
 }

@@ -4,5 +4,5 @@
 	"gatherSpeedMultiplier": 10,
 	"maxPartySize": 10,
 	"expeditionRecruitmentChance": 50,
-  "expeditionCombatChance": 10
+	"expeditionCombatChance": 10
 }
