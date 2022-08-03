@@ -1,13 +1,11 @@
 import { injectable } from 'tsyringe';
-import { getRandomItem } from '../helper/Randomizer.js';
-import { ServerConfig } from '../serverConfig.js';
 import { Expedition, ExpeditionPhase } from '../entity/Expedition.js';
-import { Resource, ResourceType } from '../entity/Resource.js';
+import { ResourceType } from '../entity/Resource.js';
 import {
 	ClientNotifier,
 	NotificationCategory,
 } from '../helper/ClientNotifier.js';
-import { TravelTimeCalculator } from '../helper/TravelTimeCalculator.js';
+import { getRandomItem } from '../helper/Randomizer.js';
 import { ExpeditionRepository } from '../repository/ExpeditionRepository.js';
 import { System } from './System.js';
 
@@ -17,13 +15,14 @@ export class ExpeditionGatheringSystem implements System {
 
 	constructor(private readonly expeditionRepository: ExpeditionRepository) {}
 
-	async tick(now: Date): Promise<void> {
+	tick(now: Date): void {
 		this.now = now;
 
 		const activeExpedition = this.expeditionRepository
 			.getAll()
 			.filter(
-				(expedition) => expedition.phase !== ExpeditionPhase.finished
+				(expedition) =>
+					expedition.getCurrentPhase() !== ExpeditionPhase.finished
 			);
 
 		for (const expedition of activeExpedition) {
@@ -32,7 +31,7 @@ export class ExpeditionGatheringSystem implements System {
 	}
 
 	private handleGathering(expedition: Expedition): void {
-		if (expedition.phase !== ExpeditionPhase.gather) {
+		if (expedition.getCurrentPhase() !== ExpeditionPhase.gather) {
 			return;
 		}
 
@@ -66,11 +65,6 @@ export class ExpeditionGatheringSystem implements System {
 		}
 
 		ClientNotifier.info(
-			`${node.name} seems to be completely depleted, so party "${party.name}" is going to head back soon.`,
-			expedition.getUpdateRoomName()
-		);
-
-		ClientNotifier.info(
 			`Party "${party.name}" has gathered: ${Object.entries(gathered)
 				.filter(([type, value]) => value > 0)
 				.map(([type, value]) => `${value} ${type}`)
@@ -80,10 +74,11 @@ export class ExpeditionGatheringSystem implements System {
 		);
 
 		if (resources.length === 0) {
-			expedition.nextPhaseAt = new Date();
+			expedition.setCurrentPhase(ExpeditionPhase.gather, this.now);
 			ClientNotifier.info(
 				`${node.name} seems to be completely depleted, so party "${party.name}" is going to head back soon.`,
-				expedition.getUpdateRoomName()
+				expedition.getUpdateRoomName(),
+				[NotificationCategory.expedition]
 			);
 		}
 	}

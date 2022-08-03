@@ -1,5 +1,5 @@
-import { Socket } from 'socket.io';
 import jwt from 'jsonwebtoken';
+import { Socket } from 'socket.io';
 import { container } from 'tsyringe';
 import { Party, PartyId } from '../entity/Party.js';
 import { Settlement, SettlementId } from '../entity/Settlement.js';
@@ -7,7 +7,7 @@ import { WorldId } from '../entity/World.js';
 import { ExpeditionFactory } from '../factory/ExpeditionFactory.js';
 import { PartyFactory } from '../factory/PartyFactory.js';
 import { VoyageFactory } from '../factory/VoyageFactory.js';
-import { ClientNotifier } from '../helper/ClientNotifier.js';
+import { ClientNotifier, NotificationCategory } from '../helper/ClientNotifier.js';
 import { TravelTimeCalculator } from '../helper/TravelTimeCalculator.js';
 import { ExpeditionRepository } from '../repository/ExpeditionRepository.js';
 import { PartyRepository } from '../repository/PartyRepository.js';
@@ -16,11 +16,7 @@ import { ResourceNodeRepository } from '../repository/ResourceNodeRepository.js'
 import { SettlementRepository } from '../repository/SettlementRepository.js';
 import { WorldRepository } from '../repository/WorldRepository.js';
 import { ServerConfig } from '../serverConfig.js';
-import {
-	ClientToServerEvents,
-	ServerToClientEvents,
-	SocketData,
-} from '../socket.io.js';
+import { ClientToServerEvents, ServerToClientEvents, SocketData, } from '../socket.io.js';
 
 const secret = 'CHANGE ME QUICK!'; //TODO I mean it!
 
@@ -259,7 +255,7 @@ export class ClientController {
 			this.voyageFactory.create(party, target);
 			ClientNotifier.success(
 				`Party "${party.name}" is starting it's voyage to settlement "${target.name}".`,
-				party.getUpdateRoomName()
+				party.getUpdateRoomName(),
 			);
 		});
 	}
@@ -282,7 +278,8 @@ export class ClientController {
 			this.expeditionFactory.create(party, target);
 			ClientNotifier.success(
 				`Party "${party.name}" is starting it's expedition to ${target.name}.`,
-				party.getUpdateRoomName()
+				party.getUpdateRoomName(),
+				[NotificationCategory.general, NotificationCategory.expedition]
 			);
 		});
 
@@ -311,6 +308,14 @@ export class ClientController {
 		if (!party) {
 			ClientNotifier.error(
 				"You don't control this party.",
+				this.socket.id
+			);
+
+			return null;
+		}
+		if (party.dead) {
+			ClientNotifier.error(
+				"This party has been defeated and can't do anything anymore.",
 				this.socket.id
 			);
 

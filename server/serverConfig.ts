@@ -15,10 +15,12 @@ type ConfigTemplate = {
 	serverTickTime: number;
 	gatherSpeedMultiplier: number;
 	expeditionRecruitmentChance: number;
+	expeditionCombatChance: number;
 	expeditionRecruitment: {
 		0: number;
 	};
 	maxPartySize: number;
+	secondsBetweenCombatInSamePhase: number;
 };
 
 @singleton()
@@ -73,6 +75,12 @@ export class ServerConfig {
 				arg: 'expeditionRecruitmentChance',
 				env: 'EXPEDITION_RECRUITMENT_CHANCE',
 			},
+			expeditionCombatChance: {
+				format: Number,
+				default: 5,
+				arg: 'expeditionCombatChance',
+				env: 'EXPEDITION_COMBAT_CHANCE',
+			},
 			expeditionRecruitment: {
 				0: {
 					format: Number,
@@ -84,6 +92,12 @@ export class ServerConfig {
 				default: 10,
 				arg: 'maxPartySize',
 				env: 'MAX_PARTY_SIZE',
+			},
+			secondsBetweenCombatInSamePhase: {
+				format: Number,
+				default: 15,
+				arg: 'secondsBetweenCombatInSamePhase',
+				env: 'SECONDS_BETWEEN_COMBAT_IN_SAME_PHASE',
 			},
 		});
 

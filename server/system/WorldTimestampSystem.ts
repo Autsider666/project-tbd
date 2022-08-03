@@ -10,7 +10,7 @@ export class WorldTimestampSystem implements System {
 		private readonly config: ServerConfig
 	) {}
 
-	async tick(now: Date): Promise<void> {
+	tick(now: Date): void {
 		this.io.emit('server:turn', {
 			startedAt: now,
 			endsAt: new Date(now.getTime() + this.config.get('serverTickTime')),

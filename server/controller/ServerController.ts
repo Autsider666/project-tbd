@@ -1,6 +1,5 @@
 import { SocketId } from 'socket.io-adapter';
 import { injectable, injectAll, registry } from 'tsyringe';
-import { ExpeditionPhase } from '../entity/Expedition.js';
 import { ServerConfig } from '../serverConfig.js';
 import { WorldFactory } from '../factory/WorldFactory.js';
 import { StatePersister } from '../helper/StatePersister.js';
@@ -10,8 +9,9 @@ import {
 	ServerToClientEvents,
 	SocketData,
 } from '../socket.io.js';
+import { ExpeditionCombatTurnSystem } from '../system/ExpeditionCombatTurnSystem.js';
 import { ExpeditionGatheringSystem } from '../system/ExpeditionGatheringSystem.js';
-import { ExpeditionPhaseSystem } from '../system/ExpeditionPhaseSystem.js';
+import { ExpeditionPhaseChangeSystem } from '../system/ExpeditionPhaseChangeSystem.js';
 import { ExpeditionRecruitmentSystem } from '../system/ExpeditionRecruitmentSystem.js';
 import { StatusLoggerSystem } from '../system/StatusLoggerSystem.js';
 import { System } from '../system/System.js';
@@ -23,8 +23,9 @@ import { Server, Socket } from 'socket.io';
 // TODO move to config file?
 @registry([
 	{ token: 'System', useClass: VoyageSystem },
+	{ token: 'System', useClass: ExpeditionCombatTurnSystem },
 	{ token: 'System', useClass: ExpeditionGatheringSystem },
-	{ token: 'System', useClass: ExpeditionPhaseSystem },
+	{ token: 'System', useClass: ExpeditionPhaseChangeSystem },
 	{ token: 'System', useClass: ExpeditionRecruitmentSystem },
 	{ token: 'System', useClass: StatusLoggerSystem },
 	{ token: 'System', useClass: WorldTimestampSystem },
@@ -74,7 +75,7 @@ export class ServerController {
 
 		setInterval(() => {
 			const now = new Date();
-			this.systems.forEach(async (system) => system.tick(now));
+			this.systems.forEach((system) => system.tick(now));
 		}, this.config.get('serverTickTime'));
 	}
 }
