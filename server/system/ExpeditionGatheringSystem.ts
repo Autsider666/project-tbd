@@ -65,11 +65,6 @@ export class ExpeditionGatheringSystem implements System {
 		}
 
 		ClientNotifier.info(
-			`${node.name} seems to be completely depleted, so party "${party.name}" is going to head back soon.`,
-			expedition.getUpdateRoomName()
-		);
-
-		ClientNotifier.info(
 			`Party "${party.name}" has gathered: ${Object.entries(gathered)
 				.filter(([type, value]) => value > 0)
 				.map(([type, value]) => `${value} ${type}`)
@@ -82,7 +77,8 @@ export class ExpeditionGatheringSystem implements System {
 			expedition.setCurrentPhase(ExpeditionPhase.gather, this.now);
 			ClientNotifier.info(
 				`${node.name} seems to be completely depleted, so party "${party.name}" is going to head back soon.`,
-				expedition.getUpdateRoomName()
+				expedition.getUpdateRoomName(),
+				[NotificationCategory.expedition]
 			);
 		}
 	}

@@ -60,6 +60,7 @@ export class ClientNotifier {
 				message,
 				severity,
 				categories,
+				timestamp: new Date(),
 			} as any);
 	}
 }

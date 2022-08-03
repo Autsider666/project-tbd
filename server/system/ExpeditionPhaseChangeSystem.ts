@@ -70,7 +70,8 @@ export class ExpeditionPhaseChangeSystem implements System {
 		const target = expedition.getTarget();
 		ClientNotifier.success(
 			`Party "${party.name}" finished gathering at ${target.name} and are on their way back home.`,
-			party.getUpdateRoomName()
+			party.getUpdateRoomName(),
+			[NotificationCategory.expedition]
 		);
 	}
 
@@ -83,7 +84,8 @@ export class ExpeditionPhaseChangeSystem implements System {
 
 			ClientNotifier.success(
 				`Party "${party.name}" returned from their expedition to ${target.name}.`,
-				party.getUpdateRoomName()
+				party.getUpdateRoomName(),
+				[NotificationCategory.general,NotificationCategory.expedition]
 			);
 
 			const settlement = expedition.getOrigin();
@@ -108,7 +110,8 @@ export class ExpeditionPhaseChangeSystem implements System {
 
 		ClientNotifier.success(
 			`Party "${party.name}" arrived at ${target.name} and will start to gather.`,
-			party.getUpdateRoomName()
+			party.getUpdateRoomName(),
+			[NotificationCategory.expedition]
 		);
 	}
 
