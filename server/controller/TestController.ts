@@ -4,7 +4,7 @@ import { ResourceContainer } from '../entity/CommonTypes/ResourceContainer.js';
 import { SurvivorContainer } from '../entity/CommonTypes/SurvivorContainer.js';
 import { PartyId } from '../entity/Party.js';
 import { SettlementId } from '../entity/Settlement.js';
-import { SurvivorFactory } from '../factory/SurvivorFactory.js';
+import { SurvivorFactory, SurvivorType } from '../factory/SurvivorFactory.js';
 import { PartyRepository } from '../repository/PartyRepository.js';
 import { SettlementRepository } from '../repository/SettlementRepository.js';
 import { SurvivorRepository } from '../repository/SurvivorRepository.js';
@@ -40,7 +40,7 @@ export class TestController {
 					SocketData
 				>
 			) => {
-				socket.on('test:survivor:add', ({ containerId, template }) => {
+				socket.on('test:survivor:add', ({ containerId, template = SurvivorType.villager }) => {
 					let container: SurvivorContainer | null =
 						this.settlementRepository.get(
 							containerId as SettlementId

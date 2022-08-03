@@ -76,7 +76,7 @@ export interface ClientToServerEvents {
 		resource: ResourceType;
 	}) => void;
 	// 'test:resource:remove': (data: { settlementId: SettlementId, amount: number, resource: ResourceType }) => void;
-	'test:settlement:upgrade': (data: { settlementId: SettlementId }) => void;
+	// 'test:settlement:upgrade': (data: { settlementId: SettlementId }) => void;
 	'test:survivor:add': (data: {
 		containerId: SettlementId | PartyId;
 		template: SurvivorType;
