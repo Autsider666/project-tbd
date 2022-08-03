@@ -15,9 +15,7 @@ const content = [
 const Log = () => {
 
     return (
-        <div>
-            <TabsWrapper content={content} />
-        </div>
+        <TabsWrapper content={content} />
     )
 }
 

@@ -20,7 +20,7 @@ const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
 const ResponsiveAppBar = () => {
 
-  const { controlledParty, currentSettlement } = useGame()
+  const { controlledParty, currentSettlement, setSelectedRegionId } = useGame()
 
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
@@ -55,7 +55,7 @@ const ResponsiveAppBar = () => {
             currentSettlement
             && <>
               <Divider sx={{backgroundColor: 'white', my: 2, width: 2 }} orientation="vertical" flexItem  />
-              <Box sx={{ mx: 1 }}>
+              <Box onClick={()=>setSelectedRegionId(currentSettlement.region)} sx={{ mx: 1, cursor: 'pointer' }}>
                 <Typography>
                   {`Settlement: ${currentSettlement.name}`}
                 </Typography>

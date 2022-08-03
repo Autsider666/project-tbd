@@ -10,19 +10,13 @@ function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
   return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`simple-tabpanel-${index}`}
-      aria-labelledby={`simple-tab-${index}`}
-      {...other}
-    >
-      {value === index && (
-        <Box sx={{ p: 1, height: 'calc(100% - 48px)' }}>
+    <>
+      {value === index
+        && <Box sx={{ p: 1, height: 'calc(100% - 48px)' }}>
           {children}
         </Box>
-      )}
-    </div>
+      }
+    </>
   );
 }
 
@@ -49,7 +43,7 @@ const TabsWrapper = ({ content = [], }) => {
         </Tabs>
       </Box>
       {content.map(({ Component, props = {} }, index) => (
-        <TabPanel style={{ height: '100%', width: '100%' }} key={index} value={value} index={index}>
+        <TabPanel sx={{ height: '100%', width: '100%', overflow: 'hidden' }} key={index} value={value} index={index}>
           <Component {...props} />
         </TabPanel>
       ))}

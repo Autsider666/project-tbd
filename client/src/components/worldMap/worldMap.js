@@ -22,12 +22,17 @@ const WorldMap = ({ world, regions, selectedRegionId, setSelectedRegionId }) => 
             <svg className="mapRegionWrapper" width="100%" viewBox="0 0 1440 1080" >
                 <g id="g8">
                     {regions.map(region => (
-                        <Tooltip title={`Region: ${region.name}`}>
+                        <Tooltip key={region.id} title={<Box sx={{ whiteSpace: 'pre-line' }}>
+                            {`Region: ${region.name}
+                            ${region.settlementName ? `Settlement: ${region.settlementName}` : ''}`}
+                        </Box>
+                        }>
                             <path
                                 key={region.id}
                                 className={`
                                 mapRegion 
                                 ${selectedRegionId === region.id ? 'selected' : ''}
+                                ${region.selectionInProgress === 'gray' ? 'selected' : ''}
                                 ${region.expeditionInProgress !== '' ? `expedition ${region.expeditionInProgress}` : ''}
                                 `}
                                 d={region.dimensions}

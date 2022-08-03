@@ -20,10 +20,7 @@ const Region = () => {
     if (!region) return <div />
 
     return (
-        <div>
             <TabsWrapper key={region.id} content={content} />
-
-        </div>
     )
 }
 

@@ -50,9 +50,14 @@ const GameProvider = ({ children }) => {
     const [expeditionRepository, setExpeditionRepository] = useState({})
     const [resourceRepository, setResourceRepository] = useState({})
 
+    const [notificationLog, setNotificationLog] = useState([])
+
+
     const [travelPaths, setTravelPaths] = useState({})
     const [selectedRegionTravelPath, setSelectedRegionTravelPath] = useState({})
     const [currentExpeditionTravelPath, setCurrentExpeditionTravelPath] = useState({})
+
+
 
     const isLoaded = () => {
         // console.log({
@@ -117,7 +122,11 @@ const GameProvider = ({ children }) => {
         // if (isLoaded()) setLoaded(true)
     }
 
-    const notificationUpdater = ({ message, severity }) => {
+    const notificationUpdater = ({ message, severity, categories }) => {
+        setNotificationLog(prev => {
+            prev.unshift({ message, severity, categories, localTimeStamp: (new Date()).getTime() })
+            return prev
+        })
         // console.log({ message, severity })
         displaySnackbar(message, severity)
     }
@@ -173,7 +182,10 @@ const GameProvider = ({ children }) => {
     const selectedResourceNodes = Object.values(resourceNodeRepository).filter(resourceNode => resourceNode.region === selectedRegionId)
     const currentExpedition = Object.values(expeditionRepository).find(expedition => expedition.party === controlledParty.id && expedition.phase !== "finished")
 
-    const partySurvivors = controlledParty && controlledParty.survivors.map(survivorId => survivorRepository[survivorId])
+    const partySurvivors = controlledParty && controlledParty.survivors.map(survivorId => survivorRepository[survivorId]).filter(survivorId => survivorId)
+    console.log(selectedSettlement)
+    const currentSettlementSurvivors = selectedSettlement && selectedSettlement.survivors ? selectedSettlement.survivors.map(survivorId => survivorRepository[survivorId]).filter(survivorId => survivorId) : []
+
     // console.log({controlledParty, survivorRepository, partySurvivors})
     const partyInventory = controlledParty && controlledParty.inventory.map(resourceId => resourceRepository[resourceId])
     const currentSettlementStorage = currentSettlement && currentSettlement.storage.map(resourceId => resourceRepository[resourceId])
@@ -238,9 +250,10 @@ const GameProvider = ({ children }) => {
         allEntities,
         loaded,
         token,
+        currentRegionId,
         worldRepository, regionRepository, borderRepository, survivorRepository, partyRepository, resourceNodeRepository, settlementRepository, voyageRepository, expeditionRepository, resourceRepository,
         controlledParty, partyInventory, partySurvivors,
-        currentSettlement, currentSettlementId, currentSettlementStorage,
+        currentSettlement, currentSettlementId, currentSettlementStorage, currentSettlementSurvivors,
         currentExpedition, currentExpeditionTravelPath,
         currentVoyage,
         selectedResourceNodes,
@@ -248,6 +261,7 @@ const GameProvider = ({ children }) => {
         travelPaths, selectedRegionTravelPath,
         tickLength,
         recruitSurvivor, dismissSurvivor,
+        notificationLog,
 
     };
 

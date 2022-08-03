@@ -62,10 +62,7 @@ const content = [
 const Profile = () => {
 
     return (
-        <div>
             <TabsWrapper content={content} />
-
-        </div>
     )
 }
 

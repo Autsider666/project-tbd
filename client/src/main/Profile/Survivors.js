@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { IconButton, List, ListItem, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
+import { Box, IconButton, List, ListItem, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
 import { useGame } from '../../contexts/GameContext';
 import DeleteIcon from '@mui/icons-material/Delete'
 
@@ -17,10 +17,10 @@ const Survivors = () => {
 
     const dismissHandler = survivorId => () => dismissSurvivor(survivorId, partyId)
     
-
+    console.log({survivors})
 
     return (
-        <div style={{ height: 300, width: '100%' }}>
+        <Box sx={{ height: '330px ', width: '100%', overflow: 'auto' }}>
             <TableContainer>
 
                 <Table size="small">
@@ -72,7 +72,7 @@ const Survivors = () => {
                     })
                 }
             </List> */}
-        </div>
+        </Box>
     )
 }
 

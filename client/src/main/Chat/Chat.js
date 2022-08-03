@@ -2,6 +2,7 @@ import { Box, Button, Grid, List, ListItem, ListItemText, Stack, TextField, Typo
 import React, { useState } from 'react'
 import TabsWrapper from '../../components/TabsWrapper'
 import { useChat } from '../../contexts/ChatContext'
+import { useGame } from '../../contexts/GameContext'
 
 
 
@@ -16,7 +17,7 @@ const ChatComponent = room => {
     const saveMessage = () => {
 
         setRandomMessages(prev => {
-            return [...prev, inputField]
+            return [inputField, ...prev ]
         })
     }
 
@@ -32,7 +33,7 @@ const ChatComponent = room => {
 
                 <Grid item container xs={12} sx={{ borderRadius: '4px', border: '1px solid black', flexGrow: 1, height: 'calc(100% - 80px)', overflow: 'auto' }}>
 
-                    <List dense={true} sx={{ padding: 0, marginTop: 0, marginBottom: 0,  height: '100%', width: '100%' }}>
+                    <List dense={true} sx={{ padding: 0, marginTop: 0, marginBottom: 0, height: '100%', width: '100%' }}>
                         {
                             randomMessages.map((message, index) => {
                                 return (
@@ -51,11 +52,40 @@ const ChatComponent = room => {
     )
 }
 
+const getColorFromSeverity = severity => {
+    switch (severity) {
+        case 'info': return '#5789c8'
+        case 'success': return '#77ca77'
+        case 'warning': return '#d1d96d'
+        case 'error': return '#e16b6b'
+        default: return 'white'
+    }
+}
 
 
 const World = () => <div>World</div>
 const Global = () => <div>Global</div>
-const Log = () => <div>Log</div>
+const Log = () => {
+
+    const { notificationLog } = useGame()
+    // console.log(notificationLog)
+
+    // const sortedNotifications = notificationLog.sort((a, b) => a.localTimeStamp > b.localTimeStamp)
+    // console.log(sortedNotifications)
+
+    return (
+        <Box sx={{ height: '100%', overflow: 'auto', display: 'flex', flexDirection: 'column' }} >
+            {notificationLog.map((notification, index) => {
+                const backgroundColor = getColorFromSeverity(notification.severity)
+
+                return <Box sx={{ backgroundColor, margin: '1px', padding: '4px', borderRadius: '4px' }} key={index}>
+                    {notification.message}
+                </Box>
+            }
+            )}
+        </Box>
+    )
+}
 
 const content = [
     { label: 'World', Component: ChatComponent, props: { room: 'world' } },

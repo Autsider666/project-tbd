@@ -7,37 +7,52 @@ import { useGame } from '../../contexts/GameContext.js'
 import { capitalizeFirstLetter } from '../../functions/utils'
 
 const Map = () => {
-    const { regionRepository, worldRepository, selectedRegionId, setSelectedRegionId, currentExpedition, currentExpeditionTravelPath = {}, selectedSettlement = {}, selectedRegion = {} } = useGame()
+    const { currentRegionId, settlementRepository, regionRepository, worldRepository, selectedRegionId, setSelectedRegionId, currentExpedition, currentExpeditionTravelPath = {}, selectedSettlement = {}, selectedRegion = {}, travelPaths = {} } = useGame()
 
     const worldSelected = Object.values(worldRepository)[0] // Add future code to take more than one map.
 
     const hide = false
 
     const { path } = currentExpeditionTravelPath
+    // console.log(travelPaths)
+    // travelPaths && currentRegionId && selectedRegionId && console.log(travelPaths[currentRegionId][selectedRegionId])
 
     const regions = Object.values(regionRepository).map(region => {
-        region.expeditionInProgress = path && path.find(pathRegionId => pathRegionId === region.id) ? currentExpedition?.phase : ''
+        region.expeditionInProgress = path && path.find((pathRegionId, index) => pathRegionId === region.id && index === path.length - 1) ? currentExpedition?.phase : ''
+        // region.currentExpedition = currentExpedition && region.id === currentExpedition.target
+        if (currentRegionId && selectedRegionId && travelPaths
+            && travelPaths[currentRegionId]
+            && travelPaths[currentRegionId][selectedRegionId]
+            && travelPaths[currentRegionId][selectedRegionId].path
+        ) {
+            // console.log(travelPaths[currentRegionId][selectedRegionId])
+            region.selectionInProgress = travelPaths[currentRegionId][selectedRegionId].path.find(pathRegionId => pathRegionId === region.id) ? 'gray' : ''
+        } else {
+            region.selectionInProgress = ''
+        }
+        region.settlementName = settlementRepository[region.settlement] ? settlementRepository[region.settlement].name : null
         return region
     })
 
     const travelling = currentExpedition && currentExpedition.phase !== 'finished';
-    console.log(currentExpedition)
+    // console.log(currentExpedition)
 
     if (hide) return <img style={{ opacity: 0.3, marginBottom: '-16px' }} src={Water} position="absolute" width="100%" />
     return (
         <Box>
             <Box sx={{ height: 48, display: 'flex' }}>
-                <Typography color="primary" sx={{ m: 1 }} textAlign={"center"} variant="h5">{`Region: ${selectedRegion?.name}`}</Typography>
+                <Typography color="primary" sx={{ m: 1 }} textAlign={"center"} variant="h6">{`Region: ${selectedRegion?.name}`}</Typography>
                 {selectedSettlement.id
                     && <>
                         <Divider sx={{ backgroundColor: theme => theme.palette.primary, my: 1, width: 4 }} orientation="vertical" flexItem />
-                        <Typography color="primary" sx={{ m: 1 }} textAlign={"center"} variant="h5">{`Settlement: ${selectedSettlement?.name}`}</Typography>
+                        <Typography color="primary" sx={{ m: 1 }} textAlign={"center"} variant="h6">{`Settlement: ${selectedSettlement?.name}`}</Typography>
                     </>
                 }
+                <Box sx={{ flexGrow: 1 }} />
                 {travelling
                     && <>
-                        <Divider sx={{ backgroundColor: theme => theme.palette.primary, my: 1, width: 4 }} orientation="vertical" flexItem />
-                        <Typography color="primary" sx={{ m: 1 }} textAlign={"center"} variant="h5">{`Expedition Status: ${capitalizeFirstLetter(currentExpedition?.phase)}`}</Typography>
+                        {/* <Divider sx={{ backgroundColor: theme => theme.palette.primary, my: 1, width: 4 }} orientation="vertical" flexItem /> */}
+                        <Typography color="primary" sx={{ m: 1 }} textAlign={"center"} variant="h6">{`Expedition Status: ${capitalizeFirstLetter(currentExpedition?.phase)}`}</Typography>
                     </>
                 }
             </Box>
