@@ -11,6 +11,7 @@ import { RegionRepository } from '../repository/RegionRepository.js';
 import { ResourceNodeRepository } from '../repository/ResourceNodeRepository.js';
 import { SettlementRepository } from '../repository/SettlementRepository.js';
 import { WorldRepository } from '../repository/WorldRepository.js';
+import { ServerConfig } from '../serverConfig.js';
 import { ResourceNodeFactory } from './ResourceNodeFactory.js';
 
 @injectable()
@@ -21,7 +22,8 @@ export class WorldFactory {
 		private readonly nodeRepository: ResourceNodeRepository,
 		private readonly borderRepository: BorderRepository,
 		private readonly settlementRepository: SettlementRepository,
-		private readonly resourceNodeFactory: ResourceNodeFactory
+		private readonly resourceNodeFactory: ResourceNodeFactory,
+		private readonly config: ServerConfig
 	) {}
 
 	create(template: string = 'default'): World {
@@ -152,6 +154,8 @@ export class WorldFactory {
 		const settlement = this.settlementRepository.create({
 			name: template.name ?? fallbackName,
 			region: region.getId(),
+			hp: this.config.get('settlementStartingHp'),
+			damage: this.config.get('settlementStartingDamage'),
 		});
 
 		region.setSettlement(settlement);

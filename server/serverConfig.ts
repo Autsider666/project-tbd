@@ -21,6 +21,9 @@ type ConfigTemplate = {
 	};
 	maxPartySize: number;
 	secondsBetweenCombatInSamePhase: number;
+	settlementStartingHp: number;
+	settlementStartingDamage: number;
+	settlementRaidChance: number;
 };
 
 @singleton()
@@ -98,6 +101,18 @@ export class ServerConfig {
 				default: 15,
 				arg: 'secondsBetweenCombatInSamePhase',
 				env: 'SECONDS_BETWEEN_COMBAT_IN_SAME_PHASE',
+			},
+			settlementStartingHp: {
+				format: Number,
+				default: 10000,
+			},
+			settlementStartingDamage: {
+				format: Number,
+				default: 100,
+			},
+			settlementRaidChance: {
+				format: Number,
+				default: 1,
 			},
 		});
 

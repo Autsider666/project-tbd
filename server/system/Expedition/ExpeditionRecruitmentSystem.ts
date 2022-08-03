@@ -1,13 +1,13 @@
-import { injectable } from 'tsyringe';
-import { SurvivorFactory } from '../factory/SurvivorFactory.js';
-import { getRandomItem } from '../helper/Randomizer.js';
-import { ServerConfig } from '../serverConfig.js';
-import { ExpeditionPhase } from '../entity/Expedition.js';
-import { ClientNotifier } from '../helper/ClientNotifier.js';
-import { ExpeditionRepository } from '../repository/ExpeditionRepository.js';
-import { System } from './System.js';
+import { singleton } from 'tsyringe';
+import { SurvivorFactory } from '../../factory/SurvivorFactory.js';
+import { getRandomItem } from '../../helper/Randomizer.js';
+import { ServerConfig } from '../../serverConfig.js';
+import { ExpeditionPhase } from '../../entity/Expedition.js';
+import { ClientNotifier } from '../../helper/ClientNotifier.js';
+import { ExpeditionRepository } from '../../repository/ExpeditionRepository.js';
+import { System } from '../System.js';
 
-@injectable()
+@singleton()
 export class ExpeditionRecruitmentSystem implements System {
 	private now: Date = new Date();
 

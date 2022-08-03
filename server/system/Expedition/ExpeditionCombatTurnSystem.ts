@@ -1,13 +1,13 @@
-import { injectable } from 'tsyringe';
-import { ExpeditionPhase } from '../entity/Expedition.js';
+import { singleton } from 'tsyringe';
+import { ExpeditionPhase } from '../../entity/Expedition.js';
 import {
 	ClientNotifier,
 	NotificationCategory,
-} from '../helper/ClientNotifier.js';
-import { ExpeditionRepository } from '../repository/ExpeditionRepository.js';
-import { System } from './System.js';
+} from '../../helper/ClientNotifier.js';
+import { ExpeditionRepository } from '../../repository/ExpeditionRepository.js';
+import { System } from '../System.js';
 
-@injectable()
+@singleton()
 export class ExpeditionCombatTurnSystem implements System {
 	private now: Date = new Date();
 
@@ -59,7 +59,7 @@ export class ExpeditionCombatTurnSystem implements System {
 				expedition.previousPhaseEndedAt = this.now; //TODO fix some day
 
 				ClientNotifier.success(
-					`Party "${party.name}" has killed ${enemy.name} and continues its expedition.`,
+					`Party "${party.name}" has killed ${enemy.name}.`,
 					party.getUpdateRoomName(),
 					[
 						NotificationCategory.expedition,

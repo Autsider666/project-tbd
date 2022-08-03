@@ -41,23 +41,26 @@ export class TestController {
 					SocketData
 				>
 			) => {
-				socket.on('test:survivor:add', ({ containerId, template = SurvivorType.villager }) => {
-					let container: SurvivorContainer | null =
-						this.settlementRepository.get(
-							containerId as SettlementId
-						);
-					if (container === null) {
-						container = this.partyRepository.get(
-							containerId as PartyId
-						);
-					}
+				socket.on(
+					'test:survivor:add',
+					({ containerId, template = SurvivorType.villager }) => {
+						let container: SurvivorContainer | null =
+							this.settlementRepository.get(
+								containerId as SettlementId
+							);
+						if (container === null) {
+							container = this.partyRepository.get(
+								containerId as PartyId
+							);
+						}
 
-					if (container === null) {
-						return;
-					}
+						if (container === null) {
+							return;
+						}
 
-					this.survivorFactory.create(template, container);
-				});
+						this.survivorFactory.create(template, container);
+					}
+				);
 
 				socket.on('test:survivor:remove', ({ survivorId }) => {
 					let survivor = this.survivorRepository.get(survivorId);
@@ -89,6 +92,37 @@ export class TestController {
 						container.addResource(amount, resource);
 					}
 				);
+
+				socket.on(
+					'test:raid:start',
+					({
+						settlementId,
+						enemy = {
+							name: 'a horde of 42 zombies',
+							hp: 1000,
+							damage: 50,
+							damageTaken: 0,
+						},
+					}) => {
+						const settlement =
+							this.settlementRepository.get(settlementId);
+						if (!settlement) {
+							return;
+						}
+
+						settlement.raid = enemy;
+					}
+				);
+
+				socket.on('test:raid:stop', ({ settlementId }) => {
+					const settlement =
+						this.settlementRepository.get(settlementId);
+					if (!settlement) {
+						return;
+					}
+
+					settlement.raid = null;
+				});
 			}
 		);
 	}

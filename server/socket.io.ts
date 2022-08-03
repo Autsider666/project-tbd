@@ -1,6 +1,7 @@
 import { Client } from './controller/ClientController.js';
 import { EntityUpdate } from './controller/StateSyncController.js';
-import { Enemy, ExpeditionClientData } from './entity/Expedition.js';
+import { Enemy } from './entity/CommonTypes/Combat.js';
+import { ExpeditionClientData } from './entity/Expedition.js';
 import { PartyId } from './entity/Party.js';
 import { RegionId } from './entity/Region.js';
 import { ResourceType } from './entity/Resource.js';
@@ -65,11 +66,11 @@ export interface ClientToServerEvents {
 		survivorId: SurvivorId;
 	}) => void;
 
-	// 'test:raid:start': (data: {
-	// 	settlementId: SettlementId;
-	// 	enemy: Enemy;
-	// }) => void;
-	// 'test:raid:stop': (data: { settlementId: SettlementId }) => void;
+	'test:raid:start': (data: {
+		settlementId: SettlementId;
+		enemy?: Enemy;
+	}) => void;
+	'test:raid:stop': (data: { settlementId: SettlementId }) => void;
 	'test:resource:add': (data: {
 		containerId: SettlementId | PartyId;
 		amount: number;
