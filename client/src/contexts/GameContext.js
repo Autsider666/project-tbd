@@ -180,7 +180,7 @@ const GameProvider = ({ children }) => {
     const currentVoyage = Object.values(voyageRepository).find(voyage => voyage.party === controlledParty.id && voyage.finished === false)
 
     const selectedResourceNodes = Object.values(resourceNodeRepository).filter(resourceNode => resourceNode.region === selectedRegionId)
-    const currentExpedition = Object.values(expeditionRepository).find(expedition => expedition.party === controlledParty.id && expedition.phase !== "finished")
+    const currentExpedition = Object.values(expeditionRepository).find(expedition => expedition.party === controlledParty.id && expedition.currentPhase !== "finished")
 
     const partySurvivors = controlledParty && controlledParty.survivors.map(survivorId => survivorRepository[survivorId]).filter(survivorId => survivorId)
     console.log(selectedSettlement)
