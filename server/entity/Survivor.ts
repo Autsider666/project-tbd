@@ -40,7 +40,7 @@ export class Survivor extends Entity<
 
 		this.name = data.name;
 		this.hp = data.hp;
-		this.damage = data.hp;
+		this.damage = data.damage;
 		this.carryCapacity = data.carryCapacity;
 		this.gatheringSpeed =
 			data.gatheringSpeed * this.gatheringSpeedMultiplier;

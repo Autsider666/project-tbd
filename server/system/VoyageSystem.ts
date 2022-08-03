@@ -7,7 +7,7 @@ import { System } from './System.js';
 export class VoyageSystem implements System {
 	constructor(private readonly voyageRepository: VoyageRepository) {}
 
-	async tick(now: Date): Promise<void> {
+	tick(now: Date): void {
 		this.voyageRepository.getAll().forEach((voyage) => {
 			if (voyage.finished || voyage.arrivalAt > now) {
 				return;

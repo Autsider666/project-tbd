@@ -17,7 +17,7 @@ export class ExpeditionRecruitmentSystem implements System {
 		private readonly survivorFactory: SurvivorFactory
 	) {}
 
-	async tick(now: Date): Promise<void> {
+	tick(now: Date): void {
 		this.now = now;
 
 		const chances = this.config.get('expeditionRecruitment');

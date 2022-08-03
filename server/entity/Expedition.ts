@@ -40,7 +40,9 @@ export type ExpeditionStateData = {
 	enemy?: Enemy | null;
 } & EntityStateData<ExpeditionId>;
 
-export type ExpeditionClientData = ExpeditionStateData &
+export type ExpeditionClientData = {
+	phase: ExpeditionPhase; //TODO remove BC
+} & ExpeditionStateData &
 	EntityClientData<ExpeditionId>;
 
 export class Expedition extends Entity<
@@ -79,6 +81,7 @@ export class Expedition extends Entity<
 	normalize(forClient?: Client): ExpeditionClientData {
 		return {
 			entityType: this.getEntityType(),
+			phase: this.currentPhase,
 			...this.toJSON(),
 		};
 	}

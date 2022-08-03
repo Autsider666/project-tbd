@@ -1,9 +1,12 @@
 import { injectable } from 'tsyringe';
-import { ServerConfig } from '../serverConfig.js';
 import { Expedition, ExpeditionPhase } from '../entity/Expedition.js';
-import { ClientNotifier } from '../helper/ClientNotifier.js';
+import {
+	ClientNotifier,
+	NotificationCategory,
+} from '../helper/ClientNotifier.js';
 import { TravelTimeCalculator } from '../helper/TravelTimeCalculator.js';
 import { ExpeditionRepository } from '../repository/ExpeditionRepository.js';
+import { ServerConfig } from '../serverConfig.js';
 import { System } from './System.js';
 
 @injectable()
@@ -16,7 +19,7 @@ export class ExpeditionPhaseChangeSystem implements System {
 		private readonly config: ServerConfig
 	) {}
 
-	async tick(now: Date): Promise<void> {
+	tick(now: Date): void {
 		this.now = now;
 
 		const activeExpedition = this.expeditionRepository
@@ -113,13 +116,14 @@ export class ExpeditionPhaseChangeSystem implements System {
 	}
 
 	private checkForCombat(expedition: Expedition): void {
-		if (
-			expedition.previousPhase === ExpeditionPhase.combat &&
-			expedition.previousPhaseEndedAt
-		) {
+		if (expedition.previousPhase === ExpeditionPhase.combat) {
+			const previous = expedition.previousPhaseEndedAt;
+			if (previous === null) {
+				console.log(expedition);
+				throw new Error('Should not be null right now');
+			}
 			const secondsInPast =
-				expedition.previousPhaseEndedAt.getTime() -
-				this.now.getTime() / 1000;
+				previous.getTime() - this.now.getTime() / 1000;
 			if (
 				secondsInPast <
 				this.config.get('secondsBetweenCombatInSamePhase')
@@ -137,11 +141,18 @@ export class ExpeditionPhaseChangeSystem implements System {
 
 		expedition.enemy = {
 			name: 'Zombie',
-			hp: 100,
+			hp: 500,
 			damageTaken: 0,
 			damage: 10,
 		};
 
 		expedition.setCurrentPhase(ExpeditionPhase.combat, this.now, null);
+
+		const party = expedition.getParty();
+		ClientNotifier.warning(
+			`Party "${party.name}" has encountered an enemy and is now fighting with it.`,
+			party.getUpdateRoomName(),
+			[NotificationCategory.expedition]
+		);
 	}
 }

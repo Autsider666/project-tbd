@@ -5,7 +5,7 @@ import { System } from './System.js';
 export class StatusLoggerSystem implements System {
 	private turn: number = 1;
 
-	async tick(now: Date): Promise<void> {
+	tick(now: Date): void {
 		console.log('Tick ' + this.turn++ + ' at ' + now);
 		for (const [key, value] of Object.entries(process.memoryUsage())) {
 			console.log(`Memory usage by ${key}, ${value / 1000000}MB `);

@@ -15,7 +15,7 @@ export class ExpeditionGatheringSystem implements System {
 
 	constructor(private readonly expeditionRepository: ExpeditionRepository) {}
 
-	async tick(now: Date): Promise<void> {
+	tick(now: Date): void {
 		this.now = now;
 
 		const activeExpedition = this.expeditionRepository

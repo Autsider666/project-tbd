@@ -9,6 +9,7 @@ import {
 	ServerToClientEvents,
 	SocketData,
 } from '../socket.io.js';
+import { ExpeditionCombatTurnSystem } from '../system/ExpeditionCombatTurnSystem.js';
 import { ExpeditionGatheringSystem } from '../system/ExpeditionGatheringSystem.js';
 import { ExpeditionPhaseChangeSystem } from '../system/ExpeditionPhaseChangeSystem.js';
 import { ExpeditionRecruitmentSystem } from '../system/ExpeditionRecruitmentSystem.js';
@@ -22,6 +23,7 @@ import { Server, Socket } from 'socket.io';
 // TODO move to config file?
 @registry([
 	{ token: 'System', useClass: VoyageSystem },
+	{ token: 'System', useClass: ExpeditionCombatTurnSystem },
 	{ token: 'System', useClass: ExpeditionGatheringSystem },
 	{ token: 'System', useClass: ExpeditionPhaseChangeSystem },
 	{ token: 'System', useClass: ExpeditionRecruitmentSystem },
@@ -73,7 +75,7 @@ export class ServerController {
 
 		setInterval(() => {
 			const now = new Date();
-			this.systems.forEach(async (system) => system.tick(now));
+			this.systems.forEach((system) => system.tick(now));
 		}, this.config.get('serverTickTime'));
 	}
 }

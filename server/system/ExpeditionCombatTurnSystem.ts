@@ -13,7 +13,7 @@ export class ExpeditionCombatTurnSystem implements System {
 
 	constructor(private readonly expeditionRepository: ExpeditionRepository) {}
 
-	async tick(now: Date): Promise<void> {
+	tick(now: Date): void {
 		this.now = now;
 		const activeExpedition = this.expeditionRepository
 			.getAll()
@@ -28,8 +28,8 @@ export class ExpeditionCombatTurnSystem implements System {
 			}
 
 			const party = expedition.getParty();
-
 			//Party attacks
+
 			const damageDealt = party.getDamage();
 			enemy.damageTaken += damageDealt;
 
@@ -56,6 +56,8 @@ export class ExpeditionCombatTurnSystem implements System {
 					this.now,
 					new Date(this.now.getTime() + timeCombatHasTaken)
 				);
+				expedition.previousPhaseEndedAt = this.now; //TODO fix some day
+
 				ClientNotifier.success(
 					`Party "${party.name}" has killed ${enemy.name} and continues its expedition.`,
 					party.getUpdateRoomName(),
@@ -84,6 +86,8 @@ export class ExpeditionCombatTurnSystem implements System {
 			);
 
 			expedition.setCurrentPhase(ExpeditionPhase.finished, this.now);
+
+			party.getSettlement().removeParty(party); //TODO are we sure?
 		}
 	}
 }
