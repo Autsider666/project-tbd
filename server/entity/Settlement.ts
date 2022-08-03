@@ -1,6 +1,7 @@
 import { Opaque } from 'type-fest';
 import { Client } from '../controller/ClientController.js';
 import { EntityUpdate } from '../controller/StateSyncController.js';
+import { ClientNotifier } from '../helper/ClientNotifier.js';
 import { Uuid } from '../helper/UuidHelper.js';
 import { PartiesProperty } from './CommonProperties/PartiesProperty.js';
 import { RegionProperty } from './CommonProperties/RegionProperty.js';
@@ -180,6 +181,16 @@ export class Settlement
 
 		for (const survivor of this.survivorsProperty.getAll()) {
 			this.survivorsProperty.remove(survivor.getId());
+		}
+
+		for (const party of this.partiesProperty
+			.getAll()
+			.filter((party) => party.getVoyage() === null)) {
+			party.dead = true;
+			ClientNotifier.warning(
+				`Party "${party.name}" has died during the raid on settlement "${this.name}"`,
+				party.getUpdateRoomName()
+			);
 		}
 	}
 }
