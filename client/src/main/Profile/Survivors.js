@@ -16,8 +16,6 @@ const Survivors = () => {
     const { id: partyId } = controlledParty || {}
 
     const dismissHandler = survivorId => () => dismissSurvivor(survivorId, partyId)
-    
-    console.log({survivors})
 
     return (
         <Box sx={{ height: '330px ', width: '100%', overflow: 'auto' }}>

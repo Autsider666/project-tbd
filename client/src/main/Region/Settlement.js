@@ -17,8 +17,6 @@ export const Settlement = () => {
 
     const recruitHandler = survivorId => () => recruitSurvivor(survivorId, partyId)
 
-    console.log({ currentSettlement })
-
     if (selectedRegionId === null) return <div />
 
     const { cost = 0 } = selectedRegionTravelPath
@@ -26,8 +24,6 @@ export const Settlement = () => {
 
     const traveling = voyage && voyage.finished === false;
     const isInSettlement = settlement.id === party.settlement
-    console.log(isInSettlement)
-
 
     voyage && console.log(voyage.finished);
 
@@ -68,9 +64,9 @@ export const Settlement = () => {
                 </ListItem>
             </Grid>
             <Grid item xs={12}>
-                <Box sx={{ height: '330px ', width: '100%', overflow: 'auto' }}>
-                    <TableContainer>
-                        <Table size="small">
+                <Box sx={{ height: '210px ', width: '100%', overflow: 'auto' }}>
+                    <TableContainer >
+                        <Table stickyHeader={true} size="small">
                             <TableHead >
                                 <TableRow sx={{ width: '200px' }}>
                                     <TableCell >Name</TableCell>
