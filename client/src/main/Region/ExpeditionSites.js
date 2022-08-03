@@ -17,7 +17,7 @@ export const ExpeditionSites = () => {
     const { name } = region;
     const { cost = 0 } = selectedRegionTravelPath
 
-    const travelling = expedition && expedition.phase !== 'finished';
+    const travelling = expedition && expedition.currentPhase !== 'finished';
     const handleClick = node => () => resourceNodeButtonSelected(prev => prev == node ? null : node)
 
 
@@ -41,7 +41,7 @@ export const ExpeditionSites = () => {
                 })}
 
                 <Grid sx={{ margin: 1 }} item xs={12}>
-                    <Button onClick={() => expeditionStart(party.id, resourceNodeButton)} disabled={(resourceNodeButton === null ? true : false) || (expedition && expedition.phase !== 'finished')} variant="contained" sx={{ width: 1 }}>
+                    <Button onClick={() => expeditionStart(party.id, resourceNodeButton)} disabled={(resourceNodeButton === null ? true : false) || (expedition && expedition.currentPhase !== 'finished')} variant="contained" sx={{ width: 1 }}>
                         {travelling
                             ? `Currently on expedition to ${resourceNodeRepository[expedition.target].name}`
                             : `Go on Expedition, it takes ${cost} seconds`}

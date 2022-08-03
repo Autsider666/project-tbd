@@ -18,7 +18,7 @@ const Map = () => {
     // travelPaths && currentRegionId && selectedRegionId && console.log(travelPaths[currentRegionId][selectedRegionId])
 
     const regions = Object.values(regionRepository).map(region => {
-        region.expeditionInProgress = path && path.find((pathRegionId, index) => pathRegionId === region.id && index === path.length - 1) ? currentExpedition?.phase : ''
+        region.expeditionInProgress = path && path.find((pathRegionId, index) => pathRegionId === region.id && index === path.length - 1) ? currentExpedition?.currentPhase : ''
         // region.currentExpedition = currentExpedition && region.id === currentExpedition.target
         if (currentRegionId && selectedRegionId && travelPaths
             && travelPaths[currentRegionId]
@@ -34,7 +34,7 @@ const Map = () => {
         return region
     })
 
-    const travelling = currentExpedition && currentExpedition.phase !== 'finished';
+    const travelling = currentExpedition && currentExpedition.currentPhase !== 'finished';
     // console.log(currentExpedition)
 
     if (hide) return <img style={{ opacity: 0.3, marginBottom: '-16px' }} src={Water} position="absolute" width="100%" />
@@ -52,7 +52,7 @@ const Map = () => {
                 {travelling
                     && <>
                         {/* <Divider sx={{ backgroundColor: theme => theme.palette.primary, my: 1, width: 4 }} orientation="vertical" flexItem /> */}
-                        <Typography color="primary" sx={{ m: 1 }} textAlign={"center"} variant="h6">{`Expedition Status: ${capitalizeFirstLetter(currentExpedition?.phase)}`}</Typography>
+                        <Typography color="primary" sx={{ m: 1 }} textAlign={"center"} variant="h6">{`Expedition Status: ${capitalizeFirstLetter(currentExpedition?.currentPhase)}`}</Typography>
                     </>
                 }
             </Box>
