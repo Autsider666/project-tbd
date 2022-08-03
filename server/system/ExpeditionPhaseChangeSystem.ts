@@ -1,6 +1,9 @@
 import { injectable } from 'tsyringe';
 import { Expedition, ExpeditionPhase } from '../entity/Expedition.js';
-import { ClientNotifier, NotificationCategory, } from '../helper/ClientNotifier.js';
+import {
+	ClientNotifier,
+	NotificationCategory,
+} from '../helper/ClientNotifier.js';
 import { TravelTimeCalculator } from '../helper/TravelTimeCalculator.js';
 import { ExpeditionRepository } from '../repository/ExpeditionRepository.js';
 import { ServerConfig } from '../serverConfig.js';
@@ -85,7 +88,7 @@ export class ExpeditionPhaseChangeSystem implements System {
 			ClientNotifier.success(
 				`Party "${party.name}" returned from their expedition to ${target.name}.`,
 				party.getUpdateRoomName(),
-				[NotificationCategory.general,NotificationCategory.expedition]
+				[NotificationCategory.general, NotificationCategory.expedition]
 			);
 
 			const settlement = expedition.getOrigin();
