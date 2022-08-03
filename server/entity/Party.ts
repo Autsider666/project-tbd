@@ -7,6 +7,7 @@ import { ResourcesProperty } from './CommonProperties/ResourcesProperty.js';
 import { SettlementProperty } from './CommonProperties/SettlementProperty.js';
 import { SurvivorsProperty } from './CommonProperties/SurvivorsProperty.js';
 import { VoyageProperty } from './CommonProperties/VoyageProperty.js';
+import { ResourceContainer } from './CommonTypes/ResourceContainer.js';
 import { SurvivorContainer } from './CommonTypes/SurvivorContainer.js';
 import { Expedition, ExpeditionId } from './Expedition.js';
 import { Resource, ResourceId, ResourceType } from './Resource.js';
@@ -39,7 +40,7 @@ export type PartyClientData = {
 
 export class Party
 	extends Entity<PartyId, PartyStateData, PartyClientData>
-	implements SurvivorContainer
+	implements SurvivorContainer, ResourceContainer
 {
 	public name: string;
 	public dead: boolean;
@@ -137,6 +138,10 @@ export class Party
 
 	public addSurvivor(survivor: Survivor): void {
 		this.survivorsProperty.add(survivor);
+	}
+
+	public removeSurvivor(survivor: Survivor): void {
+		this.survivorsProperty.remove(survivor.getId());
 	}
 
 	public getVoyage(): Voyage | null {
@@ -238,5 +243,9 @@ export class Party
 		newContainer: SurvivorContainer
 	): void {
 		this.survivorsProperty.transferSurvivorTo(survivor, newContainer);
+	}
+
+	removeResource(resource: Resource): void {
+		this.inventoryProperty.remove(resource.getId());
 	}
 }

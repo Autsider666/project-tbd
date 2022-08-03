@@ -4,5 +4,8 @@
 	"gatherSpeedMultiplier": 10,
 	"maxPartySize": 10,
 	"expeditionRecruitmentChance": 50,
-  "expeditionCombatChance": 10
+	"expeditionCombatChance": 10,
+	"settlementStartingHp": 10000,
+	"settlementStartingDamage": 100,
+	"settlementRaidChance": 1
 }

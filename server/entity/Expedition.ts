@@ -4,6 +4,7 @@ import { Uuid } from '../helper/UuidHelper.js';
 import { PartyProperty } from './CommonProperties/PartyProperty.js';
 import { ResourceNodeProperty } from './CommonProperties/ResourceNodeProperty.js';
 import { SettlementProperty } from './CommonProperties/SettlementProperty.js';
+import { Enemy } from './CommonTypes/Combat.js';
 import { Entity, EntityClientData, EntityStateData } from './Entity.js';
 import { Party, PartyId } from './Party.js';
 import { ResourceNode, ResourceNodeId } from './ResourceNode.js';
@@ -17,13 +18,6 @@ export enum ExpeditionPhase {
 	combat = 'combat',
 	returning = 'returning',
 	finished = 'finished',
-}
-
-export interface Enemy {
-	name: string;
-	hp: number;
-	damageTaken: number;
-	damage: number;
 }
 
 export type ExpeditionStateData = {

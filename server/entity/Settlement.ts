@@ -1,16 +1,19 @@
 import { Opaque } from 'type-fest';
 import { Client } from '../controller/ClientController.js';
 import { EntityUpdate } from '../controller/StateSyncController.js';
+import { ClientNotifier } from '../helper/ClientNotifier.js';
 import { Uuid } from '../helper/UuidHelper.js';
 import { PartiesProperty } from './CommonProperties/PartiesProperty.js';
 import { RegionProperty } from './CommonProperties/RegionProperty.js';
 import { ResourcesProperty } from './CommonProperties/ResourcesProperty.js';
 import { SurvivorsProperty } from './CommonProperties/SurvivorsProperty.js';
+import { Combatant, Enemy } from './CommonTypes/Combat.js';
+import { ResourceContainer } from './CommonTypes/ResourceContainer.js';
 import { SurvivorContainer } from './CommonTypes/SurvivorContainer.js';
 import { Entity, EntityClientData, EntityStateData } from './Entity.js';
 import { Party, PartyId } from './Party.js';
 import { Region, RegionId } from './Region.js';
-import { ResourceId, ResourceType } from './Resource.js';
+import { Resource, ResourceId, ResourceType } from './Resource.js';
 import { Survivor, SurvivorId } from './Survivor.js';
 
 export type SettlementId = Opaque<Uuid, 'SettlementId'>;
@@ -18,17 +21,21 @@ export type SettlementId = Opaque<Uuid, 'SettlementId'>;
 export type SettlementStateData = {
 	name: string;
 	region: RegionId;
+	damageTaken?: number;
+	raid?: Enemy | null;
 	parties?: PartyId[];
 	storage?: ResourceId[];
 	survivors?: SurvivorId[];
-} & EntityStateData<SettlementId>;
+	destroyed?: boolean;
+} & Combatant &
+	EntityStateData<SettlementId>;
 
 export type SettlementClientData = SettlementStateData &
 	EntityClientData<SettlementId>;
 
 export class Settlement
 	extends Entity<SettlementId, SettlementStateData, SettlementClientData>
-	implements SurvivorContainer
+	implements SurvivorContainer, ResourceContainer, Combatant
 {
 	public name: string;
 	private readonly regionProperty: RegionProperty;
@@ -36,10 +43,21 @@ export class Settlement
 	private readonly storage: ResourcesProperty;
 	private readonly survivorsProperty: SurvivorsProperty;
 
+	hp: number;
+	damage: number;
+	damageTaken: number;
+	raid: Enemy | null;
+	destroyed: boolean;
+
 	constructor(data: SettlementStateData) {
 		super(data);
 
 		this.name = data.name;
+		this.hp = data.hp ?? 10000; //TODO remove BC
+		this.damage = data.damage ?? 100; //TODO remove BC
+		this.damageTaken = data.damageTaken ?? 0;
+		this.raid = data.raid ?? null;
+		this.destroyed = data.destroyed ?? false;
 		this.regionProperty = new RegionProperty(data.region);
 		this.partiesProperty = new PartiesProperty(data.parties ?? []);
 		this.storage = new ResourcesProperty(data.storage ?? [], this);
@@ -64,6 +82,10 @@ export class Settlement
 			parties: this.partiesProperty.toJSON(),
 			storage: this.storage.toJSON(),
 			survivors: this.survivorsProperty.toJSON(),
+			hp: this.hp,
+			damage: this.damage,
+			damageTaken: this.damageTaken,
+			destroyed: this.destroyed,
 		};
 	}
 
@@ -132,6 +154,10 @@ export class Settlement
 		this.survivorsProperty.add(survivor);
 	}
 
+	removeSurvivor(survivor: Survivor): void {
+		this.survivorsProperty.remove(survivor.getId());
+	}
+
 	transferSurvivorTo(
 		survivor: Survivor,
 		newContainer: SurvivorContainer
@@ -141,5 +167,30 @@ export class Settlement
 
 	getSurvivors(): Survivor[] {
 		return this.survivorsProperty.getAll();
+	}
+
+	removeResource(resource: Resource): void {
+		this.storage.remove(resource.getId());
+	}
+
+	destroy(): void {
+		this.destroyed = true;
+		for (const resource of this.storage.getAll()) {
+			this.storage.remove(resource.getId());
+		}
+
+		for (const survivor of this.survivorsProperty.getAll()) {
+			this.survivorsProperty.remove(survivor.getId());
+		}
+
+		for (const party of this.partiesProperty
+			.getAll()
+			.filter((party) => party.getVoyage() === null)) {
+			party.dead = true;
+			ClientNotifier.warning(
+				`Party "${party.name}" has died during the raid on settlement "${this.name}"`,
+				party.getUpdateRoomName()
+			);
+		}
 	}
 }

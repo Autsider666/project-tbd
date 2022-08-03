@@ -1,15 +1,15 @@
-import { injectable } from 'tsyringe';
-import { Expedition, ExpeditionPhase } from '../entity/Expedition.js';
+import { singleton } from 'tsyringe';
+import { Expedition, ExpeditionPhase } from '../../entity/Expedition.js';
 import {
 	ClientNotifier,
 	NotificationCategory,
-} from '../helper/ClientNotifier.js';
-import { TravelTimeCalculator } from '../helper/TravelTimeCalculator.js';
-import { ExpeditionRepository } from '../repository/ExpeditionRepository.js';
-import { ServerConfig } from '../serverConfig.js';
-import { System } from './System.js';
+} from '../../helper/ClientNotifier.js';
+import { TravelTimeCalculator } from '../../helper/TravelTimeCalculator.js';
+import { ExpeditionRepository } from '../../repository/ExpeditionRepository.js';
+import { ServerConfig } from '../../serverConfig.js';
+import { System } from '../System.js';
 
-@injectable()
+@singleton()
 export class ExpeditionPhaseChangeSystem implements System {
 	private now: Date = new Date();
 

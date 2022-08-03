@@ -9,10 +9,11 @@ import {
 	ServerToClientEvents,
 	SocketData,
 } from '../socket.io.js';
-import { ExpeditionCombatTurnSystem } from '../system/ExpeditionCombatTurnSystem.js';
-import { ExpeditionGatheringSystem } from '../system/ExpeditionGatheringSystem.js';
-import { ExpeditionPhaseChangeSystem } from '../system/ExpeditionPhaseChangeSystem.js';
-import { ExpeditionRecruitmentSystem } from '../system/ExpeditionRecruitmentSystem.js';
+import { ExpeditionCombatTurnSystem } from '../system/Expedition/ExpeditionCombatTurnSystem.js';
+import { ExpeditionGatheringSystem } from '../system/Expedition/ExpeditionGatheringSystem.js';
+import { ExpeditionPhaseChangeSystem } from '../system/Expedition/ExpeditionPhaseChangeSystem.js';
+import { ExpeditionRecruitmentSystem } from '../system/Expedition/ExpeditionRecruitmentSystem.js';
+import { SettlementCombatSystem } from '../system/Settlement/SettlementCombatSystem.js';
 import { StatusLoggerSystem } from '../system/StatusLoggerSystem.js';
 import { System } from '../system/System.js';
 import { VoyageSystem } from '../system/VoyageSystem.js';
@@ -27,6 +28,7 @@ import { Server, Socket } from 'socket.io';
 	{ token: 'System', useClass: ExpeditionGatheringSystem },
 	{ token: 'System', useClass: ExpeditionPhaseChangeSystem },
 	{ token: 'System', useClass: ExpeditionRecruitmentSystem },
+	{ token: 'System', useClass: SettlementCombatSystem },
 	{ token: 'System', useClass: StatusLoggerSystem },
 	{ token: 'System', useClass: WorldTimestampSystem },
 ])

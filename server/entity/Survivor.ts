@@ -3,6 +3,7 @@ import { Opaque } from 'type-fest';
 import { ServerConfig } from '../serverConfig.js';
 import { Client } from '../controller/ClientController.js';
 import { Uuid } from '../helper/UuidHelper.js';
+import { Combatant } from './CommonTypes/Combat.js';
 import { SurvivorContainer } from './CommonTypes/SurvivorContainer.js';
 import { Entity, EntityClientData, EntityStateData } from './Entity.js';
 
@@ -10,20 +11,18 @@ export type SurvivorId = Opaque<Uuid, 'SurvivorId'>;
 
 export type SurvivorStateData = {
 	name: string;
-	hp: number;
-	damage: number;
 	carryCapacity: number;
 	gatheringSpeed: number;
-} & EntityStateData<SurvivorId>;
+} & Combatant &
+	EntityStateData<SurvivorId>;
 
 export type SurvivorClientDate = SurvivorStateData &
 	EntityClientData<SurvivorId>;
 
-export class Survivor extends Entity<
-	SurvivorId,
-	SurvivorStateData,
-	SurvivorClientDate
-> {
+export class Survivor
+	extends Entity<SurvivorId, SurvivorStateData, SurvivorClientDate>
+	implements Combatant
+{
 	public readonly name: string;
 	public readonly hp: number;
 	public readonly damage: number;

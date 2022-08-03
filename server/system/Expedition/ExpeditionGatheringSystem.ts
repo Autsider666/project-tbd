@@ -1,15 +1,15 @@
-import { injectable } from 'tsyringe';
-import { Expedition, ExpeditionPhase } from '../entity/Expedition.js';
-import { ResourceType } from '../entity/Resource.js';
+import { singleton } from 'tsyringe';
+import { Expedition, ExpeditionPhase } from '../../entity/Expedition.js';
+import { ResourceType } from '../../entity/Resource.js';
 import {
 	ClientNotifier,
 	NotificationCategory,
-} from '../helper/ClientNotifier.js';
-import { getRandomItem } from '../helper/Randomizer.js';
-import { ExpeditionRepository } from '../repository/ExpeditionRepository.js';
-import { System } from './System.js';
+} from '../../helper/ClientNotifier.js';
+import { getRandomItem } from '../../helper/Randomizer.js';
+import { ExpeditionRepository } from '../../repository/ExpeditionRepository.js';
+import { System } from '../System.js';
 
-@injectable()
+@singleton()
 export class ExpeditionGatheringSystem implements System {
 	private now: Date = new Date();
 
