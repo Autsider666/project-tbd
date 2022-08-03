@@ -1,9 +1,6 @@
 import { injectable } from 'tsyringe';
 import { Expedition, ExpeditionPhase } from '../entity/Expedition.js';
-import {
-	ClientNotifier,
-	NotificationCategory,
-} from '../helper/ClientNotifier.js';
+import { ClientNotifier, NotificationCategory, } from '../helper/ClientNotifier.js';
 import { TravelTimeCalculator } from '../helper/TravelTimeCalculator.js';
 import { ExpeditionRepository } from '../repository/ExpeditionRepository.js';
 import { ServerConfig } from '../serverConfig.js';
@@ -152,7 +149,7 @@ export class ExpeditionPhaseChangeSystem implements System {
 		ClientNotifier.warning(
 			`Party "${party.name}" has encountered an enemy and is now fighting with it.`,
 			party.getUpdateRoomName(),
-			[NotificationCategory.expedition]
+			[NotificationCategory.expedition, NotificationCategory.combat]
 		);
 	}
 }
