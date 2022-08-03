@@ -1,4 +1,4 @@
-import { useContext, useState, createContext } from 'react';
+import { useContext, useState, createContext, useEffect } from 'react';
 import { socket, socketPromise } from '../functions/SocketAPI';
 
 const AuthContext = createContext();
@@ -29,6 +29,10 @@ const getSettlements = worldId => new Promise(resolve => {
 const AuthProvider = ({ children }) => {
 
     const [user, setUser] = useState({})
+    const { token } = user
+
+    const tbdToken = localStorage.getItem("tbd-token")
+    console.log({tbdToken, token})
 
     const partyCreate = async name => {
 
@@ -47,8 +51,22 @@ const AuthProvider = ({ children }) => {
 
         // console.log({ selectedWorld, settlements, selectedSettlement })
 
-        socket.emit('party:create', { name, settlementId: selectedSettlement.id }, token => setUser({ token }))
+
+
+        // socket.emit('party:create', { name, settlementId: selectedSettlement.id }, token => setUser({ token }))
+        socket.emit('party:create', { name, settlementId: selectedSettlement.id }, token => localStorage.setItem("tbd-token", token))
     }
+
+    useEffect(() => {
+        if (tbdToken) {
+            console.log("Logging in based on token in local storage")
+            setUser({ token: tbdToken })
+            socket.emit('party:init', tbdToken)
+        }
+
+    }, [tbdToken])
+
+    console.log(user)
 
 
 

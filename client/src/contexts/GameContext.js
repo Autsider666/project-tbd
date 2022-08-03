@@ -2,7 +2,6 @@ import { useContext, useState, createContext, useEffect } from 'react';
 import { socket } from '../functions/SocketAPI';
 import { useApp } from './AppContext';
 // import { EVENT_NAMES, EMIT_NAMES} from '../functions/SocketAPI'
-import { useAuth } from './AuthContext';
 import { DateTime } from 'luxon'
 
 const GameContext = createContext();
@@ -26,8 +25,6 @@ const dismissSurvivor = (survivorId, partyId) => transferSurvivor('dismiss', sur
 
 const GameProvider = ({ children }) => {
 
-    const { user } = useAuth()
-    const { token = null } = user
     const { displaySnackbar } = useApp()
 
     const [allEntities, setAllEntities] = useState()
@@ -249,7 +246,6 @@ const GameProvider = ({ children }) => {
     const value = {
         allEntities,
         loaded,
-        token,
         currentRegionId,
         worldRepository, regionRepository, borderRepository, survivorRepository, partyRepository, resourceNodeRepository, settlementRepository, voyageRepository, expeditionRepository, resourceRepository,
         controlledParty, partyInventory, partySurvivors,
