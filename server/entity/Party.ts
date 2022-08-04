@@ -24,8 +24,8 @@ export type PartyStateData = {
 	settlement: SettlementId;
 	survivors?: SurvivorId[];
 	inventory?: ResourceId[];
-	currentVoyage?: VoyageId;
-	currentExpedition?: ExpeditionId;
+	currentVoyage?: VoyageId | null;
+	currentExpedition?: ExpeditionId | null;
 	dead?: boolean;
 } & EntityStateData<PartyId>;
 
@@ -81,6 +81,8 @@ export class Party
 			settlement: this.settlementProperty.toJSON(),
 			survivors: this.survivorsProperty.toJSON(),
 			inventory: this.inventoryProperty.toJSON(),
+			currentVoyage: this.voyageProperty?.toJSON() ?? null,
+			currentExpedition: this.expeditionProperty?.toJSON() ?? null,
 		};
 	}
 
