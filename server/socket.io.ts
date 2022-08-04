@@ -6,7 +6,11 @@ import { PartyId } from './entity/Party.js';
 import { RegionId } from './entity/Region.js';
 import { ResourceType } from './entity/Resource.js';
 import { ResourceNodeId } from './entity/ResourceNode.js';
-import { SettlementClientData, SettlementId } from './entity/Settlement.js';
+import {
+	SettlementBuilding,
+	SettlementClientData,
+	SettlementId,
+} from './entity/Settlement.js';
 import { SurvivorId } from './entity/Survivor.js';
 import { WorldClientData, WorldId } from './entity/World.js';
 import { SurvivorType } from './factory/SurvivorFactory.js';
@@ -64,6 +68,10 @@ export interface ClientToServerEvents {
 	'survivor:dismiss': (data: {
 		partyId: PartyId;
 		survivorId: SurvivorId;
+	}) => void;
+	'settlement:upgrade:start': (data: {
+		settlementId: SettlementId;
+		building: SettlementBuilding;
 	}) => void;
 
 	'test:raid:start': (data: {

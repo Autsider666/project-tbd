@@ -2,7 +2,12 @@ import jwt from 'jsonwebtoken';
 import { Socket } from 'socket.io';
 import { container } from 'tsyringe';
 import { Party, PartyId } from '../entity/Party.js';
-import { Settlement, SettlementId } from '../entity/Settlement.js';
+import {
+	BuildingCost,
+	Settlement,
+	SettlementBuilding,
+	SettlementId,
+} from '../entity/Settlement.js';
 import { WorldId } from '../entity/World.js';
 import { ExpeditionFactory } from '../factory/ExpeditionFactory.js';
 import { PartyFactory } from '../factory/PartyFactory.js';
@@ -81,6 +86,7 @@ export class ClientController {
 
 		this.handleTravel();
 		this.handleExpedition();
+		this.handleSettlementManagement();
 
 		this.socket.on('world:list', (callback) => {
 			callback(
@@ -423,6 +429,71 @@ export class ClientController {
 				party.getUpdateRoomName()
 			);
 		});
+	}
+
+	private handleSettlementManagement() {
+		this.socket.on(
+			'settlement:upgrade:start',
+			({ settlementId, building }) => {
+				if (!(building in SettlementBuilding)) {
+					ClientNotifier.error(
+						`"${building}" is not a valid building.`,
+						this.socket.id
+					);
+					return;
+				}
+
+				const settlement = this.settlementRepository.get(settlementId);
+				if (settlement === null) {
+					ClientNotifier.error(
+						'This settlement does not exist.',
+						this.socket.id
+					);
+					return;
+				}
+
+				if (settlement.settlementUpgrade !== null) {
+					ClientNotifier.error(
+						'This settlement is already upgrading something.',
+						this.socket.id
+					);
+					return;
+				}
+
+				const upgradeCost =
+					1000 * Math.pow(2, settlement.buildings[building]);
+				const resourceType = BuildingCost[building];
+				if (settlement.getResource(resourceType) < upgradeCost) {
+					ClientNotifier.error(
+						'This settlement does not have enough resources.',
+						this.socket.id
+					);
+					return;
+				}
+
+				for (const party of this.client.parties.values()) {
+					if (party.getSettlement().getId() !== settlementId) {
+						continue;
+					}
+
+					settlement.removeResource(upgradeCost, resourceType);
+					settlement.settlementUpgrade = {
+						type: building,
+						remainingWork: upgradeCost,
+					};
+					ClientNotifier.success(
+						`Settlement "${settlement.name}" has started a project to upgrade its ${building}.`,
+						settlement.getUpdateRoomName()
+					);
+					return;
+				}
+
+				ClientNotifier.error(
+					`You don't have a party in settlement "${settlement.name}".`,
+					this.socket.id
+				);
+			}
+		);
 	}
 
 	private getParty(id: PartyId): Party | null {

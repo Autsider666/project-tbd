@@ -247,7 +247,18 @@ export class Party
 		this.survivorsProperty.transferSurvivorTo(survivor, newContainer);
 	}
 
-	removeResource(resource: Resource): void {
-		this.inventoryProperty.remove(resource.getId());
+	removeResource(amount: number, type: ResourceType): void {
+		for (const resource of this.inventoryProperty.getAll()) {
+			if (resource.type !== type) {
+				continue;
+			}
+
+			if (resource.getAmount() < amount) {
+				throw new Error(`Party does not have ${amount} ${type}.`);
+			}
+
+			resource.removeAmount(amount);
+			break;
+		}
 	}
 }

@@ -27,8 +27,25 @@ export type SettlementStateData = {
 	storage?: ResourceId[];
 	survivors?: SurvivorId[];
 	destroyed?: boolean;
+	settlementUpgrade?: SettlementUpgrade | null;
+	buildings?: { [key in SettlementBuilding]: number };
 } & Combatant &
 	EntityStateData<SettlementId>;
+
+export enum SettlementBuilding {
+	Wall = 'wall',
+	Tower = 'tower',
+}
+
+export const BuildingCost: { [key in SettlementBuilding]: ResourceType } = {
+	[SettlementBuilding.Wall]: ResourceType.stone,
+	[SettlementBuilding.Tower]: ResourceType.iron,
+};
+
+export type SettlementUpgrade = {
+	type: SettlementBuilding;
+	remainingWork: number;
+};
 
 export type SettlementClientData = SettlementStateData &
 	EntityClientData<SettlementId>;
@@ -48,6 +65,8 @@ export class Settlement
 	damageTaken: number;
 	raid: Enemy | null;
 	destroyed: boolean;
+	settlementUpgrade: SettlementUpgrade | null;
+	buildings: { [key in SettlementBuilding]: number };
 
 	constructor(data: SettlementStateData) {
 		super(data);
@@ -58,6 +77,11 @@ export class Settlement
 		this.damageTaken = data.damageTaken ?? 0;
 		this.raid = data.raid ?? null;
 		this.destroyed = data.destroyed ?? false;
+		this.settlementUpgrade = data.settlementUpgrade ?? null;
+		this.buildings = data.buildings ?? {
+			[SettlementBuilding.Tower]: 0,
+			[SettlementBuilding.Wall]: 0,
+		};
 		this.regionProperty = new RegionProperty(data.region);
 		this.partiesProperty = new PartiesProperty(data.parties ?? []);
 		this.storage = new ResourcesProperty(data.storage ?? [], this);
@@ -87,6 +111,8 @@ export class Settlement
 			damageTaken: this.damageTaken,
 			destroyed: this.destroyed,
 			raid: this.raid,
+			settlementUpgrade: this.settlementUpgrade,
+			buildings: this.buildings,
 		};
 	}
 
@@ -170,8 +196,31 @@ export class Settlement
 		return this.survivorsProperty.getAll();
 	}
 
-	removeResource(resource: Resource): void {
-		this.storage.remove(resource.getId());
+	removeResource(amount: number, type: ResourceType): void {
+		for (const resource of this.storage.getAll()) {
+			if (resource.type !== type) {
+				continue;
+			}
+
+			if (resource.getAmount() < amount) {
+				throw new Error(`Settlement does not have ${amount} ${type}.`);
+			}
+
+			resource.removeAmount(amount);
+			break;
+		}
+	}
+
+	getResource(type: ResourceType): number {
+		for (const resource of this.storage.getAll()) {
+			if (resource.type !== type) {
+				continue;
+			}
+
+			return resource.getAmount();
+		}
+
+		return 0;
 	}
 
 	destroy(): void {
@@ -192,6 +241,19 @@ export class Settlement
 				`Party "${party.name}" has died during the raid on settlement "${this.name}"`,
 				party.getUpdateRoomName()
 			);
+		}
+	}
+
+	upgradeBuilding(type: SettlementBuilding): void {
+		this.buildings[type]++;
+		switch (type) {
+			case SettlementBuilding.Tower:
+				this.damage += 100;
+				break;
+			case SettlementBuilding.Wall:
+				this.hp += 1000;
+				this.damageTaken = Math.max(0, this.damageTaken - 1000);
+				break;
 		}
 	}
 }

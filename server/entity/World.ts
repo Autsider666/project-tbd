@@ -20,7 +20,6 @@ export class World extends Entity<WorldId, WorldStateData, WorldClientData> {
 	public name: string;
 	public readonly createdAt: Date;
 	private readonly regions: RegionsProperty;
-	// private readonly travelTimeCalculator: TravelTimeCalculator = container.resolve(TravelTimeCalculator);
 
 	constructor(data: WorldStateData) {
 		super(data);
@@ -42,16 +41,6 @@ export class World extends Entity<WorldId, WorldStateData, WorldClientData> {
 	getUpdateRoomName(): string {
 		return this.getEntityRoomName();
 	}
-
-	// onCreate(proxy: this) {
-	// 	this.travelTimeCalculator.cacheWorld(this);
-	// 	super.onCreate(proxy);
-	// }
-	//
-	// onUpdate(proxy: this) {
-	// 	this.travelTimeCalculator.cacheWorld(this);
-	// 	super.onUpdate(proxy);
-	// }
 
 	public override normalize(forClient?: Client): WorldClientData {
 		return {

@@ -1,9 +1,9 @@
-import { Resource, ResourceType } from '../Resource.js';
+import { ResourceType } from '../Resource.js';
 
 export interface ResourceContainer {
 	addResource(amount: number, type: ResourceType): void;
 
-	removeResource(resource: Resource): void;
+	removeResource(amount: number, type: ResourceType): void;
 
 	// transferResourceTo(
 	// 	resource: Resource,
