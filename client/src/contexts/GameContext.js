@@ -119,9 +119,10 @@ const GameProvider = ({ children }) => {
         // if (isLoaded()) setLoaded(true)
     }
 
-    const notificationUpdater = ({ message, severity, categories }) => {
+    const notificationUpdater = ({ message, severity, categories, timestamp }) => {
         setNotificationLog(prev => {
-            prev.unshift({ message, severity, categories, localTimeStamp: (new Date()).getTime() })
+            prev.unshift({ message, severity, categories, timestamp: DateTime.fromISO(timestamp)
+                , localTimeStamp: (new Date()).getTime() })
             return prev
         })
         // console.log({ message, severity })

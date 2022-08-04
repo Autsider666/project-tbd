@@ -17,7 +17,7 @@ const ChatComponent = room => {
     const saveMessage = () => {
 
         setRandomMessages(prev => {
-            return [inputField, ...prev ]
+            return [inputField, ...prev]
         })
     }
 
@@ -76,10 +76,12 @@ const Log = () => {
     return (
         <Box sx={{ height: '100%', overflow: 'auto', display: 'flex', flexDirection: 'column' }} >
             {notificationLog.map((notification, index) => {
+                {/* console.log(notification) */}
                 const backgroundColor = getColorFromSeverity(notification.severity)
-
                 return <Box sx={{ backgroundColor, margin: '1px', padding: '4px', borderRadius: '4px' }} key={index}>
-                    {notification.message}
+                    <Typography variant="body2" >
+                        {`${notification.timestamp.toFormat("yyyy-MM-dd hh:mm:ss")} - ${notification.message}`}
+                    </Typography>
                 </Box>
             }
             )}

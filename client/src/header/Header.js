@@ -39,17 +39,21 @@ const ResponsiveAppBar = () => {
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
-
+  console.log(controlledParty)
   return (
     <AppBar position="static">
       <Container sx={{ marginLeft: 0 }} maxWidth="xl">
         <Toolbar disableGutters sx={{ position: 'relative' }} >
           {
             controlledParty && <Box sx={{ mx: 1, display: 'flex' }}>
-              <Typography>
-                {`Party: ${controlledParty.name} `}
+
+              <Typography sx={{mr: 1}} >
+                {'Party: '}
               </Typography>
-              <Typography sx={{mx: 1, color: controlledParty.survivors.length > 10 ? 'red' : 'white' }}>
+              <Typography sx={{ color: controlledParty.dead ? 'red' : 'white' }}>
+                {`  ${controlledParty.name} ${controlledParty.dead ? '(DEAD)' : ''}`}
+              </Typography>
+              <Typography sx={{ mx: 1, color: controlledParty.survivors.length > 10 ? 'red' : 'white' }}>
                 {`(${controlledParty.survivors.length} / 10)`}
               </Typography>
             </Box>
