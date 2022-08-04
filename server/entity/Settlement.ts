@@ -86,6 +86,7 @@ export class Settlement
 			damage: this.damage,
 			damageTaken: this.damageTaken,
 			destroyed: this.destroyed,
+			raid: this.raid,
 		};
 	}
 

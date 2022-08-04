@@ -110,7 +110,7 @@ export class StateSyncController {
 				return;
 			}
 
-			// console.log({ room, update });
+			// console.log({ room, update: JSON.stringify(update) });
 
 			console.log(
 				'emitting',
