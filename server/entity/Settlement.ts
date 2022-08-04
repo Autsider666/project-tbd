@@ -13,7 +13,7 @@ import { SurvivorContainer } from './CommonTypes/SurvivorContainer.js';
 import { Entity, EntityClientData, EntityStateData } from './Entity.js';
 import { Party, PartyId } from './Party.js';
 import { Region, RegionId } from './Region.js';
-import { Resource, ResourceId, ResourceType } from './Resource.js';
+import { ResourceId, ResourceType } from './Resource.js';
 import { Survivor, SurvivorId } from './Survivor.js';
 
 export type SettlementId = Opaque<Uuid, 'SettlementId'>;
