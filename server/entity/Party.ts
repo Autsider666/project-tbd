@@ -1,6 +1,6 @@
-import { Socket } from 'socket.io';
 import { ResourceType } from '../config/ResourceData.js';
 import {
+	StatsBlock,
 	Survivor,
 	SurvivorData,
 	SurvivorDataMap,
@@ -37,10 +37,7 @@ export type PartyStateData = {
 
 export type PartyClientData = Omit<PartyStateData, 'survivors'> & {
 	controllable: boolean;
-	hp: number;
-	damage: number;
-	carryCapacity: number;
-	gatheringSpeed: number;
+	stats: StatsBlock;
 	survivors: SurvivorData[];
 } & EntityClientData<PartyId>;
 
@@ -96,10 +93,14 @@ export class Party
 		return {
 			entityType: this.constructor.name.toLowerCase(),
 			controllable: forClient?.parties.has(this.id) ?? false,
-			hp: this.getHp(),
-			damage: this.getDamage(),
-			gatheringSpeed: this.getGatheringSpeed(),
-			carryCapacity: this.getCarryCapacity(),
+			stats: {
+				hp: this.getHp(),
+				damage: this.getDamage(),
+				gatheringSpeed: this.getGatheringSpeed(),
+				carryCapacity: this.getCarryCapacity(),
+				defense: this.getDefense(),
+				travelSpeed: this.getTravelSpeed(),
+			},
 			...this.toJSON(),
 			survivors: this.survivors.map(
 				(survivor) => SurvivorDataMap[survivor]
@@ -229,6 +230,26 @@ export class Party
 		);
 
 		return carryCapacity;
+	}
+
+	public getDefense(): number {
+		let defense = 0;
+		this.getSurvivors().forEach(
+			(survivor) => (defense += SurvivorDataMap[survivor].stats.defense)
+		);
+
+		return defense;
+	}
+
+	public getTravelSpeed(): number {
+		let travelSpeed = 0;
+		const survivors = this.getSurvivors();
+		survivors.forEach(
+			(survivor) =>
+				(travelSpeed += SurvivorDataMap[survivor].stats.defense)
+		);
+
+		return Math.round(travelSpeed / survivors.length);
 	}
 
 	public getResources(): Resources {

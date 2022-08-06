@@ -29,11 +29,13 @@ type PartyBoost = {
 	type: ResourceNodeType | null;
 };
 
+export type StatsBlock = { [key in SurvivorStat]: number };
+
 export type SurvivorData = {
 	name: Survivor;
 	tree: SurvivorTree;
 	tier: number;
-	stats: { [key in SurvivorStat]: number };
+	stats: StatsBlock;
 	upgrades: Survivor[];
 	boost: PartyBoost | null;
 };
