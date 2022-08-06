@@ -13,6 +13,7 @@ import { ExpeditionCombatTurnSystem } from '../system/Expedition/ExpeditionComba
 import { ExpeditionGatheringSystem } from '../system/Expedition/ExpeditionGatheringSystem.js';
 import { ExpeditionPhaseChangeSystem } from '../system/Expedition/ExpeditionPhaseChangeSystem.js';
 import { ExpeditionRecruitmentSystem } from '../system/Expedition/ExpeditionRecruitmentSystem.js';
+import { IncrementalEnergySystem } from '../system/IncrementalEnergySystem.js';
 import { SettlementCombatSystem } from '../system/Settlement/SettlementCombatSystem.js';
 import { StatusLoggerSystem } from '../system/StatusLoggerSystem.js';
 import { System } from '../system/System.js';
@@ -29,6 +30,7 @@ import { Server, Socket } from 'socket.io';
 	{ token: 'System', useClass: ExpeditionPhaseChangeSystem },
 	{ token: 'System', useClass: ExpeditionRecruitmentSystem },
 	{ token: 'System', useClass: SettlementCombatSystem },
+	{ token: 'System', useClass: IncrementalEnergySystem },
 	{ token: 'System', useClass: StatusLoggerSystem },
 	{ token: 'System', useClass: WorldTimestampSystem },
 ])

@@ -384,6 +384,15 @@ export class ClientController {
 				return;
 			}
 
+			if (party.getSurvivors().length >= this.maxPartySize) {
+				ClientNotifier.error(
+					`Party "${party.name}" can't do this because it is already at the limit of ${this.maxPartySize} survivors.`,
+					party.getUpdateRoomName()
+				);
+
+				return null;
+			}
+
 			const settlement = party.getSettlement();
 			for (const survivor of settlement.getSurvivors()) {
 				if (survivor !== type) {
@@ -428,7 +437,7 @@ export class ClientController {
 				);
 				return;
 			}
-			console.log(survivors, type)
+			console.log(survivors, type);
 
 			for (const survivor of survivors) {
 				if (survivor !== type) {
