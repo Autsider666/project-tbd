@@ -15,7 +15,7 @@ const content = [
 ]
 
 const Profile = () => {
-    const {tabSelected, setTabSelected} = useGame()
+    const {tabSelected = 0, setTabSelected} = useGame()
 
     const handleIndexChange = (event, newValue) => setTabSelected(newValue);
 

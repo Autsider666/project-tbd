@@ -26,7 +26,7 @@ const a11yProps = index => ({
   'aria-controls': `simple-tabpanel-${index}`,
 })
 
-const TabsWrapper = ({ content = [], tabIndexValue, handleIndexChange }) => {
+const TabsWrapper = ({ content = [], tabIndexValue = 0, handleIndexChange }) => {
 
   const disableFilter = row => row.disable !== undefined && row.disable ? false : true
 
