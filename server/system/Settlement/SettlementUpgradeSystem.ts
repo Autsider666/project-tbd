@@ -34,7 +34,7 @@ export class SettlementUpgradeSystem implements System {
 			const project = settlement.upgrade as SettlementUpgrade;
 
 			const workDone = Math.min(availableWork, project.remainingWork);
-			if (workDone < project.remainingWork) {
+			if (workDone > project.remainingWork) {
 				settlement.upgradeBuilding(project.type);
 				settlement.upgrade = null;
 				return;
