@@ -5,7 +5,7 @@ import MuiAccordion from '@mui/material/Accordion';
 import MuiAccordionSummary from '@mui/material/AccordionSummary';
 import MuiAccordionDetails from '@mui/material/AccordionDetails';
 import Typography from '@mui/material/Typography';
-import { Box, Button, ButtonGroup, List, ListItem, ListItemButton, ListItemText, Switch } from '@mui/material';
+import { Box, Button, ButtonGroup, FormControlLabel, FormGroup, List, ListItem, ListItemButton, ListItemText, Switch } from '@mui/material';
 import { useGame } from '../contexts/GameContext';
 
 const Accordion = styled((props) => (
@@ -45,14 +45,14 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
 }));
 
 const SurvivorList = () => {
-    const { currentSettlement, partySurvivors: survivors, dismissSurvivor, recruitSurvivor, controlledParty, partySurvivorsGrouped } = useGame()
+    const { currentSettlement, partySurvivors: survivors, dismissSurvivor, recruitSurvivor, controlledParty, partySurvivorsGrouped, surivorTypes } = useGame()
     const [expanded, setExpanded] = useState('panel1');
 
     const handleChange = (panel) => (event, newExpanded) => {
         setExpanded(newExpanded ? panel : false);
     };
 
-    
+    console.log(surivorTypes)
 
     console.log(currentSettlement)
     console.log(survivors)
@@ -60,29 +60,18 @@ const SurvivorList = () => {
     return (
         <Box sx={{ overflow: 'auto', height: '100%' }}>
 
-            Party
-            <Switch>
-
-            </Switch>
-
-            Settlement
-            <Switch>
-
-            </Switch>
-
-
-            All
-            <Switch>
-
-            </Switch>
-
+            <FormGroup sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }} >
+                <FormControlLabel control={<Switch defaultChecked />} label="Party" />
+                <FormControlLabel control={<Switch />} label="Settlement" />
+                <FormControlLabel control={<Switch />} label="All" />
+            </FormGroup>
             {
                 partySurvivorsGrouped && partySurvivorsGrouped.map(survivorGroup => {
                     const { name, content, count } = survivorGroup
                     const { stats, upgrades } = content
                     const { damage, hp, gatheringSpeed, travelSpeed, defense } = stats
-                    const settlementSurvivorsCount = currentSettlement.survivors.filter(survivor=>survivor.name === name).length
-                    
+                    const settlementSurvivorsCount = currentSettlement.survivors.filter(survivor => survivor.name === name).length
+
 
 
                     return (
@@ -112,10 +101,10 @@ const SurvivorList = () => {
                                         </ListItemButton>
                                         <ListItemButton disableGutters>
                                             <ButtonGroup disableRipple >
-                                                <Button onClick={()=>recruitSurvivor(name,controlledParty.id)} sx={{ mx: 0.5}} variant="contained">
+                                                <Button onClick={() => recruitSurvivor(name, controlledParty.id)} sx={{ mx: 0.5 }} variant="contained">
                                                     {`Recruit one ${name}`}
                                                 </Button>
-                                                <Button onClick={()=>dismissSurvivor(name,controlledParty.id)}sx={{ mx: 0.5}} variant="contained">
+                                                <Button onClick={() => dismissSurvivor(name, controlledParty.id)} sx={{ mx: 0.5 }} variant="contained">
                                                     {`Dismiss one ${name}`}
                                                 </Button>
                                             </ButtonGroup>

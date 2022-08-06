@@ -37,6 +37,7 @@ const GameProvider = ({ children }) => {
     const lEndsAt = (startedAt && endsAt) && DateTime.fromISO(endsAt)
     const tickLength = (startedAt && endsAt) && lStartedAt.diff(lEndsAt, 'seconds').toObject()
 
+    const [surivorTypes, setSurvivorTypes] = useState({})
 
     const [worldRepository, setWorldRepository] = useState({})
     const [regionRepository, setRegionRepository] = useState({})
@@ -168,6 +169,9 @@ const GameProvider = ({ children }) => {
 
     useEffect(() => {
         if (!socket.hasListeners('entity:update')) {
+            socket.emit('survivor:list',data => {
+                setSurvivorTypes(data)
+            })
             socket.on('entity:update', entityUpdater)
             socket.on('notification', notificationUpdater)
             socket.on('server:turn', setCurrentTick)
@@ -291,6 +295,7 @@ const GameProvider = ({ children }) => {
         recruitSurvivor, dismissSurvivor,
         notificationLog,
         resetRepositories,
+        surivorTypes, 
 
     };
 

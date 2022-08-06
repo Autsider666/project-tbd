@@ -7,3 +7,4 @@ export const voyageStart = (partyId, targetId) => {
 export const expeditionStart = (partyId, targetId) => {
     socket.emit("expedition:start",{partyId, targetId})
 }
+

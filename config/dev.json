@@ -3,9 +3,10 @@
 	"corsOrigin": ["http://localhost:3000", "https://admin.socket.io"],
 	"gatherSpeedMultiplier": 10,
 	"maxPartySize": 10,
-	"expeditionRecruitmentChance": 50,
-	"expeditionCombatChance": 10,
+	"expeditionRecruitmentChance": 75,
+	"expeditionCombatChance": 5,
 	"settlementStartingHp": 10000,
 	"settlementStartingDamage": 100,
-	"settlementRaidChance": 1
+	"settlementRaidChance": 1,
+	"serverTickTime": 6000
 }
