@@ -39,8 +39,8 @@ export type SettlementStateData = {
 	EntityStateData<SettlementId>;
 
 export enum SettlementBuilding {
-	Wall = 'wall',
-	Tower = 'tower',
+	Wall = 'Wall',
+	Tower = 'Tower',
 }
 
 export const BuildingCost: { [key in SettlementBuilding]: ResourceType } = {
