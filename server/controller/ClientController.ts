@@ -541,6 +541,24 @@ export class ClientController {
 					return;
 				}
 
+				let inSettlement = false;
+				for (const party of this.client.parties.values()) {
+					if (party.getSettlement().getId() !== settlementId) {
+						continue;
+					}
+
+					inSettlement = true;
+					break;
+				}
+
+				if (!inSettlement) {
+					ClientNotifier.error(
+						`You don't have a party in settlement "${settlement.name}".`,
+						this.socket.id
+					);
+					return;
+				}
+
 				if (settlement.upgrade !== null) {
 					ClientNotifier.error(
 						'This settlement is already upgrading something.',
@@ -568,11 +586,6 @@ export class ClientController {
 				ClientNotifier.success(
 					`Settlement "${settlement.name}" has started a project to upgrade its ${building}.`,
 					settlement.getUpdateRoomName()
-				);
-
-				ClientNotifier.error(
-					`You don't have a party in settlement "${settlement.name}".`,
-					this.socket.id
 				);
 			}
 		);
