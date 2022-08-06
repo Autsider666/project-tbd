@@ -3,13 +3,13 @@ import React from 'react';
 
 import Profile from './Profile'
 import Map from './Map'
-import Region from './Region'
+// import Region from './Region'
 import Chat from './Chat'
 
 const sections = [
     { name: 'Map', Component: Map, sx: { gridArea: 'Map', overflow: 'hidden', margin: 'auto', maxWidth: { xs: '500px', sm: '750px', md: "855px", lg: 'none' } } },
 
-    { name: 'Profile', Component: Profile, sx: { gridArea: 'Profile', display: { xs: 'block' } } },
+    { name: 'Profile', Component: Profile, sx: { gridArea: 'Profile', display: { xs: 'block' }, overflow: 'hidden' } },
     // { name: 'Region', Component: Region, sx: { gridArea: 'Region', minHeight: {md: "400px", xs: 'none'}, display: {xs: 'none'} } },
 
     { name: 'Chat', Component: Chat, sx: { gridArea: 'Chat', display: { xs: 'none', sm: 'none', lg: 'block' }, overflow: 'hidden' } },

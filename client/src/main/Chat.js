@@ -1,8 +1,8 @@
-import { Box, Button, Grid, List, ListItem, ListItemText, Stack, TextField, Typography } from '@mui/material'
+import { Box, Button, Grid, List, ListItem, ListItemText, Stack, TextField } from '@mui/material'
 import React, { useState } from 'react'
 import TabsWrapper from '../components/TabsWrapper'
 import { useChat } from '../contexts/ChatContext'
-import { useGame } from '../contexts/GameContext'
+import { Log } from '../tabs/Log'
 
 
 
@@ -52,7 +52,7 @@ const ChatComponent = room => {
     )
 }
 
-const getColorFromSeverity = severity => {
+export const getColorFromSeverity = severity => {
     switch (severity) {
         case 'info': return '#5789c8'
         case 'success': return '#77ca77'
@@ -65,30 +65,6 @@ const getColorFromSeverity = severity => {
 
 const World = () => <div>World</div>
 const Global = () => <div>Global</div>
-const Log = () => {
-
-    const { notificationLog } = useGame()
-    // console.log(notificationLog)
-
-    // const sortedNotifications = notificationLog.sort((a, b) => a.localTimeStamp > b.localTimeStamp)
-    // console.log(sortedNotifications)
-
-    return (
-        <Box sx={{ height: '100%', overflow: 'auto', display: 'flex', flexDirection: 'column' }} >
-            {notificationLog.map((notification, index) => {
-                {/* console.log(notification) */ }
-                const backgroundColor = getColorFromSeverity(notification.severity)
-                return <Box sx={{ backgroundColor, margin: '1px', padding: '4px', borderRadius: '4px' }} key={index}>
-                    <Typography variant="body2" >
-                        {`${notification.timestamp.toFormat("yyyy-MM-dd hh:mm:ss")} - ${notification.message}`}
-                    </Typography>
-                </Box>
-            }
-            )}
-        </Box>
-    )
-}
-
 const content = [
     { label: 'World', Component: ChatComponent, props: { room: 'world' } },
     { label: 'Global', Component: ChatComponent, props: { room: 'global' } },

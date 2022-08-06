@@ -10,11 +10,7 @@ import { useGame } from './contexts/GameContext';
 import { Box } from "@mui/system";
 import { useApp } from "./contexts/AppContext";
 
-const StyledApp = styled("div")(({ theme }) => ({
-	height: {xs: "200%", lg: "100%"},
-	width: "100%",
-	backgroundColor: "#b0620d",
-}));
+
 
 const marginAmount = 24
 
@@ -26,10 +22,14 @@ function App() {
 	const { snackbar, hideSnackbar } = useApp()
 
 	return (
-		<StyledApp>
+		<Box sx={{
+			height: { xs: 'auto', lg: "100%" },
+			width: "100%",
+			backgroundColor: "#b0620d",
+		}}>
 			<Header />
 			<Box sx={{
-				height: {xs: "850px", sm:"1070px" , md:"1200px", lg: `calc(100% - 24px - ${marginAmount * 2}px)`},
+				height: { xs: "850px", sm: "1070px", md: "1200px", lg: `calc(100% - 24px - ${marginAmount * 2}px)` },
 				// width: `calc(100% - ${marginAmount * 2}px)`,
 				padding: 3,
 			}} >
@@ -49,7 +49,7 @@ function App() {
 					{snackbar.message}
 				</Alert>
 			</Snackbar>
-		</StyledApp>
+		</Box>
 	);
 }
 
