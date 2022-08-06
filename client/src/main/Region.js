@@ -1,9 +1,9 @@
 import React from 'react'
-import TabsWrapper from '../../components/TabsWrapper'
-import { useGame } from '../../contexts/GameContext'
+import TabsWrapper from '../components/TabsWrapper'
+import { useGame } from '../contexts/GameContext'
 
-import { Settlement } from './Settlement';
-import { ExpeditionSites } from './ExpeditionSites';
+import Settlement from '../tabs/Settlement';
+import ExpeditionSites from '../tabs/ExpeditionSites';
 
 // const Party = () => <div>Party</div>
 

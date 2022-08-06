@@ -1,10 +1,10 @@
 import { Divider, Typography } from '@mui/material'
 import { Box } from '@mui/system'
 import React from 'react'
-import Water from '../../components/worldMap/Map1/water.png'
-import WorldMap from '../../components/worldMap/worldMap.js'
-import { useGame } from '../../contexts/GameContext.js'
-import { capitalizeFirstLetter } from '../../functions/utils'
+import Water from '../components/worldMap/Map1/water.png'
+import WorldMap from '../components/worldMap/worldMap.js'
+import { useGame } from '../contexts/GameContext.js'
+import { capitalizeFirstLetter } from '../functions/utils'
 
 const Map = () => {
     const { currentRegionId, settlementRepository, regionRepository, worldRepository, selectedRegionId, setSelectedRegionId, currentExpedition, currentExpeditionTravelPath = {}, selectedSettlement = {}, selectedRegion = {}, travelPaths = {} } = useGame()

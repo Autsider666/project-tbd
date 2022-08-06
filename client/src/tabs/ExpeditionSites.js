@@ -1,25 +1,30 @@
 import React from 'react';
 import { Box, Button, Grid, Typography } from '@mui/material';
-import { expeditionStart } from '../../functions/socketCalls';
-import { useGame } from '../../contexts/GameContext';
+import { expeditionStart } from '../functions/socketCalls';
+import { useGame } from '../contexts/GameContext';
+import { voyageStart } from '../functions/socketCalls';
 
-export const ExpeditionSites = () => {
+const ExpeditionSites = () => {
     const [resourceNodeButton, resourceNodeButtonSelected] = React.useState(null);
 
     const {
-        selectedRegion: region = {}, controlledParty: party, currentExpedition: expedition, selectedResourceNodes : resourceNodes = [],
-         selectedRegionId, resourceNodeRepository,
-        selectedRegionTravelPath = {}
+        selectedRegion = {}, controlledParty: party, currentExpedition: expedition, selectedResourceNodes: resourceNodes = [],
+        selectedRegionId, resourceNodeRepository, settlementRepository,
+        selectedRegionTravelPath = {}, currentVoyage, selectedSettlement = {},
     } = useGame()
-    
+
     if (selectedRegionId === null || resourceNodes.length === 0 || Object.values(resourceNodeRepository).length === 0) return <div />
 
-    const { name } = region;
+    const { name : regionName } = selectedRegion;
     const { cost = 0 } = selectedRegionTravelPath
 
     const travelling = expedition && expedition.currentPhase !== 'finished';
     const handleClick = node => () => resourceNodeButtonSelected(prev => prev == node ? null : node)
 
+    const { name : settlementName } = selectedSettlement;
+
+    const traveling = currentVoyage && currentVoyage.finished === false;
+    const isInSettlement = selectedSettlement.id === party.settlement
 
     return (
         <Box sx={{ flexGrow: 1 }}>
@@ -29,7 +34,7 @@ export const ExpeditionSites = () => {
 
                 </Grid> */}
                 <Grid sx={{ margin: 1, justifyContent: 'center' }} item xs={12}>
-                    <Typography textAlign={"center"} variant="h5">Resource Sites:</Typography>
+                    <Typography textAlign={"center"} variant="h5">Resource Expeditions:</Typography>
                 </Grid>
 
                 {resourceNodes.map(resourceNode => {
@@ -47,7 +52,24 @@ export const ExpeditionSites = () => {
                             : `Go on Expedition, it takes ${cost} seconds`}
                     </Button>
                 </Grid>
+
+                <Grid sx={{ margin: 1, justifyContent: 'center' }} item xs={12}>
+                    <Typography textAlign={"center"} variant="h5">Settlement Voyage:</Typography>
+                </Grid>
+
+                <Grid sx={{ margin: 1 }} item xs={12}>
+                    <Button disabled={traveling || isInSettlement} onClick={() => voyageStart(party.id, selectedSettlement.id)} variant="contained">
+                        {isInSettlement
+                            ? `You're already in ${settlementName}!`
+                            : traveling
+                                ? `Travelling to ${settlementRepository[currentVoyage.target].name}`
+                                : `Travel to ${settlementName}. It takes ${cost} seconds.`}
+                    </Button>
+                </Grid>
+
             </Grid>
         </Box>
     );
 };
+
+export default ExpeditionSites

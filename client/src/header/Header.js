@@ -41,6 +41,9 @@ const ResponsiveAppBar = () => {
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
+
+  const maxEnergy = 2000
+  
   return (
     <AppBar position="static">
       <Container sx={{ marginLeft: 0 }} maxWidth="xl">
@@ -54,15 +57,26 @@ const ResponsiveAppBar = () => {
               <Typography sx={{ color: controlledParty.dead ? 'red' : 'white' }}>
                 {`  ${controlledParty.name} ${controlledParty.dead ? '(DEAD)' : ''}`}
               </Typography>
-              <Typography sx={{ mx: 1, color: controlledParty.survivors.length > 10 ? 'red' : 'white' }}>
+              <Typography sx={{ ml: 1, color: controlledParty.survivors.length > 10 ? 'red' : 'white' }}>
                 {`(${controlledParty.survivors.length} / 10)`}
               </Typography>
             </Box>
           }
           {
+            controlledParty
+            && <>
+              <Divider sx={{ backgroundColor: 'white', my: 2, mr: 1, width: 2 }} orientation="vertical" flexItem />
+              <Box>
+                <Typography sx={{ color: controlledParty.energy >= maxEnergy ? 'red' : 'white' }}>
+                  {`Energy: ${controlledParty.energy} / ${maxEnergy}`}
+                </Typography>
+              </Box>
+            </>
+          }
+          {
             currentSettlement
             && <>
-              <Divider sx={{ backgroundColor: 'white', my: 2, width: 2 }} orientation="vertical" flexItem />
+              <Divider sx={{ backgroundColor: 'white', my: 2, ml: 1, width: 2 }} orientation="vertical" flexItem />
               <Box onClick={() => setSelectedRegionId(currentSettlement.region)} sx={{ mx: 1, cursor: 'pointer' }}>
                 <Typography>
                   {`Settlement: ${currentSettlement.name}`}

@@ -7,6 +7,7 @@ import MuiAccordionDetails from '@mui/material/AccordionDetails';
 import Typography from '@mui/material/Typography';
 import { Box, Button, ButtonGroup, FormControlLabel, FormGroup, List, ListItem, ListItemButton, ListItemText, Switch } from '@mui/material';
 import { useGame } from '../contexts/GameContext';
+import StatListItem from './StatListItem'
 
 const Accordion = styled((props) => (
     <MuiAccordion disableGutters elevation={0} square {...props} />
@@ -56,31 +57,31 @@ const SurvivorList = () => {
         setExpanded(newExpanded ? panel : false);
     };
 
-    const switchFilter = (survivorTypes=>{
-        if(allSwitch) return true
-        if(settlementSwitch && currentSettlement.survivors.some(survivor=>survivor.name === survivorTypes.name)) return true
-        if(partySwitch && controlledParty.survivors.some(survivor=>survivor.name === survivorTypes.name)) return true
+    const switchFilter = (survivorTypes => {
+        if (allSwitch) return true
+        if (settlementSwitch && currentSettlement.survivors.some(survivor => survivor.name === survivorTypes.name)) return true
+        if (partySwitch && controlledParty.survivors.some(survivor => survivor.name === survivorTypes.name)) return true
         return false
     })
 
     console.log(survivorTypes)
 
     console.log(currentSettlement)
-    console.log(survivors)
+    console.log(controlledParty)
 
     return (
         <Box sx={{ overflow: 'auto', height: '100%' }}>
 
             <FormGroup sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }} >
-                <FormControlLabel checked={partySwitch} onChange={event=>setPartySwitch(event.target.checked)} control={<Switch />} label="Party" />
-                <FormControlLabel checked={settlementSwitch} onChange={event=>setSettlementSwitch(event.target.checked)} control={<Switch />} label="Settlement" />
-                <FormControlLabel checked={allSwitch} onChange={event=>setAllSwitch(event.target.checked)} control={<Switch />} label="All" />
+                <FormControlLabel checked={partySwitch} onChange={event => setPartySwitch(event.target.checked)} control={<Switch />} label="Party" />
+                <FormControlLabel checked={settlementSwitch} onChange={event => setSettlementSwitch(event.target.checked)} control={<Switch />} label="Settlement" />
+                <FormControlLabel checked={allSwitch} onChange={event => setAllSwitch(event.target.checked)} control={<Switch />} label="All" />
             </FormGroup>
             {
                 survivorTypes && Object.values(survivorTypes).filter(switchFilter).map(survivorType => {
 
 
-                    const { name, stats, upgrades = [],tier } = survivorType
+                    const { name, stats, upgrades = [], tier } = survivorType
                     const { damage, hp, gatheringSpeed, travelSpeed, defense } = stats
 
                     const partySurvivorCount = controlledParty.survivors.filter(survivor => survivor.name === name).length
@@ -91,21 +92,15 @@ const SurvivorList = () => {
                         <Accordion key={name} expanded={expanded === name} onChange={handleChange(name)}>
                             <AccordionSummary aria-controls="panel1d-content" id="panel1d-header">
                                 <Typography sx={{ width: '35%', flexShrink: 0 }} >{`Type: ${name}`}</Typography>
-                                
+
                                 <Typography sx={{ px: 1, color: 'text.secondary' }}>{`Tier: ${tier}`}</Typography>
                                 <Typography sx={{ px: 1, color: 'text.secondary' }}>{`Party: ${partySurvivorCount}`}</Typography>
                                 <Typography sx={{ px: 1, color: 'text.secondary' }}>{`Settlement: ${settlementSurvivorsCount}`}</Typography>
                             </AccordionSummary>
                             <AccordionDetails>
-                                <List>
-                                    <ListItem >
-                                        <ListItemText primary={damage} secondary="DMG" />
-                                        <ListItemText primary={hp} secondary="HP" />
-                                        <ListItemText primary={gatheringSpeed} secondary="Def" />
-                                        <ListItemText primary={travelSpeed} secondary="Gather" />
-                                        <ListItemText primary={defense} secondary="Travel" />
-                                    </ListItem>
-                                    <ListItem>
+                                <List >
+                                    <StatListItem stats={stats} />
+                                    <ListItem disableGutters>
                                         <ListItemButton disableGutters>
                                             <ButtonGroup disableRipple >
                                                 {upgrades.map(upgrade => (

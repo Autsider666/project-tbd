@@ -1,8 +1,8 @@
 import { Box, Button, Grid, List, ListItem, ListItemText, Stack, TextField, Typography } from '@mui/material'
 import React, { useState } from 'react'
-import TabsWrapper from '../../components/TabsWrapper'
-import { useChat } from '../../contexts/ChatContext'
-import { useGame } from '../../contexts/GameContext'
+import TabsWrapper from '../components/TabsWrapper'
+import { useChat } from '../contexts/ChatContext'
+import { useGame } from '../contexts/GameContext'
 
 
 
