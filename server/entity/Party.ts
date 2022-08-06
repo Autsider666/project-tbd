@@ -1,9 +1,12 @@
+import { Opaque } from 'type-fest';
 import { ResourceType } from '../config/ResourceData.js';
 import {
+	PartyBoost,
 	StatsBlock,
 	Survivor,
 	SurvivorData,
 	SurvivorDataMap,
+	SurvivorStat,
 } from '../config/SurvivorData.js';
 import { Client } from '../controller/ClientController.js';
 import { Uuid } from '../helper/UuidHelper.js';
@@ -16,10 +19,9 @@ import {
 	Resources,
 } from './CommonTypes/ResourceContainer.js';
 import { SurvivorContainer } from './CommonTypes/SurvivorContainer.js';
-import { Expedition, ExpeditionId } from './Expedition.js';
-import { Settlement, SettlementId } from './Settlement.js';
-import { Opaque } from 'type-fest';
 import { Entity, EntityClientData, EntityStateData } from './Entity.js';
+import { Expedition, ExpeditionId, ExpeditionPhase } from './Expedition.js';
+import { Settlement, SettlementId } from './Settlement.js';
 import { Voyage, VoyageId } from './Voyage.js';
 
 export type PartyId = Opaque<Uuid, 'PartyId'>;
@@ -38,6 +40,7 @@ export type PartyStateData = {
 export type PartyClientData = Omit<PartyStateData, 'survivors'> & {
 	controllable: boolean;
 	stats: StatsBlock;
+	boosts: PartyBoost[];
 	survivors: SurvivorData[];
 } & EntityClientData<PartyId>;
 
@@ -53,6 +56,8 @@ export class Party
 	private voyageProperty: VoyageProperty | null;
 	private expeditionProperty: ExpeditionProperty | null;
 	public energy: number;
+
+	private cachedBoosts: PartyBoost[] | null = null;
 
 	constructor(data: PartyStateData) {
 		super(data);
@@ -101,6 +106,7 @@ export class Party
 				defense: this.getDefense(),
 				travelSpeed: this.getTravelSpeed(),
 			},
+			boosts: this.getBoosts(),
 			...this.toJSON(),
 			survivors: this.survivors.map(
 				(survivor) => SurvivorDataMap[survivor]
@@ -193,13 +199,80 @@ export class Party
 		return true;
 	}
 
+	public getBoosts(): PartyBoost[] {
+		if (this.cachedBoosts === null) {
+			return this.calculateBoosts();
+		}
+
+		return this.cachedBoosts;
+	}
+
+	private calculateBoosts(): PartyBoost[] {
+		const boosts: PartyBoost[] = [];
+		for (const survivorType of this.getSurvivors()) {
+			const survivor = SurvivorDataMap[survivorType];
+			const survivorBoost = survivor.boost;
+			if (survivorBoost === null) {
+				continue;
+			}
+
+			let applicableBoost: PartyBoost | null = null;
+			for (const boost of boosts) {
+				if (
+					survivorBoost.stat !== boost.stat ||
+					survivorBoost.type !== boost.type
+				) {
+					continue;
+				}
+
+				applicableBoost = boost;
+
+				break;
+			}
+
+			if (applicableBoost === null) {
+				boosts.push({ ...survivorBoost });
+				continue;
+			}
+
+			applicableBoost.percentage += survivorBoost.percentage;
+		}
+
+		this.cachedBoosts = boosts;
+		return boosts;
+	}
+
+	public getBoost(stat: SurvivorStat): PartyBoost | null {
+		if (this.cachedBoosts === null) {
+			this.cachedBoosts = this.calculateBoosts();
+		}
+		const expedition = this.expeditionProperty?.get();
+		const currentType =
+			expedition?.getCurrentPhase() === ExpeditionPhase.gather
+				? expedition.getTarget().type
+				: null;
+		for (const boost of this.cachedBoosts) {
+			if (boost.stat !== stat || boost.type !== currentType) {
+				continue;
+			}
+
+			return boost;
+		}
+
+		return null;
+	}
+
 	public getHp(): number {
 		let hp = 0;
 		this.getSurvivors().forEach(
 			(survivor) => (hp += SurvivorDataMap[survivor].stats.hp)
 		);
 
-		return hp;
+		return Math.round(
+			hp *
+				((100 + (this.getBoost(SurvivorStat.hp)?.percentage ?? 0)) /
+					100)
+		);
 	}
 
 	public getDamage(): number {
@@ -208,7 +281,11 @@ export class Party
 			(survivor) => (damage += SurvivorDataMap[survivor].stats.damage)
 		);
 
-		return damage;
+		return Math.round(
+			damage *
+				((100 + (this.getBoost(SurvivorStat.damage)?.percentage ?? 0)) /
+					100)
+		);
 	}
 
 	public getGatheringSpeed(): number {
@@ -219,7 +296,13 @@ export class Party
 					SurvivorDataMap[survivor].stats.gatheringSpeed)
 		);
 
-		return gatheringSpeed;
+		return Math.round(
+			gatheringSpeed *
+				((100 +
+					(this.getBoost(SurvivorStat.gatheringSpeed)?.percentage ??
+						0)) /
+					100)
+		);
 	}
 
 	public getCarryCapacity(): number {
@@ -229,7 +312,13 @@ export class Party
 				(carryCapacity += SurvivorDataMap[survivor].stats.carryCapacity)
 		);
 
-		return carryCapacity;
+		return Math.round(
+			carryCapacity *
+				((100 +
+					(this.getBoost(SurvivorStat.carryCapacity)?.percentage ??
+						0)) /
+					100)
+		);
 	}
 
 	public getDefense(): number {
@@ -238,7 +327,12 @@ export class Party
 			(survivor) => (defense += SurvivorDataMap[survivor].stats.defense)
 		);
 
-		return defense;
+		return Math.round(
+			defense *
+				((100 +
+					(this.getBoost(SurvivorStat.defense)?.percentage ?? 0)) /
+					100)
+		);
 	}
 
 	public getTravelSpeed(): number {
@@ -249,7 +343,11 @@ export class Party
 				(travelSpeed += SurvivorDataMap[survivor].stats.defense)
 		);
 
-		return Math.round(travelSpeed / survivors.length);
+		return Math.round(
+			(travelSpeed / survivors.length) *
+				((100 + (this.getBoost(SurvivorStat.hp)?.percentage ?? 0)) /
+					100)
+		);
 	}
 
 	public getResources(): Resources {
