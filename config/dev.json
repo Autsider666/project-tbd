@@ -13,5 +13,5 @@
 		"1": 300,
 		"2": 500
 	},
-	"serverTickTime":6000
+	"serverTickTime": 6000
 }

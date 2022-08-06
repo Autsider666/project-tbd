@@ -410,7 +410,7 @@ export class ClientController {
 			}
 
 			ClientNotifier.error(
-				'This survivor is not accessible to this party.',
+				`There are no available ${type} in settlement "${settlement.name}".`,
 				party.getUpdateRoomName()
 			);
 		});
