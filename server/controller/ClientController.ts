@@ -541,7 +541,7 @@ export class ClientController {
 					return;
 				}
 
-				if (settlement.settlementUpgrade !== null) {
+				if (settlement.upgrade !== null) {
 					ClientNotifier.error(
 						'This settlement is already upgrading something.',
 						this.socket.id
@@ -561,7 +561,7 @@ export class ClientController {
 				}
 
 				settlement.removeResource(upgradeCost, resourceType);
-				settlement.settlementUpgrade = {
+				settlement.upgrade = {
 					type: building,
 					remainingWork: upgradeCost,
 				};

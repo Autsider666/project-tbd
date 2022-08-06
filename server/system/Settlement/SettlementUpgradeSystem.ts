@@ -14,7 +14,7 @@ export class SettlementUpgradeSystem implements System {
 			.filter(
 				(settlement) =>
 					!settlement.destroyed &&
-					settlement.settlementUpgrade !== null
+					settlement.upgrade !== null
 			)) {
 			const idleSurvivors = settlement.getSurvivors();
 			for (const party of settlement
@@ -32,12 +32,12 @@ export class SettlementUpgradeSystem implements System {
 				availableWork += SurvivorDataMap[survivor].stats.gatheringSpeed;
 			}
 
-			const project = settlement.settlementUpgrade as SettlementUpgrade;
+			const project = settlement.upgrade as SettlementUpgrade;
 
 			const workDone = Math.min(availableWork, project.remainingWork);
 			if (workDone < project.remainingWork) {
 				settlement.upgradeBuilding(project.type);
-				settlement.settlementUpgrade = null;
+				settlement.upgrade = null;
 				return;
 			}
 
