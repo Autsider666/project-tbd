@@ -26,24 +26,21 @@ const a11yProps = index => ({
   'aria-controls': `simple-tabpanel-${index}`,
 })
 
-const TabsWrapper = ({ content = [], }) => {
-  const [value, setValue] = useState(0)
-
-  const handleChange = (event, newValue) => setValue(newValue);
+const TabsWrapper = ({ content = [], tabIndexValue, handleIndexChange }) => {
 
   const disableFilter = row => row.disable !== undefined && row.disable ? false : true
 
   return (
     <Box sx={{ height: "100%", width: '100%' }}>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-        <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
+        <Tabs value={tabIndexValue} onChange={handleIndexChange} aria-label="basic tabs example">
           {content.map((row, index) => (
             <Tab sx={row.tabSx} disabled={!disableFilter(row)} key={index} label={row.label} {...a11yProps(index)} />
           ))}
         </Tabs>
       </Box>
       {content.map(({ Component, props = {} }, index) => (
-        <TabPanel sx={{ height: '100%', width: '100%', overflow: 'hidden' }} key={index} value={value} index={index}>
+        <TabPanel sx={{ height: '100%', width: '100%', overflow: 'hidden' }} key={index} value={tabIndexValue} index={index}>
           <Component {...props} />
         </TabPanel>
       ))}

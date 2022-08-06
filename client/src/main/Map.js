@@ -7,7 +7,7 @@ import { useGame } from '../contexts/GameContext.js'
 import { capitalizeFirstLetter } from '../functions/utils'
 
 const Map = () => {
-    const { currentRegionId, settlementRepository, regionRepository, worldRepository, selectedRegionId, setSelectedRegionId, currentExpedition, currentExpeditionTravelPath = {}, selectedSettlement = {}, selectedRegion = {}, travelPaths = {} } = useGame()
+    const { currentRegionId, settlementRepository, regionRepository, worldRepository, selectedRegionId, setSelectedRegionId, currentExpedition, currentExpeditionTravelPath = {}, selectedSettlement = {}, selectedRegion = {}, travelPaths = {}, setTabSelected } = useGame()
 
     const worldSelected = Object.values(worldRepository)[0] // Add future code to take more than one map.
 
@@ -56,7 +56,7 @@ const Map = () => {
                     </>
                 }
             </Box>
-            <WorldMap world={worldSelected} selectedRegionId={selectedRegionId} setSelectedRegionId={setSelectedRegionId} regions={regions} />
+            <WorldMap setTabSelected={setTabSelected} world={worldSelected} selectedRegionId={selectedRegionId} setSelectedRegionId={setSelectedRegionId} regions={regions} />
         </Box>
     )
 }

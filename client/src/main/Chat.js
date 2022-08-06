@@ -76,7 +76,7 @@ const Log = () => {
     return (
         <Box sx={{ height: '100%', overflow: 'auto', display: 'flex', flexDirection: 'column' }} >
             {notificationLog.map((notification, index) => {
-                {/* console.log(notification) */}
+                {/* console.log(notification) */ }
                 const backgroundColor = getColorFromSeverity(notification.severity)
                 return <Box sx={{ backgroundColor, margin: '1px', padding: '4px', borderRadius: '4px' }} key={index}>
                     <Typography variant="body2" >
@@ -97,12 +97,17 @@ const content = [
 ]
 
 const Chat = () => {
+    const [tabIndexValue, setTabIndexValue] = useState(0)
+
+    const handleIndexChange = (event, newValue) => setTabIndexValue(newValue);
 
     return (
         <Box sx={{ height: '100%', width: '100%' }}>
-            <TabsWrapper content={content} />
+            <TabsWrapper content={content} handleIndexChange={handleIndexChange} tabIndexValue={tabIndexValue} />
         </Box>
     )
 }
 
 export default Chat
+
+

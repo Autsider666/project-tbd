@@ -9,9 +9,14 @@ const WorldMaps = [
     }
 ]
 
-const WorldMap = ({ world, regions, selectedRegionId, setSelectedRegionId }) => {
+const WorldMap = ({ world, regions, selectedRegionId, setSelectedRegionId, setTabSelected }) => {
 
     const worldMapSelected = WorldMaps[0]
+
+    const regionClickHandler = regionId => () => {
+        setTabSelected(2)
+        setSelectedRegionId(regionId)
+    }
 
     const dev = false
 
@@ -36,7 +41,7 @@ const WorldMap = ({ world, regions, selectedRegionId, setSelectedRegionId }) => 
                                 ${region.expeditionInProgress !== '' ? `expedition ${region.expeditionInProgress}` : ''}
                                 `}
                                 d={region.dimensions}
-                                onClick={() => setSelectedRegionId(region.id)}
+                                onClick={regionClickHandler(region.id)}
                             />
                         </Tooltip>
                     ))}

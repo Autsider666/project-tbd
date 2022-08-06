@@ -51,6 +51,8 @@ const GameProvider = ({ children }) => {
 
     const [notificationLog, setNotificationLog] = useState([])
 
+    const [tabSelected, setTabSelected] = useState(0)
+
 
     const [travelPaths, setTravelPaths] = useState({})
     const [selectedRegionTravelPath, setSelectedRegionTravelPath] = useState({})
@@ -296,7 +298,7 @@ const GameProvider = ({ children }) => {
         notificationLog,
         resetRepositories,
         survivorTypes, 
-
+        tabSelected, setTabSelected,
     };
 
     return (

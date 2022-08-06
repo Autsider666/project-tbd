@@ -1,5 +1,6 @@
 import React from 'react'
 import TabsWrapper from '../components/TabsWrapper'
+import { useGame } from '../contexts/GameContext'
 import ExpeditionSites from '../tabs/ExpeditionSites'
 import Settlement from '../tabs/Settlement'
 import Survivors from '../tabs/Survivors'
@@ -14,9 +15,12 @@ const content = [
 ]
 
 const Profile = () => {
+    const {tabSelected, setTabSelected} = useGame()
+
+    const handleIndexChange = (event, newValue) => setTabSelected(newValue);
 
     return (
-            <TabsWrapper content={content} />
+            <TabsWrapper content={content} handleIndexChange={handleIndexChange} tabIndexValue={tabSelected} />
     )
 }
 
