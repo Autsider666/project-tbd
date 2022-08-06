@@ -15,6 +15,8 @@ import { ExpeditionPhaseChangeSystem } from '../system/Expedition/ExpeditionPhas
 import { ExpeditionRecruitmentSystem } from '../system/Expedition/ExpeditionRecruitmentSystem.js';
 import { IncrementalEnergySystem } from '../system/IncrementalEnergySystem.js';
 import { SettlementCombatSystem } from '../system/Settlement/SettlementCombatSystem.js';
+import { SettlementRepairSystem } from '../system/Settlement/SettlementRepairSystem.js';
+import { SettlementUpgradeSystem } from '../system/Settlement/SettlementUpgradeSystem.js';
 import { StatusLoggerSystem } from '../system/StatusLoggerSystem.js';
 import { System } from '../system/System.js';
 import { VoyageSystem } from '../system/VoyageSystem.js';
@@ -30,6 +32,8 @@ import { Server, Socket } from 'socket.io';
 	{ token: 'System', useClass: ExpeditionPhaseChangeSystem },
 	{ token: 'System', useClass: ExpeditionRecruitmentSystem },
 	{ token: 'System', useClass: SettlementCombatSystem },
+	{ token: 'System', useClass: SettlementUpgradeSystem },
+	{ token: 'System', useClass: SettlementRepairSystem },
 	{ token: 'System', useClass: IncrementalEnergySystem },
 	{ token: 'System', useClass: StatusLoggerSystem },
 	{ token: 'System', useClass: WorldTimestampSystem },

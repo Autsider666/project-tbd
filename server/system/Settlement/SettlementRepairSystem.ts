@@ -2,7 +2,7 @@ import { SurvivorDataMap } from '../../config/SurvivorData.js';
 import { SettlementRepository } from '../../repository/SettlementRepository.js';
 import { System } from '../System.js';
 
-export class SettlementUpgradeSystem implements System {
+export class SettlementRepairSystem implements System {
 	constructor(private readonly settlementRepository: SettlementRepository) {}
 
 	tick(now: Date): void {
