@@ -10,7 +10,7 @@ const Survivors = () => {
     const { controlledParty, partySurvivorsGrouped } = useGame()
     return (
         <Box sx={{ height: '300px', width: '100%' }}>
-            <List>
+            <List sx={{ height: '310px' }} >
                 <ResourceListItem resources={controlledParty.resources} />
                 <StatListItem stats={controlledParty.stats} />
                 <SurvivorList partySurvivorsGrouped={partySurvivorsGrouped} />
