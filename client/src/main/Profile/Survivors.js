@@ -18,7 +18,6 @@ const Survivors = () => {
     const { id: partyId } = controlledParty || {}
 
     const dismissHandler = survivorType => () => dismissSurvivor(survivorType, partyId)
-    console.log(survivors)
     if(true) return <SurvivorList partySurvivorsGrouped={partySurvivorsGrouped} />
 
     return (
