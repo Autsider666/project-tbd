@@ -90,7 +90,7 @@ const SurvivorList = () => {
 
                         <Accordion key={name} expanded={expanded === name} onChange={handleChange(name)}>
                             <AccordionSummary aria-controls="panel1d-content" id="panel1d-header">
-                                <Typography sx={{ width: '30%', flexShrink: 0 }} >{`Type: ${name}`}</Typography>
+                                <Typography sx={{ width: '35%', flexShrink: 0 }} >{`Type: ${name}`}</Typography>
                                 
                                 <Typography sx={{ px: 1, color: 'text.secondary' }}>{`Tier: ${tier}`}</Typography>
                                 <Typography sx={{ px: 1, color: 'text.secondary' }}>{`Party: ${partySurvivorCount}`}</Typography>
