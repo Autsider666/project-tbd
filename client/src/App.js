@@ -11,7 +11,7 @@ import { Box } from "@mui/system";
 import { useApp } from "./contexts/AppContext";
 
 const StyledApp = styled("div")(({ theme }) => ({
-	height: "100%",
+	height: {xs: "200%", lg: "100%"},
 	width: "100%",
 	backgroundColor: "#b0620d",
 }));
@@ -29,7 +29,7 @@ function App() {
 		<StyledApp>
 			<Header />
 			<Box sx={{
-				height: `calc(100% - 24px - ${marginAmount * 2}px)`,
+				height: {xs: "850px", sm:"1070px" , md:"1200px", lg: `calc(100% - 24px - ${marginAmount * 2}px)`},
 				// width: `calc(100% - ${marginAmount * 2}px)`,
 				padding: 3,
 			}} >
