@@ -53,8 +53,22 @@ export type SettlementUpgrade = {
 	remainingWork: number;
 };
 
-export type SettlementClientData = Omit<SettlementStateData, 'survivors'> & {
+type SettlementBuildingClientData = {
+	[key in SettlementBuilding]: {
+		level: number;
+		upgradeCost: {
+			amount: number;
+			resource: ResourceType;
+		};
+	};
+};
+
+export type SettlementClientData = Omit<
+	SettlementStateData,
+	'survivors' | 'buildings'
+> & {
 	survivors: SurvivorData[];
+	buildings: SettlementBuildingClientData;
 } & EntityClientData<SettlementId>;
 
 export class Settlement
@@ -79,8 +93,8 @@ export class Settlement
 		super(data);
 
 		this.name = data.name;
-		this.hp = data.hp ?? 10000; //TODO remove BC
-		this.damage = data.damage ?? 100; //TODO remove BC
+		this.hp = data.hp;
+		this.damage = data.damage;
 		this.damageTaken = data.damageTaken ?? 0;
 		this.raid = data.raid ?? null;
 		this.destroyed = data.destroyed ?? false;
@@ -96,12 +110,26 @@ export class Settlement
 	}
 
 	normalize(forClient: Client | undefined): SettlementClientData {
+		const buildings: SettlementBuildingClientData =
+			{} as SettlementBuildingClientData;
+		for (const buildingType of Object.keys(this.buildings)) {
+			const level = this.buildings[buildingType as SettlementBuilding];
+			buildings[buildingType as SettlementBuilding] = {
+				level,
+				upgradeCost: {
+					amount: 1000 * Math.pow(2, level),
+					resource: BuildingCost[buildingType as SettlementBuilding],
+				},
+			};
+		}
+
 		return {
 			entityType: this.getEntityType(),
 			...this.toJSON(),
 			survivors: this.survivors.map(
 				(survivor) => SurvivorDataMap[survivor]
 			),
+			buildings,
 		};
 	}
 

@@ -9,9 +9,5 @@
 	"settlementStartingDamage": 100,
 	"settlementRaidChance": 1,
 	"maxPartyEnergy": 2000,
-	"survivorUpgradeCost": {
-		"1": 300,
-		"2": 500
-	},
 	"serverTickTime": 6000
 }

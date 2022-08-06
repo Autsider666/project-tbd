@@ -1,5 +1,3 @@
-import { container } from 'tsyringe';
-import { ServerConfig } from '../serverConfig.js';
 import { ResourceNodeType } from './ResourceData.js';
 
 export enum Survivor {
@@ -43,9 +41,8 @@ export type SurvivorData = {
 	boost: PartyBoost | null;
 };
 
-const config = container.resolve(ServerConfig);
-const tier1UpgradeCost = config.get('survivorUpgradeCost.1') as number;
-const tier2UpgradeCost = config.get('survivorUpgradeCost.2') as number;
+const tier1UpgradeCost = 250;
+const tier2UpgradeCost = 500;
 const tier3UpgradeCost = -1;
 
 export const SurvivorDataMap: { [key in Survivor]: SurvivorData } = {

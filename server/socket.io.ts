@@ -1,9 +1,5 @@
 import { ResourceType } from './config/ResourceData.js';
-import {
-	Survivor,
-	SurvivorData,
-	SurvivorDataMap,
-} from './config/SurvivorData.js';
+import { Survivor, SurvivorData } from './config/SurvivorData.js';
 import { Client } from './controller/ClientController.js';
 import { EntityUpdate } from './controller/StateSyncController.js';
 import { Enemy } from './entity/CommonTypes/Combat.js';
