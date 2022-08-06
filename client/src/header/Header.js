@@ -14,13 +14,15 @@ import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
 import { useGame } from '../contexts/GameContext';
 import { Divider } from '@mui/material';
+import { useAuth } from '../contexts/AuthContext';
 
 const pages = ['Test1', 'Test2', 'Test3'];
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
 const ResponsiveAppBar = () => {
 
-  const { controlledParty, currentSettlement, setSelectedRegionId } = useGame()
+  const { controlledParty, currentSettlement, setSelectedRegionId, resetRepositories } = useGame()
+  const { resetAuth } = useAuth()
 
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
@@ -39,7 +41,6 @@ const ResponsiveAppBar = () => {
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
-  console.log(controlledParty)
   return (
     <AppBar position="static">
       <Container sx={{ marginLeft: 0 }} maxWidth="xl">
@@ -47,7 +48,7 @@ const ResponsiveAppBar = () => {
           {
             controlledParty && <Box sx={{ mx: 1, display: 'flex' }}>
 
-              <Typography sx={{mr: 1}} >
+              <Typography sx={{ mr: 1 }} >
                 {'Party: '}
               </Typography>
               <Typography sx={{ color: controlledParty.dead ? 'red' : 'white' }}>
@@ -141,6 +142,17 @@ const ResponsiveAppBar = () => {
             Project TBD
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'flex' } }} />
+          {
+            controlledParty && controlledParty.dead
+            && <Box onClick={() => {
+              resetAuth()
+              resetRepositories()
+            }} sx={{ mx: 1, cursor: 'pointer' }}>
+              <Typography>
+                {`Restart Game`}
+              </Typography>
+            </Box>
+          }
 
 
           {/* <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} /> */}

@@ -6,10 +6,10 @@ import Survivors from './Survivors'
 
 const Party = () => {
 
-    const { controlledParty: party, partyInventory } = useGame()
+    const { controlledParty: party, partyResources } = useGame()
     if (party === null) return <div />
 
-    // console.log({ party, partyInventory })
+    console.log({ party, partyResources })
     const resourceTypes = [
         { type: 'wood', },
         { type: 'stone', },
@@ -31,7 +31,7 @@ const Party = () => {
                 {resourceTypes.map(({ type }) => {
 
 
-                    const resourceFound = partyInventory.find(resource => resource.type === type)
+                    const resourceFound = partyResources.find(resource => resource.type === type)
                     const { amount = 0 } = resourceFound || {}
                     return (
                         <ListItemText key={type} primary={amount} secondary={type} />
@@ -55,7 +55,7 @@ const Upgrades = () => <div>Upgrades</div>
 const content = [
     { label: 'Party', Component: Party },
     { label: 'Survivors', Component: Survivors },
-    { label: 'Upgrades', Component: Upgrades },
+    // { label: 'Upgrades', Component: Upgrades },
     // { label: 'RandomTest', Component: RandomTest },
 ]
 
