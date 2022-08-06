@@ -99,6 +99,7 @@ export interface ClientToServerEvents {
 		containerId: SettlementId | PartyId;
 		type: Survivor;
 	}) => void;
+	'test:energy:full': (data: { partyId: PartyId }) => void;
 
 	//Default to keep PhpStorm calm
 	[event: string]: (...args: any[]) => void;

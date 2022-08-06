@@ -155,6 +155,15 @@ export class TestController {
 
 					settlement.raid = null;
 				});
+
+				socket.on('test:energy:full', ({ partyId }) => {
+					const party = this.partyRepository.get(partyId);
+					if (!party) {
+						return;
+					}
+
+					party.energy = this.config.get('maxPartyEnergy');
+				});
 			}
 		);
 	}
