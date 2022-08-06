@@ -30,6 +30,7 @@ type PartyBoost = {
 };
 
 export type SurvivorData = {
+	name: Survivor;
 	tree: SurvivorTree;
 	tier: number;
 	stats: { [key in SurvivorStat]: number };
@@ -39,6 +40,7 @@ export type SurvivorData = {
 
 export const SurvivorDataMap: { [key in Survivor]: SurvivorData } = {
 	[Survivor.Villager]: {
+		name: Survivor.Villager,
 		tree: SurvivorTree.Generic,
 		tier: 1,
 		stats: {
@@ -52,6 +54,7 @@ export const SurvivorDataMap: { [key in Survivor]: SurvivorData } = {
 		upgrades: [Survivor.Laborer, Survivor.Scout],
 	},
 	[Survivor.Laborer]: {
+		name: Survivor.Laborer,
 		tree: SurvivorTree.Generic,
 		tier: 2,
 		stats: {
@@ -65,6 +68,7 @@ export const SurvivorDataMap: { [key in Survivor]: SurvivorData } = {
 		upgrades: [Survivor.LumberJack, Survivor.Miner],
 	},
 	[Survivor.LumberJack]: {
+		name: Survivor.LumberJack,
 		tree: SurvivorTree.Generic,
 		tier: 3,
 		stats: {
@@ -82,6 +86,7 @@ export const SurvivorDataMap: { [key in Survivor]: SurvivorData } = {
 		},
 	},
 	[Survivor.Miner]: {
+		name: Survivor.Miner,
 		tree: SurvivorTree.Generic,
 		tier: 3,
 		stats: {
@@ -99,6 +104,7 @@ export const SurvivorDataMap: { [key in Survivor]: SurvivorData } = {
 		},
 	},
 	[Survivor.Scout]: {
+		name: Survivor.Scout,
 		tree: SurvivorTree.Generic,
 		tier: 2,
 		stats: {
@@ -112,6 +118,7 @@ export const SurvivorDataMap: { [key in Survivor]: SurvivorData } = {
 		upgrades: [Survivor.Fighter, Survivor.Knight],
 	},
 	[Survivor.Fighter]: {
+		name: Survivor.Fighter,
 		tree: SurvivorTree.Generic,
 		tier: 3,
 		stats: {
@@ -128,6 +135,7 @@ export const SurvivorDataMap: { [key in Survivor]: SurvivorData } = {
 		},
 	},
 	[Survivor.Knight]: {
+		name: Survivor.Knight,
 		tree: SurvivorTree.Generic,
 		tier: 3,
 		stats: {
