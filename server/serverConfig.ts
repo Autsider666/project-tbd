@@ -24,6 +24,7 @@ type ConfigTemplate = {
 	settlementStartingHp: number;
 	settlementStartingDamage: number;
 	settlementRaidChance: number;
+	maxPartyEnergy: number;
 };
 
 @singleton()
@@ -113,6 +114,10 @@ export class ServerConfig {
 			settlementRaidChance: {
 				format: Number,
 				default: 1,
+			},
+			maxPartyEnergy: {
+				format: Number,
+				default: 1000,
 			},
 		});
 
