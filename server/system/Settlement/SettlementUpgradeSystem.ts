@@ -13,8 +13,7 @@ export class SettlementUpgradeSystem implements System {
 			.getAll()
 			.filter(
 				(settlement) =>
-					!settlement.destroyed &&
-					settlement.upgrade !== null
+					!settlement.destroyed && settlement.upgrade !== null
 			)) {
 			const idleSurvivors = settlement.getSurvivors();
 			for (const party of settlement
