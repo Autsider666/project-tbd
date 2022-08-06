@@ -1,4 +1,5 @@
 import { singleton } from 'tsyringe';
+import { Survivor } from '../../config/SurvivorData.js';
 import { SurvivorFactory } from '../../factory/SurvivorFactory.js';
 import { getRandomItem } from '../../helper/Randomizer.js';
 import { ServerConfig } from '../../serverConfig.js';
@@ -42,13 +43,12 @@ export class ExpeditionRecruitmentSystem implements System {
 				Object.keys(chances),
 				(change) => chances[change]
 			);
-			const survivor = this.survivorFactory.randomCreate(
-				party,
-				parseInt(tier)
-			);
+			const survivor = this.survivorFactory.randomCreate(parseInt(tier));
+
+			party.addSurvivor(survivor);
 
 			ClientNotifier.success(
-				`Party "${party.name}" managed to recruit survivor "${survivor.name}" during their expedition!`,
+				`Party "${party.name}" managed to recruit survivor "${Survivor[survivor]}" during their expedition!`,
 				party.getUpdateRoomName()
 			);
 		}

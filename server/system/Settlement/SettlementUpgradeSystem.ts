@@ -1,3 +1,4 @@
+import { SurvivorDataMap } from '../../config/SurvivorData.js';
 import { SettlementUpgrade } from '../../entity/Settlement.js';
 import { SettlementRepository } from '../../repository/SettlementRepository.js';
 import { System } from '../System.js';
@@ -26,7 +27,7 @@ export class SettlementUpgradeSystem implements System {
 
 			let availableWork = 0;
 			for (const survivor of idleSurvivors) {
-				availableWork += survivor.gatheringSpeed;
+				availableWork += SurvivorDataMap[survivor].stats.gatheringSpeed;
 			}
 
 			const project = settlement.settlementUpgrade as SettlementUpgrade;

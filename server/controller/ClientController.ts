@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken';
 import { Socket } from 'socket.io';
 import { container } from 'tsyringe';
+import { Survivor } from '../config/SurvivorData.js';
 import { Party, PartyId } from '../entity/Party.js';
 import {
 	BuildingCost,
@@ -366,7 +367,7 @@ export class ClientController {
 	}
 
 	private handleSurvivorManagement(): void {
-		this.socket.on('survivor:recruit', ({ partyId, survivorId }) => {
+		this.socket.on('survivor:recruit', ({ partyId, type }) => {
 			const party = this.validatePartyForActivity(partyId);
 			if (party === null) {
 				return;
@@ -374,14 +375,14 @@ export class ClientController {
 
 			const settlement = party.getSettlement();
 			for (const survivor of settlement.getSurvivors()) {
-				if (survivor.getId() !== survivorId) {
+				if (survivor !== type) {
 					continue;
 				}
 
 				settlement.transferSurvivorTo(survivor, party);
 
 				ClientNotifier.success(
-					`${survivor.name} has been added to party "${party.name}"`,
+					`${Survivor[type]} has been added to party "${party.name}"`,
 					party.getUpdateRoomName()
 				);
 
@@ -394,7 +395,7 @@ export class ClientController {
 			);
 		});
 
-		this.socket.on('survivor:dismiss', ({ partyId, survivorId }) => {
+		this.socket.on('survivor:dismiss', ({ partyId, type }) => {
 			const party = this.validatePartyForActivity(partyId, false);
 			if (party === null) {
 				return;
@@ -410,14 +411,14 @@ export class ClientController {
 			}
 
 			for (const survivor of survivors) {
-				if (survivor.getId() !== survivorId) {
+				if (survivor !== type) {
 					continue;
 				}
 
 				party.transferSurvivorTo(survivor, party.getSettlement());
 
 				ClientNotifier.success(
-					`${survivor.name} has left party "${party.name}"`,
+					`${Survivor[type]} has left party "${party.name}"`,
 					party.getUpdateRoomName()
 				);
 

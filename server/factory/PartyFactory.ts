@@ -1,15 +1,14 @@
 import { injectable } from 'tsyringe';
+import { Survivor } from '../config/SurvivorData.js';
 import { Party } from '../entity/Party.js';
 import { Settlement } from '../entity/Settlement.js';
 import { PartyRepository } from '../repository/PartyRepository.js';
-import { SurvivorRepository } from '../repository/SurvivorRepository.js';
-import { SurvivorFactory, SurvivorType } from './SurvivorFactory.js';
+import { SurvivorFactory } from './SurvivorFactory.js';
 
 @injectable()
 export class PartyFactory {
 	constructor(
 		private readonly partyRepository: PartyRepository,
-		private readonly survivorRepository: SurvivorRepository,
 		private readonly survivorFactory: SurvivorFactory
 	) {}
 
@@ -21,21 +20,11 @@ export class PartyFactory {
 
 		settlement.addParty(party);
 
-		party.addSurvivor(
-			this.survivorFactory.create(SurvivorType.villager, party)
-		);
-		party.addSurvivor(
-			this.survivorFactory.create(SurvivorType.villager, party)
-		);
-		party.addSurvivor(
-			this.survivorFactory.create(SurvivorType.villager, party)
-		);
-		party.addSurvivor(
-			this.survivorFactory.create(SurvivorType.villager, party)
-		);
-		party.addSurvivor(
-			this.survivorFactory.create(SurvivorType.villager, party)
-		);
+		party.addSurvivor(this.survivorFactory.create(Survivor.Villager));
+		party.addSurvivor(this.survivorFactory.create(Survivor.Villager));
+		party.addSurvivor(this.survivorFactory.create(Survivor.Villager));
+		party.addSurvivor(this.survivorFactory.create(Survivor.Villager));
+		party.addSurvivor(this.survivorFactory.create(Survivor.Villager));
 
 		return party;
 	}

@@ -1,11 +1,14 @@
 import { Socket } from 'socket.io';
+import {
+	Survivor,
+	SurvivorData,
+	SurvivorDataMap,
+} from '../config/SurvivorData.js';
 import { Client } from '../controller/ClientController.js';
-import { EntityUpdate } from '../controller/StateSyncController.js';
 import { Uuid } from '../helper/UuidHelper.js';
 import { ExpeditionProperty } from './CommonProperties/ExpedtionProperty.js';
 import { ResourcesProperty } from './CommonProperties/ResourcesProperty.js';
 import { SettlementProperty } from './CommonProperties/SettlementProperty.js';
-import { SurvivorsProperty } from './CommonProperties/SurvivorsProperty.js';
 import { VoyageProperty } from './CommonProperties/VoyageProperty.js';
 import { ResourceContainer } from './CommonTypes/ResourceContainer.js';
 import { SurvivorContainer } from './CommonTypes/SurvivorContainer.js';
@@ -14,7 +17,6 @@ import { Resource, ResourceId, ResourceType } from './Resource.js';
 import { Settlement, SettlementId } from './Settlement.js';
 import { Opaque } from 'type-fest';
 import { Entity, EntityClientData, EntityStateData } from './Entity.js';
-import { Survivor, SurvivorId } from './Survivor.js';
 import { Voyage, VoyageId } from './Voyage.js';
 
 export type PartyId = Opaque<Uuid, 'PartyId'>;
@@ -22,21 +24,21 @@ export type PartyId = Opaque<Uuid, 'PartyId'>;
 export type PartyStateData = {
 	name: string;
 	settlement: SettlementId;
-	survivors?: SurvivorId[];
+	survivors?: Survivor[];
 	inventory?: ResourceId[];
 	currentVoyage?: VoyageId | null;
 	currentExpedition?: ExpeditionId | null;
 	dead?: boolean;
 } & EntityStateData<PartyId>;
 
-export type PartyClientData = {
+export type PartyClientData = Omit<PartyStateData, 'survivors'> & {
 	controllable: boolean;
 	hp: number;
 	damage: number;
 	carryCapacity: number;
 	gatheringSpeed: number;
-} & PartyStateData &
-	EntityClientData<PartyId>;
+	survivors: SurvivorData[];
+} & EntityClientData<PartyId>;
 
 export class Party
 	extends Entity<PartyId, PartyStateData, PartyClientData>
@@ -45,7 +47,7 @@ export class Party
 	public name: string;
 	public dead: boolean;
 	private readonly settlementProperty: SettlementProperty;
-	private readonly survivorsProperty: SurvivorsProperty;
+	private readonly survivors: Survivor[];
 	private readonly inventoryProperty: ResourcesProperty;
 	private voyageProperty: VoyageProperty | null;
 	private expeditionProperty: ExpeditionProperty | null;
@@ -57,10 +59,7 @@ export class Party
 		this.name = data.name;
 		this.dead = data.dead ?? false;
 		this.settlementProperty = new SettlementProperty(data.settlement);
-		this.survivorsProperty = new SurvivorsProperty(
-			data.survivors ?? [],
-			this
-		);
+		this.survivors = data.survivors ?? [];
 		this.inventoryProperty = new ResourcesProperty(
 			data.inventory ?? [],
 			this
@@ -79,7 +78,7 @@ export class Party
 			name: this.name,
 			dead: this.dead,
 			settlement: this.settlementProperty.toJSON(),
-			survivors: this.survivorsProperty.toJSON(),
+			survivors: this.survivors,
 			inventory: this.inventoryProperty.toJSON(),
 			currentVoyage: this.voyageProperty?.toJSON() ?? null,
 			currentExpedition: this.expeditionProperty?.toJSON() ?? null,
@@ -99,21 +98,10 @@ export class Party
 			gatheringSpeed: this.getGatheringSpeed(),
 			carryCapacity: this.getCarryCapacity(),
 			...this.toJSON(),
+			survivors: this.survivors.map(
+				(survivor) => SurvivorDataMap[survivor]
+			),
 		};
-	}
-
-	public async prepareNestedEntityUpdate(
-		updateObject: EntityUpdate = {},
-		forClient?: Client
-	): Promise<EntityUpdate> {
-		for (const survivor of this.getSurvivors()) {
-			updateObject = await survivor.prepareNestedEntityUpdate(
-				updateObject,
-				forClient
-			);
-		}
-
-		return super.prepareNestedEntityUpdate(updateObject, forClient);
 	}
 
 	public getSettlement(): Settlement {
@@ -135,15 +123,23 @@ export class Party
 	}
 
 	public getSurvivors(): Survivor[] {
-		return this.survivorsProperty.getAll();
+		return this.survivors;
 	}
 
 	public addSurvivor(survivor: Survivor): void {
-		this.survivorsProperty.add(survivor);
+		this.survivors.push(survivor);
 	}
 
-	public removeSurvivor(survivor: Survivor): void {
-		this.survivorsProperty.remove(survivor.getId());
+	public removeSurvivor(survivor: Survivor): boolean {
+		const index = this.survivors.findIndex(
+			(partyMember) => partyMember === survivor
+		);
+		if (index === -1) {
+			return false;
+		}
+
+		delete this.survivors[index];
+		return true;
 	}
 
 	public getVoyage(): Voyage | null {
@@ -194,14 +190,18 @@ export class Party
 
 	public getHp(): number {
 		let hp = 0;
-		this.getSurvivors().forEach((survivor) => (hp += survivor.hp));
+		this.getSurvivors().forEach(
+			(survivor) => (hp += SurvivorDataMap[survivor].stats.hp)
+		);
 
 		return hp;
 	}
 
 	public getDamage(): number {
 		let damage = 0;
-		this.getSurvivors().forEach((survivor) => (damage += survivor.damage));
+		this.getSurvivors().forEach(
+			(survivor) => (damage += SurvivorDataMap[survivor].stats.damage)
+		);
 
 		return damage;
 	}
@@ -209,7 +209,9 @@ export class Party
 	public getGatheringSpeed(): number {
 		let gatheringSpeed = 0;
 		this.getSurvivors().forEach(
-			(survivor) => (gatheringSpeed += survivor.gatheringSpeed)
+			(survivor) =>
+				(gatheringSpeed +=
+					SurvivorDataMap[survivor].stats.gatheringSpeed)
 		);
 
 		return gatheringSpeed;
@@ -218,7 +220,8 @@ export class Party
 	public getCarryCapacity(): number {
 		let carryCapacity = 0;
 		this.getSurvivors().forEach(
-			(survivor) => (carryCapacity += survivor.carryCapacity)
+			(survivor) =>
+				(carryCapacity += SurvivorDataMap[survivor].stats.carryCapacity)
 		);
 
 		return carryCapacity;
@@ -244,7 +247,9 @@ export class Party
 		survivor: Survivor,
 		newContainer: SurvivorContainer
 	): void {
-		this.survivorsProperty.transferSurvivorTo(survivor, newContainer);
+		if (this.removeSurvivor(survivor)) {
+			newContainer.addSurvivor(survivor);
+		}
 	}
 
 	removeResource(amount: number, type: ResourceType): void {

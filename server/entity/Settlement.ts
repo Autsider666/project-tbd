@@ -1,4 +1,9 @@
 import { Opaque } from 'type-fest';
+import {
+	Survivor,
+	SurvivorData,
+	SurvivorDataMap,
+} from '../config/SurvivorData.js';
 import { Client } from '../controller/ClientController.js';
 import { EntityUpdate } from '../controller/StateSyncController.js';
 import { ClientNotifier } from '../helper/ClientNotifier.js';
@@ -6,7 +11,6 @@ import { Uuid } from '../helper/UuidHelper.js';
 import { PartiesProperty } from './CommonProperties/PartiesProperty.js';
 import { RegionProperty } from './CommonProperties/RegionProperty.js';
 import { ResourcesProperty } from './CommonProperties/ResourcesProperty.js';
-import { SurvivorsProperty } from './CommonProperties/SurvivorsProperty.js';
 import { Combatant, Enemy } from './CommonTypes/Combat.js';
 import { ResourceContainer } from './CommonTypes/ResourceContainer.js';
 import { SurvivorContainer } from './CommonTypes/SurvivorContainer.js';
@@ -14,7 +18,6 @@ import { Entity, EntityClientData, EntityStateData } from './Entity.js';
 import { Party, PartyId } from './Party.js';
 import { Region, RegionId } from './Region.js';
 import { ResourceId, ResourceType } from './Resource.js';
-import { Survivor, SurvivorId } from './Survivor.js';
 
 export type SettlementId = Opaque<Uuid, 'SettlementId'>;
 
@@ -25,7 +28,7 @@ export type SettlementStateData = {
 	raid?: Enemy | null;
 	parties?: PartyId[];
 	storage?: ResourceId[];
-	survivors?: SurvivorId[];
+	survivors?: Survivor[];
 	destroyed?: boolean;
 	settlementUpgrade?: SettlementUpgrade | null;
 	buildings?: { [key in SettlementBuilding]: number };
@@ -47,8 +50,9 @@ export type SettlementUpgrade = {
 	remainingWork: number;
 };
 
-export type SettlementClientData = SettlementStateData &
-	EntityClientData<SettlementId>;
+export type SettlementClientData = Omit<SettlementStateData, 'survivors'> & {
+	survivors: SurvivorData[];
+} & EntityClientData<SettlementId>;
 
 export class Settlement
 	extends Entity<SettlementId, SettlementStateData, SettlementClientData>
@@ -58,7 +62,7 @@ export class Settlement
 	private readonly regionProperty: RegionProperty;
 	private readonly partiesProperty: PartiesProperty;
 	private readonly storage: ResourcesProperty;
-	private readonly survivorsProperty: SurvivorsProperty;
+	private readonly survivors: Survivor[];
 
 	hp: number;
 	damage: number;
@@ -85,16 +89,16 @@ export class Settlement
 		this.regionProperty = new RegionProperty(data.region);
 		this.partiesProperty = new PartiesProperty(data.parties ?? []);
 		this.storage = new ResourcesProperty(data.storage ?? [], this);
-		this.survivorsProperty = new SurvivorsProperty(
-			data.survivors ?? [],
-			this
-		);
+		this.survivors = data.survivors ?? [];
 	}
 
 	normalize(forClient: Client | undefined): SettlementClientData {
 		return {
 			entityType: this.getEntityType(),
 			...this.toJSON(),
+			survivors: this.survivors.map(
+				(survivor) => SurvivorDataMap[survivor]
+			),
 		};
 	}
 
@@ -105,7 +109,7 @@ export class Settlement
 			region: this.regionProperty.toJSON(),
 			parties: this.partiesProperty.toJSON(),
 			storage: this.storage.toJSON(),
-			survivors: this.survivorsProperty.toJSON(),
+			survivors: this.survivors,
 			hp: this.hp,
 			damage: this.damage,
 			damageTaken: this.damageTaken,
@@ -128,17 +132,8 @@ export class Settlement
 			return updateObject;
 		}
 
-		// this.getRegion().prepareUpdate(updateObject, forClient); //TODO add later when it works
-
 		for (const party of this.getParties()) {
 			updateObject = await party.prepareNestedEntityUpdate(
-				updateObject,
-				forClient
-			);
-		}
-
-		for (const survivor of this.getSurvivors()) {
-			updateObject = await survivor.prepareNestedEntityUpdate(
 				updateObject,
 				forClient
 			);
@@ -178,22 +173,32 @@ export class Settlement
 	}
 
 	addSurvivor(survivor: Survivor): void {
-		this.survivorsProperty.add(survivor);
+		this.survivors.push(survivor);
 	}
 
-	removeSurvivor(survivor: Survivor): void {
-		this.survivorsProperty.remove(survivor.getId());
+	public removeSurvivor(survivor: Survivor): boolean {
+		const index = this.survivors.findIndex(
+			(partyMember) => partyMember === survivor
+		);
+		if (index === -1) {
+			return false;
+		}
+
+		delete this.survivors[index];
+		return true;
 	}
 
 	transferSurvivorTo(
 		survivor: Survivor,
 		newContainer: SurvivorContainer
 	): void {
-		this.survivorsProperty.transferSurvivorTo(survivor, newContainer);
+		if (this.removeSurvivor(survivor)) {
+			newContainer.addSurvivor(survivor);
+		}
 	}
 
 	getSurvivors(): Survivor[] {
-		return this.survivorsProperty.getAll();
+		return this.survivors;
 	}
 
 	removeResource(amount: number, type: ResourceType): void {
@@ -229,8 +234,8 @@ export class Settlement
 			this.storage.remove(resource.getId());
 		}
 
-		for (const survivor of this.survivorsProperty.getAll()) {
-			this.survivorsProperty.remove(survivor.getId());
+		for (const key of this.survivors.keys()) {
+			delete this.survivors[key];
 		}
 
 		for (const party of this.partiesProperty

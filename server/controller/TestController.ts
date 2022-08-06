@@ -1,13 +1,13 @@
 import { Server, Socket } from 'socket.io';
 import { injectable } from 'tsyringe';
+import { Survivor } from '../config/SurvivorData.js';
 import { ResourceContainer } from '../entity/CommonTypes/ResourceContainer.js';
 import { SurvivorContainer } from '../entity/CommonTypes/SurvivorContainer.js';
 import { PartyId } from '../entity/Party.js';
 import { SettlementId } from '../entity/Settlement.js';
-import { SurvivorFactory, SurvivorType } from '../factory/SurvivorFactory.js';
+import { SurvivorFactory } from '../factory/SurvivorFactory.js';
 import { PartyRepository } from '../repository/PartyRepository.js';
 import { SettlementRepository } from '../repository/SettlementRepository.js';
-import { SurvivorRepository } from '../repository/SurvivorRepository.js';
 import { ServerConfig } from '../serverConfig.js';
 import {
 	ClientToServerEvents,
@@ -22,8 +22,7 @@ export class TestController {
 		private readonly io: Server,
 		private readonly survivorFactory: SurvivorFactory,
 		private readonly settlementRepository: SettlementRepository,
-		private readonly partyRepository: PartyRepository,
-		private readonly survivorRepository: SurvivorRepository
+		private readonly partyRepository: PartyRepository
 	) {}
 
 	async start() {
@@ -43,7 +42,7 @@ export class TestController {
 			) => {
 				socket.on(
 					'test:survivor:add',
-					({ containerId, template = SurvivorType.villager }) => {
+					({ containerId, type = Survivor.Villager }) => {
 						let container: SurvivorContainer | null =
 							this.settlementRepository.get(
 								containerId as SettlementId
@@ -58,18 +57,30 @@ export class TestController {
 							return;
 						}
 
-						this.survivorFactory.create(template, container);
+						container.addSurvivor(type);
 					}
 				);
 
-				socket.on('test:survivor:remove', ({ survivorId }) => {
-					let survivor = this.survivorRepository.get(survivorId);
-					if (survivor === null) {
+				socket.on('test:survivor:remove', ({ containerId, type }) => {
+					if (!(type in Survivor)) {
 						return;
 					}
 
-					survivor.owner?.removeSurvivor(survivor);
-					this.survivorRepository.removeEntity(survivor.getId());
+					let container: SurvivorContainer | null =
+						this.settlementRepository.get(
+							containerId as SettlementId
+						);
+					if (container === null) {
+						container = this.partyRepository.get(
+							containerId as PartyId
+						);
+					}
+
+					if (container === null) {
+						return;
+					}
+
+					container.removeSurvivor(type);
 				});
 
 				socket.on(

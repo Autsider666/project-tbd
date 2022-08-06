@@ -1,3 +1,4 @@
+import { SurvivorDataMap } from '../../config/SurvivorData.js';
 import { SettlementRepository } from '../../repository/SettlementRepository.js';
 import { System } from '../System.js';
 
@@ -25,7 +26,7 @@ export class SettlementUpgradeSystem implements System {
 
 			let availableWork = 0;
 			for (const survivor of idleSurvivors) {
-				availableWork += survivor.gatheringSpeed;
+				availableWork += SurvivorDataMap[survivor].stats.gatheringSpeed;
 			}
 
 			const workDone = Math.min(availableWork, settlement.damageTaken);

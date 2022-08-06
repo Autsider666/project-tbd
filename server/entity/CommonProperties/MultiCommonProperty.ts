@@ -21,13 +21,14 @@ export class MultiCommonProperty<
 	}
 
 	public getAll(): T[] {
-		for (const [id, region] of this.property) {
-			if (region != null) {
+		for (const [id, entity] of this.property) {
+			if (entity != null) {
 				continue;
 			}
 
 			const value = this.repository.get(id);
 			if (value === null) {
+				console.log(id, entity, this.repository.getAll());
 				throw new Error('.... uhm.....');
 			}
 

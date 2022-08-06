@@ -1,9 +1,9 @@
-import { Survivor } from '../Survivor.js';
+import { Survivor } from '../../config/SurvivorData.js';
 
 export interface SurvivorContainer {
 	addSurvivor(survivor: Survivor): void;
 
-	removeSurvivor(survivor: Survivor): void;
+	removeSurvivor(survivor: Survivor): boolean;
 
 	transferSurvivorTo(
 		survivor: Survivor,

@@ -4,6 +4,7 @@ import { container, injectable } from 'tsyringe';
 import { Constructor } from 'type-fest';
 import { fileURLToPath } from 'url';
 import { Repository } from '../repository/Repository.js';
+import { ResourceRepository } from '../repository/ResourceRepository.js';
 
 const filename = '../../state.json';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -51,6 +52,7 @@ export class StatePersister {
 			container.resolveAll<Constructor<Repository<any, any, any>>>(
 				'Repository'
 			);
+		repositories.unshift(ResourceRepository); //TODO fix one day
 		repositories.forEach((identifier) => {
 			const repository = container.resolve(identifier);
 			repository.load(loadedState[repository.constructor.name] ?? []);
