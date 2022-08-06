@@ -370,6 +370,72 @@ export class ClientController {
 	}
 
 	private handleSurvivorManagement(): void {
+		this.socket.on(
+			'survivor:upgrade',
+			({ partyId, currentType, targetType }) => {
+				if (!(currentType in Survivor)) {
+					ClientNotifier.error(
+						`"${currentType}" is not a valid Survivor type.`,
+						this.socket.id
+					);
+					return;
+				}
+
+				if (!(targetType in Survivor)) {
+					ClientNotifier.error(
+						`"${targetType}" is not a valid Survivor type.`,
+						this.socket.id
+					);
+					return;
+				}
+
+				const currentSurvivor = SurvivorDataMap[currentType];
+				if (!currentSurvivor.upgrades.includes(targetType)) {
+					ClientNotifier.error(
+						`Survivor "${currentType}" cannot be upgrade into "${targetType}".`,
+						this.socket.id
+					);
+					return;
+				}
+
+				const party = this.validatePartyForActivity(partyId);
+				if (party === null) {
+					return;
+				}
+
+				const upgradeCost =
+					this.config.get('survivorUpgradeCost')[
+						currentSurvivor.tier.toString()
+					] ?? 99999;
+				console.log(
+					'Testing upgrade cost',
+					currentSurvivor.tier,
+					upgradeCost
+				);
+				if (upgradeCost > party.energy) {
+					ClientNotifier.error(
+						`Party "${party.name}" is ${Math.abs(
+							party.energy - upgradeCost
+						)} energy short to upgrade this survivor.`,
+						party.getUpdateRoomName()
+					);
+
+					return;
+				}
+
+				if (!party.removeSurvivor(currentType)) {
+					ClientNotifier.error(
+						`There are no available ${currentType} in party "${party.name}".`,
+						party.getUpdateRoomName()
+					);
+				}
+
+				party.energy -= upgradeCost;
+
+				party.addSurvivor(targetType);
+			}
+		);
+
 		this.socket.on('survivor:recruit', ({ partyId, type }) => {
 			if (!(type in Survivor)) {
 				ClientNotifier.error(

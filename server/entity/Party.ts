@@ -138,6 +138,7 @@ export class Party
 
 	public addSurvivor(survivor: Survivor): void {
 		this.survivors.push(survivor);
+		this.cachedBoosts = null;
 	}
 
 	public removeSurvivor(survivor: Survivor): boolean {
@@ -149,6 +150,7 @@ export class Party
 		}
 
 		this.survivors.splice(index, 1);
+		this.cachedBoosts = null;
 
 		return true;
 	}

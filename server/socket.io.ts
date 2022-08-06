@@ -67,6 +67,11 @@ export interface ClientToServerEvents {
 		data: { originId: RegionId; targetId: RegionId },
 		callback: (path: PathResult | null) => void
 	) => void;
+	'survivor:upgrade': (data: {
+		partyId: PartyId;
+		currentType: Survivor;
+		targetType: Survivor;
+	}) => void;
 	'survivor:recruit': (data: { partyId: PartyId; type: Survivor }) => void;
 	'survivor:dismiss': (data: { partyId: PartyId; type: Survivor }) => void;
 	'settlement:upgrade:start': (data: {
