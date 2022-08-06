@@ -1,6 +1,6 @@
 import { BorderType } from '../entity/Border.js';
 import { RegionType } from '../entity/Region.js';
-import { ResourceNodeType } from '../entity/ResourceNode.js';
+import { ResourceNodeType } from './ResourceData.js';
 
 export type WorldTemplate = {
 	name?: string | null;

@@ -1,4 +1,5 @@
 import { Opaque } from 'type-fest';
+import { ResourceType } from '../config/ResourceData.js';
 import {
 	Survivor,
 	SurvivorData,
@@ -10,14 +11,15 @@ import { ClientNotifier } from '../helper/ClientNotifier.js';
 import { Uuid } from '../helper/UuidHelper.js';
 import { PartiesProperty } from './CommonProperties/PartiesProperty.js';
 import { RegionProperty } from './CommonProperties/RegionProperty.js';
-import { ResourcesProperty } from './CommonProperties/ResourcesProperty.js';
 import { Combatant, Enemy } from './CommonTypes/Combat.js';
-import { ResourceContainer } from './CommonTypes/ResourceContainer.js';
+import {
+	ResourceContainer,
+	Resources,
+} from './CommonTypes/ResourceContainer.js';
 import { SurvivorContainer } from './CommonTypes/SurvivorContainer.js';
 import { Entity, EntityClientData, EntityStateData } from './Entity.js';
 import { Party, PartyId } from './Party.js';
 import { Region, RegionId } from './Region.js';
-import { ResourceId, ResourceType } from './Resource.js';
 
 export type SettlementId = Opaque<Uuid, 'SettlementId'>;
 
@@ -27,7 +29,7 @@ export type SettlementStateData = {
 	damageTaken?: number;
 	raid?: Enemy | null;
 	parties?: PartyId[];
-	storage?: ResourceId[];
+	resources?: Resources;
 	survivors?: Survivor[];
 	destroyed?: boolean;
 	settlementUpgrade?: SettlementUpgrade | null;
@@ -61,8 +63,8 @@ export class Settlement
 	public name: string;
 	private readonly regionProperty: RegionProperty;
 	private readonly partiesProperty: PartiesProperty;
-	private readonly storage: ResourcesProperty;
-	private readonly survivors: Survivor[];
+	private resources: Resources;
+	private survivors: Survivor[];
 
 	hp: number;
 	damage: number;
@@ -88,7 +90,7 @@ export class Settlement
 		};
 		this.regionProperty = new RegionProperty(data.region);
 		this.partiesProperty = new PartiesProperty(data.parties ?? []);
-		this.storage = new ResourcesProperty(data.storage ?? [], this);
+		this.resources = data.resources ?? {};
 		this.survivors = data.survivors ?? [];
 	}
 
@@ -108,7 +110,7 @@ export class Settlement
 			name: this.name,
 			region: this.regionProperty.toJSON(),
 			parties: this.partiesProperty.toJSON(),
-			storage: this.storage.toJSON(),
+			resources: this.resources,
 			survivors: this.survivors,
 			hp: this.hp,
 			damage: this.damage,
@@ -168,10 +170,6 @@ export class Settlement
 		return this.partiesProperty.getAll();
 	}
 
-	public addResource(amount: number, type: ResourceType): void {
-		this.storage.addResource(amount, type);
-	}
-
 	addSurvivor(survivor: Survivor): void {
 		this.survivors.push(survivor);
 	}
@@ -184,7 +182,8 @@ export class Settlement
 			return false;
 		}
 
-		delete this.survivors[index];
+		this.survivors.splice(index, 1);
+
 		return true;
 	}
 
@@ -201,42 +200,31 @@ export class Settlement
 		return this.survivors;
 	}
 
-	removeResource(amount: number, type: ResourceType): void {
-		for (const resource of this.storage.getAll()) {
-			if (resource.type !== type) {
-				continue;
-			}
-
-			if (resource.getAmount() < amount) {
-				throw new Error(`Settlement does not have ${amount} ${type}.`);
-			}
-
-			resource.removeAmount(amount);
-			break;
-		}
+	addResource(amount: number, type: ResourceType): void {
+		this.resources[type] = (this.resources[type] ?? 0) + amount;
 	}
 
-	getResource(type: ResourceType): number {
-		for (const resource of this.storage.getAll()) {
-			if (resource.type !== type) {
-				continue;
-			}
-
-			return resource.getAmount();
+	removeResource(amount: number, type: ResourceType): boolean {
+		if (!(type in this.resources)) {
+			this.resources[type] = 0;
 		}
 
-		return 0;
+		if ((this.resources[type] ?? 0) < amount) {
+			return false;
+		}
+
+		this.resources[type] = Math.max(
+			0,
+			(this.resources[type] ?? 0) - amount
+		);
+
+		return true;
 	}
 
 	destroy(): void {
 		this.destroyed = true;
-		for (const resource of this.storage.getAll()) {
-			this.storage.remove(resource.getId());
-		}
-
-		for (const key of this.survivors.keys()) {
-			delete this.survivors[key];
-		}
+		this.resources = {};
+		this.survivors = [];
 
 		for (const party of this.partiesProperty
 			.getAll()

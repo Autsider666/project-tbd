@@ -1,4 +1,5 @@
 import { singleton } from 'tsyringe';
+import { ResourceType } from '../../config/ResourceData.js';
 import { Expedition, ExpeditionPhase } from '../../entity/Expedition.js';
 import {
 	ClientNotifier,
@@ -92,9 +93,11 @@ export class ExpeditionPhaseChangeSystem implements System {
 			);
 
 			const settlement = expedition.getOrigin();
-			for (const item of party.getInventory()) {
-				settlement.addResource(item.getAmount(), item.type);
-				party.deleteResource(item.getId());
+			for (const [type, amount] of Object.entries(party.getResources())) {
+				// TODO test/find better solution
+				console.log(type, amount);
+				settlement.addResource(amount as number, type as ResourceType);
+				party.removeResource(amount as number, type as ResourceType);
 			}
 
 			return;
