@@ -7,5 +7,6 @@
 	"expeditionCombatChance": 5,
 	"settlementStartingHp": 10000,
 	"settlementStartingDamage": 100,
-	"settlementRaidChance": 1
+	"settlementRaidChance": 1,
+	"serverTickTime":6000
 }
