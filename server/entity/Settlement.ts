@@ -33,7 +33,7 @@ export type SettlementStateData = {
 	resources?: Resources;
 	survivors?: Survivor[];
 	destroyed?: boolean;
-	settlementUpgrade?: SettlementUpgrade | null;
+	upgrade?: SettlementUpgrade | null;
 	buildings?: { [key in SettlementBuilding]: number };
 } & Combatant &
 	EntityStateData<SettlementId>;
@@ -98,7 +98,7 @@ export class Settlement
 		this.damageTaken = data.damageTaken ?? 0;
 		this.raid = data.raid ?? null;
 		this.destroyed = data.destroyed ?? false;
-		this.upgrade = data.settlementUpgrade ?? null;
+		this.upgrade = data.upgrade ?? null;
 		this.buildings = data.buildings ?? {
 			[SettlementBuilding.Tower]: 0,
 			[SettlementBuilding.Wall]: 0,
@@ -146,7 +146,7 @@ export class Settlement
 			damageTaken: this.damageTaken,
 			destroyed: this.destroyed,
 			raid: this.raid,
-			settlementUpgrade: this.upgrade,
+			upgrade: this.upgrade,
 			buildings: this.buildings,
 		};
 	}
