@@ -1,3 +1,5 @@
+import { container } from 'tsyringe';
+import { ServerConfig } from '../serverConfig.js';
 import { ResourceNodeType } from './ResourceData.js';
 
 export enum Survivor {
@@ -37,8 +39,14 @@ export type SurvivorData = {
 	tier: number;
 	stats: StatsBlock;
 	upgrades: Survivor[];
+	nextUpgradeCost: number;
 	boost: PartyBoost | null;
 };
+
+const config = container.resolve(ServerConfig);
+const tier1UpgradeCost = config.get('survivorUpgradeCost.1') as number;
+const tier2UpgradeCost = config.get('survivorUpgradeCost.2') as number;
+const tier3UpgradeCost = -1;
 
 export const SurvivorDataMap: { [key in Survivor]: SurvivorData } = {
 	[Survivor.Villager]: {
@@ -55,6 +63,7 @@ export const SurvivorDataMap: { [key in Survivor]: SurvivorData } = {
 		},
 		boost: null,
 		upgrades: [Survivor.Laborer, Survivor.Scout],
+		nextUpgradeCost: tier1UpgradeCost,
 	},
 	[Survivor.Laborer]: {
 		name: Survivor.Laborer,
@@ -70,6 +79,7 @@ export const SurvivorDataMap: { [key in Survivor]: SurvivorData } = {
 		},
 		boost: null,
 		upgrades: [Survivor.LumberJack, Survivor.Miner],
+		nextUpgradeCost: tier2UpgradeCost,
 	},
 	[Survivor.LumberJack]: {
 		name: Survivor.LumberJack,
@@ -89,6 +99,7 @@ export const SurvivorDataMap: { [key in Survivor]: SurvivorData } = {
 			type: ResourceNodeType.Forest,
 		},
 		upgrades: [],
+		nextUpgradeCost: tier3UpgradeCost,
 	},
 	[Survivor.Miner]: {
 		name: Survivor.Miner,
@@ -108,6 +119,7 @@ export const SurvivorDataMap: { [key in Survivor]: SurvivorData } = {
 			type: ResourceNodeType.Mountain,
 		},
 		upgrades: [],
+		nextUpgradeCost: tier3UpgradeCost,
 	},
 	[Survivor.Scout]: {
 		name: Survivor.Scout,
@@ -123,6 +135,7 @@ export const SurvivorDataMap: { [key in Survivor]: SurvivorData } = {
 		},
 		boost: null,
 		upgrades: [Survivor.Fighter, Survivor.Knight],
+		nextUpgradeCost: tier2UpgradeCost,
 	},
 	[Survivor.Fighter]: {
 		name: Survivor.Fighter,
@@ -142,6 +155,7 @@ export const SurvivorDataMap: { [key in Survivor]: SurvivorData } = {
 			type: null,
 		},
 		upgrades: [],
+		nextUpgradeCost: tier3UpgradeCost,
 	},
 	[Survivor.Knight]: {
 		name: Survivor.Knight,
@@ -161,5 +175,6 @@ export const SurvivorDataMap: { [key in Survivor]: SurvivorData } = {
 			type: null,
 		},
 		upgrades: [],
+		nextUpgradeCost: tier3UpgradeCost,
 	},
 };

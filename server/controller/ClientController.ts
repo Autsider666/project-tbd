@@ -390,7 +390,11 @@ export class ClientController {
 				}
 
 				const currentSurvivor = SurvivorDataMap[currentType];
-				if (!currentSurvivor.upgrades.includes(targetType)) {
+				const upgradeCost = currentSurvivor.nextUpgradeCost;
+				if (
+					!currentSurvivor.upgrades.includes(targetType) ||
+					upgradeCost === -1
+				) {
 					ClientNotifier.error(
 						`Survivor "${currentType}" cannot be upgrade into "${targetType}".`,
 						this.socket.id
@@ -403,15 +407,6 @@ export class ClientController {
 					return;
 				}
 
-				const upgradeCost =
-					this.config.get('survivorUpgradeCost')[
-						currentSurvivor.tier.toString()
-					] ?? 99999;
-				console.log(
-					'Testing upgrade cost',
-					currentSurvivor.tier,
-					upgradeCost
-				);
 				if (upgradeCost > party.energy) {
 					ClientNotifier.error(
 						`Party "${party.name}" is ${Math.abs(
