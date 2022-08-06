@@ -216,9 +216,9 @@ const GameProvider = ({ children }) => {
     const currentSettlementSurvivors = selectedSettlement && selectedSettlement.survivors
 
     // console.log({controlledParty, survivorRepository, partySurvivors})
-    const partyInventory = controlledParty && controlledParty.inventory.map(resourceId => resourceRepository[resourceId])
-    const currentSettlementStorage = currentSettlement && currentSettlement.storage.map(resourceId => resourceRepository[resourceId])
-
+    const partyResources = controlledParty && Object.values(controlledParty.resources).map(resourceId => resourceRepository[resourceId])
+    const currentSettlementResources = currentSettlement && Object.values(currentSettlement.resources).map(resourceId => resourceRepository[resourceId])
+    console.log(controlledParty)
 
     // console.log({partyInventory, currentSettlementStorage})
 
@@ -280,8 +280,8 @@ const GameProvider = ({ children }) => {
         loaded,
         currentRegionId,
         worldRepository, regionRepository, borderRepository, partyRepository, resourceNodeRepository, settlementRepository, voyageRepository, expeditionRepository, resourceRepository,
-        controlledParty, partyInventory, partySurvivors, partySurvivorsGrouped,
-        currentSettlement, currentSettlementId, currentSettlementStorage, currentSettlementSurvivors,
+        controlledParty, partyResources, partySurvivors, partySurvivorsGrouped,
+        currentSettlement, currentSettlementId, currentSettlementResources, currentSettlementSurvivors,
         currentExpedition, currentExpeditionTravelPath,
         currentVoyage,
         selectedResourceNodes,

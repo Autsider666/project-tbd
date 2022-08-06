@@ -10,7 +10,7 @@ export const Settlement = () => {
         currentSettlement, controlledParty: party, selectedSettlement: settlement = {}, currentVoyage: voyage,
         selectedRegionId, settlementRepository,
         selectedRegionTravelPath,
-        currentSettlementStorage
+        currentSettlementResources
     } = useGame()
 
     const { id: partyId } = controlledParty || {}
@@ -54,7 +54,7 @@ export const Settlement = () => {
                 <ListItem >
                     <ListItemText sx={{ minWidth: '100px' }} primary="Inventory" />
                     {resourceTypes.map(({ type }) => {
-                        const resourceFound = currentSettlementStorage.find(resource => resource && resource.type === type)
+                        const resourceFound = currentSettlementResources.find(resource => resource && resource.type === type)
                         const { amount = 0 } = resourceFound || {}
                         return (
                             <ListItemText key={type} primary={amount} secondary={type} />
