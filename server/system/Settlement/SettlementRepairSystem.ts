@@ -1,7 +1,9 @@
+import { singleton } from 'tsyringe';
 import { SurvivorDataMap } from '../../config/SurvivorData.js';
 import { SettlementRepository } from '../../repository/SettlementRepository.js';
 import { System } from '../System.js';
 
+@singleton()
 export class SettlementRepairSystem implements System {
 	constructor(private readonly settlementRepository: SettlementRepository) {}
 
