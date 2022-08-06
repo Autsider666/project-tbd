@@ -37,7 +37,7 @@ const GameProvider = ({ children }) => {
     const lEndsAt = (startedAt && endsAt) && DateTime.fromISO(endsAt)
     const tickLength = (startedAt && endsAt) && lStartedAt.diff(lEndsAt, 'seconds').toObject()
 
-    const [surivorTypes, setSurvivorTypes] = useState({})
+    const [survivorTypes, setSurvivorTypes] = useState(null)
 
     const [worldRepository, setWorldRepository] = useState({})
     const [regionRepository, setRegionRepository] = useState({})
@@ -295,7 +295,7 @@ const GameProvider = ({ children }) => {
         recruitSurvivor, dismissSurvivor,
         notificationLog,
         resetRepositories,
-        surivorTypes, 
+        survivorTypes, 
 
     };
 

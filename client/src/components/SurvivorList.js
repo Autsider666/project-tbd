@@ -45,14 +45,25 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
 }));
 
 const SurvivorList = () => {
-    const { currentSettlement, partySurvivors: survivors, dismissSurvivor, recruitSurvivor, controlledParty, partySurvivorsGrouped, surivorTypes } = useGame()
+    const { currentSettlement, partySurvivors: survivors, dismissSurvivor, recruitSurvivor, controlledParty, partySurvivorsGrouped, survivorTypes } = useGame()
     const [expanded, setExpanded] = useState('panel1');
+
+    const [partySwitch, setPartySwitch] = useState(true)
+    const [settlementSwitch, setSettlementSwitch] = useState(false)
+    const [allSwitch, setAllSwitch] = useState(false)
 
     const handleChange = (panel) => (event, newExpanded) => {
         setExpanded(newExpanded ? panel : false);
     };
 
-    console.log(surivorTypes)
+    const switchFilter = (survivorTypes=>{
+        if(allSwitch) return true
+        if(settlementSwitch && currentSettlement.survivors.some(survivor=>survivor.name === survivorTypes.name)) return true
+        if(partySwitch && controlledParty.survivors.some(survivor=>survivor.name === survivorTypes.name)) return true
+        return false
+    })
+
+    console.log(survivorTypes)
 
     console.log(currentSettlement)
     console.log(survivors)
@@ -61,11 +72,72 @@ const SurvivorList = () => {
         <Box sx={{ overflow: 'auto', height: '100%' }}>
 
             <FormGroup sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }} >
-                <FormControlLabel control={<Switch defaultChecked />} label="Party" />
-                <FormControlLabel control={<Switch />} label="Settlement" />
-                <FormControlLabel control={<Switch />} label="All" />
+                <FormControlLabel checked={partySwitch} onChange={event=>setPartySwitch(event.target.checked)} control={<Switch />} label="Party" />
+                <FormControlLabel checked={settlementSwitch} onChange={event=>setSettlementSwitch(event.target.checked)} control={<Switch />} label="Settlement" />
+                <FormControlLabel checked={allSwitch} onChange={event=>setAllSwitch(event.target.checked)} control={<Switch />} label="All" />
             </FormGroup>
             {
+                survivorTypes && Object.values(survivorTypes).filter(switchFilter).map(survivorType => {
+
+
+                    const { name, stats, upgrades = [],tier } = survivorType
+                    const { damage, hp, gatheringSpeed, travelSpeed, defense } = stats
+
+                    const partySurvivorCount = controlledParty.survivors.filter(survivor => survivor.name === name).length
+                    const settlementSurvivorsCount = currentSettlement.survivors.filter(survivor => survivor.name === name).length
+
+                    return (
+
+                        <Accordion key={name} expanded={expanded === name} onChange={handleChange(name)}>
+                            <AccordionSummary aria-controls="panel1d-content" id="panel1d-header">
+                                <Typography sx={{ width: '30%', flexShrink: 0 }} >{`Type: ${name}`}</Typography>
+                                
+                                <Typography sx={{ px: 1, color: 'text.secondary' }}>{`Tier: ${tier}`}</Typography>
+                                <Typography sx={{ px: 1, color: 'text.secondary' }}>{`Party: ${partySurvivorCount}`}</Typography>
+                                <Typography sx={{ px: 1, color: 'text.secondary' }}>{`Settlement: ${settlementSurvivorsCount}`}</Typography>
+                            </AccordionSummary>
+                            <AccordionDetails>
+                                <List>
+                                    <ListItem >
+                                        <ListItemText primary={damage} secondary="DMG" />
+                                        <ListItemText primary={hp} secondary="HP" />
+                                        <ListItemText primary={gatheringSpeed} secondary="Def" />
+                                        <ListItemText primary={travelSpeed} secondary="Gather" />
+                                        <ListItemText primary={defense} secondary="Travel" />
+                                    </ListItem>
+                                    <ListItem>
+                                        <ListItemButton disableGutters>
+                                            <ButtonGroup disableRipple >
+                                                {upgrades.map(upgrade => (
+                                                    <Button key={upgrade} sx={{ mx: 0.5 }} variant="contained">{`Upgrade into ${upgrade}`}</Button>
+                                                ))}
+                                            </ButtonGroup>
+                                        </ListItemButton>
+                                        <ListItemButton disableGutters>
+                                            <ButtonGroup disableRipple >
+                                                <Button onClick={() => recruitSurvivor(name, controlledParty.id)} sx={{ mx: 0.5 }} variant="contained">
+                                                    {`Recruit one ${name}`}
+                                                </Button>
+                                                <Button onClick={() => dismissSurvivor(name, controlledParty.id)} sx={{ mx: 0.5 }} variant="contained">
+                                                    {`Dismiss one ${name}`}
+                                                </Button>
+                                            </ButtonGroup>
+                                        </ListItemButton>
+                                    </ListItem>
+                                </List>
+                            </AccordionDetails>
+                        </Accordion>
+
+                    )
+
+
+
+                })
+            }
+
+
+
+            {/* {
                 partySurvivorsGrouped && partySurvivorsGrouped.map(survivorGroup => {
                     const { name, content, count } = survivorGroup
                     const { stats, upgrades } = content
@@ -115,7 +187,7 @@ const SurvivorList = () => {
                         </Accordion>
                     )
                 })
-            }
+            } */}
 
         </Box>
     );
