@@ -216,17 +216,9 @@ const GameProvider = ({ children }) => {
         return accum
     },[])
 
-    console.log(partySurvivorsGrouped)
-
-    // console.log(selectedSettlement)
     const currentSettlementSurvivors = selectedSettlement && selectedSettlement.survivors
-
-    // console.log({controlledParty, survivorRepository, partySurvivors})
     const partyResources = controlledParty && Object.values(controlledParty.resources).map(resourceId => resourceRepository[resourceId])
     const currentSettlementResources = currentSettlement && Object.values(currentSettlement.resources).map(resourceId => resourceRepository[resourceId])
-    console.log(controlledParty)
-
-    // console.log({partyInventory, currentSettlementStorage})
 
 
 

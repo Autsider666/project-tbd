@@ -5,9 +5,10 @@ import MuiAccordion from '@mui/material/Accordion';
 import MuiAccordionSummary from '@mui/material/AccordionSummary';
 import MuiAccordionDetails from '@mui/material/AccordionDetails';
 import Typography from '@mui/material/Typography';
-import { Box, Button, ButtonGroup, FormControlLabel, FormGroup, List, ListItem, ListItemButton, ListItemText, Switch } from '@mui/material';
+import { Box, Button, ButtonGroup, FormControlLabel, FormGroup, List, ListItem, ListItemButton, Switch } from '@mui/material';
 import { useGame } from '../contexts/GameContext';
 import StatListItem from './StatListItem'
+import { survivorUpgrade } from '../functions/socketCalls';
 
 const Accordion = styled((props) => (
     <MuiAccordion disableGutters elevation={0} square {...props} />
@@ -46,7 +47,7 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
 }));
 
 const SurvivorList = () => {
-    const { currentSettlement, partySurvivors: survivors, dismissSurvivor, recruitSurvivor, controlledParty, partySurvivorsGrouped, survivorTypes } = useGame()
+    const { currentSettlement, dismissSurvivor, recruitSurvivor, controlledParty, survivorTypes } = useGame()
     const [expanded, setExpanded] = useState('panel1');
 
     const [partySwitch, setPartySwitch] = useState(true)
@@ -63,12 +64,6 @@ const SurvivorList = () => {
         if (partySwitch && controlledParty.survivors.some(survivor => survivor.name === survivorTypes.name)) return true
         return false
     })
-
-    console.log(survivorTypes)
-
-    console.log(currentSettlement)
-    console.log(controlledParty)
-
     return (
         <Box sx={{ overflow: 'auto', height: '100%' }}>
 
@@ -80,9 +75,7 @@ const SurvivorList = () => {
             {
                 survivorTypes && Object.values(survivorTypes).filter(switchFilter).map(survivorType => {
 
-
-                    const { name, stats, upgrades = [], tier } = survivorType
-                    const { damage, hp, gatheringSpeed, travelSpeed, defense } = stats
+                    const { name, stats, upgrades = [], tier, nextUpgradeCost } = survivorType
 
                     const partySurvivorCount = controlledParty.survivors.filter(survivor => survivor.name === name).length
                     const settlementSurvivorsCount = currentSettlement.survivors.filter(survivor => survivor.name === name).length
@@ -104,7 +97,9 @@ const SurvivorList = () => {
                                         <ListItemButton disableGutters>
                                             <ButtonGroup disableRipple >
                                                 {upgrades.map(upgrade => (
-                                                    <Button key={upgrade} sx={{ mx: 0.5 }} variant="contained">{`Upgrade into ${upgrade}`}</Button>
+                                                    <Button onClick={()=>{
+                                                        survivorUpgrade(controlledParty.id, name, upgrade)
+                                                    }} key={upgrade} sx={{ mx: 0.5 }} variant="contained">{`Upgrade 1 into ${upgrade} for ${nextUpgradeCost} energy`}</Button>
                                                 ))}
                                             </ButtonGroup>
                                         </ListItemButton>

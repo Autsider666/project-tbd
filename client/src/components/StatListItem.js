@@ -2,7 +2,6 @@ import React from 'react'
 import { ListItem, ListItemText } from '@mui/material'
 
 const StatListItem = ({ stats = {} }) => {
-    console.log(stats)
     const statTypes = [
         { key: 'hp', label: 'Health', },
         { key: 'damage', label: 'Damage', },

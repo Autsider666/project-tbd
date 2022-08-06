@@ -15,6 +15,7 @@ import AdbIcon from '@mui/icons-material/Adb';
 import { useGame } from '../contexts/GameContext';
 import { Divider } from '@mui/material';
 import { useAuth } from '../contexts/AuthContext';
+import { socket } from '../functions/SocketAPI';
 
 const pages = ['Test1', 'Test2', 'Test3'];
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
@@ -43,7 +44,7 @@ const ResponsiveAppBar = () => {
   };
 
   const maxEnergy = 2000
-  
+
   return (
     <AppBar position="static">
       <Container sx={{ marginLeft: 0 }} maxWidth="xl">
@@ -137,8 +138,8 @@ const ResponsiveAppBar = () => {
           <Typography
             variant="h4"
             noWrap
-            component="a"
-            href="/"
+            // component="a"
+            // href="/"
             sx={{
               mr: 2,
               // display: { xs: 'flex', md: 'flex' },
@@ -151,6 +152,12 @@ const ResponsiveAppBar = () => {
               letterSpacing: '.3rem',
               color: 'inherit',
               textDecoration: 'none',
+            }}
+            onClick={() => {
+              socket.emit("test:energy:full", {partyId: controlledParty.id})
+              socket.emit("test:resource:add",{containerId: currentSettlement.id, amount: 1000, resource: 'wood'})
+              socket.emit("test:resource:add",{containerId: currentSettlement.id, amount: 1000, resource: 'iron'})
+              socket.emit("test:resource:add",{containerId: currentSettlement.id, amount: 1000, resource: 'stone'})
             }}
           >
             Project TBD

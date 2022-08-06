@@ -2,7 +2,6 @@ import React from 'react'
 import { ListItem, ListItemText } from '@mui/material'
 
 const ResourceListItem = ({ resources }) => {
-    console.log(resources)
 
     const resourceTypes = [
         { key: 'wood', label: 'Wood', },

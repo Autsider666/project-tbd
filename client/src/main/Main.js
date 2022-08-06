@@ -9,8 +9,8 @@ import Chat from './Chat'
 const sections = [
     { name: 'Map', Component: Map, sx: { gridArea: 'Map', overflow: 'hidden', margin: 'auto', maxWidth: { xs: '500px', sm: '550px' , md: 'none' } } },
 
-    { name: 'Profile', Component: Profile, sx: { gridArea: 'Profile', display: { xl: 'block' } } },
-    { name: 'Region', Component: Region, sx: { gridArea: 'Region', minHeight: {md: "400px", lg: 'none'}, display: {xl: 'none'} } },
+    { name: 'Profile', Component: Profile, sx: { gridArea: 'Profile', display: { xs: 'block' } } },
+    // { name: 'Region', Component: Region, sx: { gridArea: 'Region', minHeight: {md: "400px", xs: 'none'}, display: {xs: 'none'} } },
 
     { name: 'Chat', Component: Chat, sx: { gridArea: 'Chat', display: { xs: 'none', sm: 'none', md: 'block'}, overflow: 'hidden' } },
 ]
@@ -47,14 +47,14 @@ const Main = ({ marginAmount }) => {
             },
             gridTemplateAreas: {
                 xs: `"Map Map"
-                     "Profile Region"`,
+                     "Profile Profile"`,
                 sm: `"Map Map"
-                     "Profile Region"`,
-                md: `"Region Region Map"
+                     "Profile Profile"`,
+                md: `"Profile Profile Map"
                      "Profile Profile Map"
-                     "Profile Profile Chat"`,
-                lg: `"Profile Region Map "
-                     "Profile Region Map"
+                     "Chat Chat Map"`,
+                lg: `"Profile Profile Map "
+                     "Profile Profile Map"
                      "Chat Chat Map"`,
                 xl: `"Profile Profile Map "
                      "Profile Profile Map"
