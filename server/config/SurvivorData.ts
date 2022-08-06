@@ -26,7 +26,7 @@ enum SurvivorStat {
 type PartyBoost = {
 	percentage: number;
 	stat: SurvivorStat;
-	type?: ResourceNodeType;
+	type: ResourceNodeType | null;
 };
 
 export type SurvivorData = {
@@ -34,8 +34,8 @@ export type SurvivorData = {
 	tree: SurvivorTree;
 	tier: number;
 	stats: { [key in SurvivorStat]: number };
-	upgrades?: Survivor[];
-	boost?: PartyBoost;
+	upgrades: Survivor[];
+	boost: PartyBoost | null;
 };
 
 export const SurvivorDataMap: { [key in Survivor]: SurvivorData } = {
@@ -51,6 +51,7 @@ export const SurvivorDataMap: { [key in Survivor]: SurvivorData } = {
 			[SurvivorStat.carryCapacity]: 250,
 			[SurvivorStat.gatheringSpeed]: 5,
 		},
+		boost: null,
 		upgrades: [Survivor.Laborer, Survivor.Scout],
 	},
 	[Survivor.Laborer]: {
@@ -65,6 +66,7 @@ export const SurvivorDataMap: { [key in Survivor]: SurvivorData } = {
 			[SurvivorStat.carryCapacity]: 350,
 			[SurvivorStat.gatheringSpeed]: 7,
 		},
+		boost: null,
 		upgrades: [Survivor.LumberJack, Survivor.Miner],
 	},
 	[Survivor.LumberJack]: {
@@ -84,6 +86,7 @@ export const SurvivorDataMap: { [key in Survivor]: SurvivorData } = {
 			stat: SurvivorStat.gatheringSpeed,
 			type: ResourceNodeType.Forest,
 		},
+		upgrades: [],
 	},
 	[Survivor.Miner]: {
 		name: Survivor.Miner,
@@ -102,6 +105,7 @@ export const SurvivorDataMap: { [key in Survivor]: SurvivorData } = {
 			stat: SurvivorStat.gatheringSpeed,
 			type: ResourceNodeType.Mountain,
 		},
+		upgrades: [],
 	},
 	[Survivor.Scout]: {
 		name: Survivor.Scout,
@@ -115,6 +119,7 @@ export const SurvivorDataMap: { [key in Survivor]: SurvivorData } = {
 			[SurvivorStat.carryCapacity]: 200,
 			[SurvivorStat.gatheringSpeed]: 4,
 		},
+		boost: null,
 		upgrades: [Survivor.Fighter, Survivor.Knight],
 	},
 	[Survivor.Fighter]: {
@@ -132,7 +137,9 @@ export const SurvivorDataMap: { [key in Survivor]: SurvivorData } = {
 		boost: {
 			percentage: 1,
 			stat: SurvivorStat.damage,
+			type: null,
 		},
+		upgrades: [],
 	},
 	[Survivor.Knight]: {
 		name: Survivor.Knight,
@@ -149,6 +156,8 @@ export const SurvivorDataMap: { [key in Survivor]: SurvivorData } = {
 		boost: {
 			percentage: 1,
 			stat: SurvivorStat.defense,
+			type: null,
 		},
+		upgrades: [],
 	},
 };

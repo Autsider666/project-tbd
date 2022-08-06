@@ -13,7 +13,6 @@ export function getRandomItem<T>(
 			return items[i];
 		}
 	}
-	console.log(items)
 
 	throw new Error('Randomizer failed');
 }

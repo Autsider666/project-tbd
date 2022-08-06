@@ -17,7 +17,7 @@ type ConfigTemplate = {
 	expeditionRecruitmentChance: number;
 	expeditionCombatChance: number;
 	expeditionRecruitment: {
-		0: number;
+		1: number;
 	};
 	maxPartySize: number;
 	secondsBetweenCombatInSamePhase: number;
@@ -25,6 +25,10 @@ type ConfigTemplate = {
 	settlementStartingDamage: number;
 	settlementRaidChance: number;
 	maxPartyEnergy: number;
+	survivorUpgradeCost: {
+		1: number;
+		2: number;
+	};
 };
 
 @singleton()
@@ -86,7 +90,7 @@ export class ServerConfig {
 				env: 'EXPEDITION_COMBAT_CHANCE',
 			},
 			expeditionRecruitment: {
-				0: {
+				1: {
 					format: Number,
 					default: 100,
 				},
@@ -118,6 +122,16 @@ export class ServerConfig {
 			maxPartyEnergy: {
 				format: Number,
 				default: 1000,
+			},
+			survivorUpgradeCost: {
+				1: {
+					format: Number,
+					default: 250,
+				},
+				2: {
+					format: Number,
+					default: 1000,
+				},
 			},
 		});
 
