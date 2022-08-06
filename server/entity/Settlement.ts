@@ -13,6 +13,7 @@ import { PartiesProperty } from './CommonProperties/PartiesProperty.js';
 import { RegionProperty } from './CommonProperties/RegionProperty.js';
 import { Combatant, Enemy } from './CommonTypes/Combat.js';
 import {
+	generateEmptyResourcesObject,
 	ResourceContainer,
 	Resources,
 } from './CommonTypes/ResourceContainer.js';
@@ -90,7 +91,7 @@ export class Settlement
 		};
 		this.regionProperty = new RegionProperty(data.region);
 		this.partiesProperty = new PartiesProperty(data.parties ?? []);
-		this.resources = data.resources ?? {};
+		this.resources = data.resources ?? generateEmptyResourcesObject();
 		this.survivors = data.survivors ?? [];
 	}
 
@@ -110,7 +111,7 @@ export class Settlement
 			name: this.name,
 			region: this.regionProperty.toJSON(),
 			parties: this.partiesProperty.toJSON(),
-			resources: this.resources,
+			resources: { ...generateEmptyResourcesObject(), ...this.resources },
 			survivors: this.survivors,
 			hp: this.hp,
 			damage: this.damage,
@@ -223,7 +224,7 @@ export class Settlement
 
 	destroy(): void {
 		this.destroyed = true;
-		this.resources = {};
+		this.resources = generateEmptyResourcesObject();
 		this.survivors = [];
 
 		for (const party of this.partiesProperty

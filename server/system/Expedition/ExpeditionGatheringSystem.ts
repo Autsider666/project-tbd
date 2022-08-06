@@ -44,16 +44,21 @@ export class ExpeditionGatheringSystem implements System {
 			[ResourceType.stone]: 0,
 		};
 
+		let isEmpty = false;
 		let amountToGather = party.getGatheringSpeed();
 		while (amountToGather > 0) {
 			let resources = node.getResources();
-			if (Object.keys(resources).length === 0) {
+			if (
+				Object.values(resources).reduce((sum, value) => sum + value) ===
+				0
+			) {
+				isEmpty = true;
 				break;
 			}
 
 			const [randomResourceType, randomResourceAmount] = getRandomItem(
 				Object.entries(resources),
-				([, amount]) => amount as number
+				([, amount]) => amount
 			) as [ResourceType, number];
 			const toTake = Math.min(amountToGather, randomResourceAmount);
 			party.addResource(toTake, randomResourceType);
@@ -71,7 +76,7 @@ export class ExpeditionGatheringSystem implements System {
 			[NotificationCategory.expedition]
 		);
 
-		if (Object.keys(node.getResources()).length === 0) {
+		if (isEmpty) {
 			expedition.setCurrentPhase(ExpeditionPhase.gather, this.now);
 			ClientNotifier.info(
 				`${node.name} seems to be completely depleted, so party "${party.name}" is going to head back soon.`,

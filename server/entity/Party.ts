@@ -11,6 +11,7 @@ import { ExpeditionProperty } from './CommonProperties/ExpedtionProperty.js';
 import { SettlementProperty } from './CommonProperties/SettlementProperty.js';
 import { VoyageProperty } from './CommonProperties/VoyageProperty.js';
 import {
+	generateEmptyResourcesObject,
 	ResourceContainer,
 	Resources,
 } from './CommonTypes/ResourceContainer.js';
@@ -31,6 +32,7 @@ export type PartyStateData = {
 	currentVoyage?: VoyageId | null;
 	currentExpedition?: ExpeditionId | null;
 	dead?: boolean;
+	energy?: number;
 } & EntityStateData<PartyId>;
 
 export type PartyClientData = Omit<PartyStateData, 'survivors'> & {
@@ -53,7 +55,7 @@ export class Party
 	private readonly resources: Resources;
 	private voyageProperty: VoyageProperty | null;
 	private expeditionProperty: ExpeditionProperty | null;
-	public readonly sockets: Socket[] = [];
+	public energy: number;
 
 	constructor(data: PartyStateData) {
 		super(data);
@@ -62,7 +64,8 @@ export class Party
 		this.dead = data.dead ?? false;
 		this.settlementProperty = new SettlementProperty(data.settlement);
 		this.survivors = data.survivors ?? [];
-		this.resources = data.resources ?? {};
+		this.resources = data.resources ?? generateEmptyResourcesObject();
+		this.energy = data.energy ?? 0;
 		this.voyageProperty = data.currentVoyage
 			? new VoyageProperty(data.currentVoyage)
 			: null;
@@ -78,9 +81,10 @@ export class Party
 			dead: this.dead,
 			settlement: this.settlementProperty.toJSON(),
 			survivors: this.survivors,
-			resources: this.resources,
+			resources: { ...generateEmptyResourcesObject(), ...this.resources },
 			currentVoyage: this.voyageProperty?.toJSON() ?? null,
 			currentExpedition: this.expeditionProperty?.toJSON() ?? null,
+			energy: this.energy,
 		};
 	}
 

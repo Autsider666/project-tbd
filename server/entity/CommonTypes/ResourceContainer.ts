@@ -1,6 +1,12 @@
 import { ResourceType } from '../../config/ResourceData.js';
 
-export type Resources = { [key in ResourceType as string]?: number };
+export type Resources = { [key in ResourceType]: number };
+
+export const generateEmptyResourcesObject = (): Resources => ({
+	[ResourceType.iron]: 0,
+	[ResourceType.stone]: 0,
+	[ResourceType.wood]: 0,
+});
 
 export interface ResourceContainer {
 	addResource(amount: number, type: ResourceType): void;

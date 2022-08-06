@@ -234,7 +234,6 @@ export class ClientController {
 		);
 
 		this.client.parties.set(party.getId(), party);
-		party.sockets.push(this.socket); //TODO remove after disconnect
 
 		const settlement = party.getSettlement();
 		const region = settlement.getRegion();

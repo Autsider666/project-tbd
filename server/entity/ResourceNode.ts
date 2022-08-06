@@ -4,6 +4,7 @@ import { Client } from '../controller/ClientController.js';
 import { Uuid } from '../helper/UuidHelper.js';
 import { RegionProperty } from './CommonProperties/RegionProperty.js';
 import {
+	generateEmptyResourcesObject,
 	ResourceContainer,
 	Resources,
 } from './CommonTypes/ResourceContainer.js';
@@ -41,7 +42,7 @@ export class ResourceNode
 		this.name = data.name;
 		this.type = data.type;
 		this.regionProperty = new RegionProperty(data.region);
-		this.resources = data.resources ?? {};
+		this.resources = data.resources ?? generateEmptyResourcesObject();
 	}
 
 	normalize(forClient?: Client): ResourceNodeClientData {
@@ -57,7 +58,7 @@ export class ResourceNode
 			name: this.name,
 			type: this.type,
 			region: this.regionProperty.toJSON(),
-			resources: this.resources,
+			resources: { ...generateEmptyResourcesObject(), ...this.resources },
 		};
 	}
 
