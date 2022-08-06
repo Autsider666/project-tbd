@@ -409,12 +409,12 @@ export class ClientController {
 				);
 				return;
 			}
+			console.log(survivors, type)
 
 			for (const survivor of survivors) {
 				if (survivor !== type) {
 					continue;
 				}
-
 				party.transferSurvivorTo(survivor, party.getSettlement());
 
 				ClientNotifier.success(

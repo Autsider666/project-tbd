@@ -14,12 +14,14 @@ const getSettlements = (originId, targetId) => new Promise(resolve => {
     })
 })
 
-const transferSurvivor = (type, survivorId, partyId) => {
-    socket.emit('survivor:' + type, { survivorId, partyId })
+const transferSurvivor = (action, type, partyId) => {
+    console.log({action, type, partyId})
+    socket.emit('survivor:' + action, { type, partyId })
 }
 
-const recruitSurvivor = (survivorId, partyId) => transferSurvivor('recruit', survivorId, partyId)
-const dismissSurvivor = (survivorId, partyId) => transferSurvivor('dismiss', survivorId, partyId)
+const recruitSurvivor = (type, partyId) => transferSurvivor('recruit', type, partyId)
+
+const dismissSurvivor = (type, partyId) => transferSurvivor('dismiss', type, partyId)
 
 
 
@@ -39,7 +41,6 @@ const GameProvider = ({ children }) => {
     const [worldRepository, setWorldRepository] = useState({})
     const [regionRepository, setRegionRepository] = useState({})
     const [borderRepository, setBorderRepository] = useState({})
-    const [survivorRepository, setSurvivorRepository] = useState({})
     const [partyRepository, setPartyRepository] = useState({})
     const [resourceNodeRepository, setResourceNodeRepository] = useState({})
     const [settlementRepository, setSettlementRepository] = useState({})
@@ -53,6 +54,18 @@ const GameProvider = ({ children }) => {
     const [travelPaths, setTravelPaths] = useState({})
     const [selectedRegionTravelPath, setSelectedRegionTravelPath] = useState({})
     const [currentExpeditionTravelPath, setCurrentExpeditionTravelPath] = useState({})
+
+    const resetRepositories = () => {
+        setWorldRepository({})
+        setRegionRepository({})
+        setBorderRepository({})
+        setPartyRepository({})
+        setResourceNodeRepository({})
+        setSettlementRepository({})
+        setVoyageRepository({})
+        setExpeditionRepository({})
+        setResourceRepository({})
+    }
 
 
 
@@ -71,8 +84,6 @@ const GameProvider = ({ children }) => {
         if (Object.keys(regionRepository).length === 0) return false
         // if (Object.keys(borderRepository).length === 0) console.log("errors out at: borderRepository")
         if (Object.keys(borderRepository).length === 0) return false
-        // if (Object.keys(survivorRepository).length === 0) console.log("errors out at: survivorRepository")
-        if (Object.keys(survivorRepository).length === 0) return false
         // if (Object.keys(partyRepository).length === 0) console.log("errors out at: partyRepository")
         if (Object.keys(partyRepository).length === 0) return false
         // if (Object.keys(resourceNodeRepository).length === 0) console.log("errors out at: resourceNodeRepository")
@@ -86,7 +97,7 @@ const GameProvider = ({ children }) => {
     const [selectedRegionId, setSelectedRegionId] = useState(null)
 
     const entityUpdater = entities => {
-        console.log(entities)
+        // console.log(entities)
         // Does all the pretty work of saving it into the various repositories.
 
         const entitiesFormatted = Object.values(entities).reduce((accum, { id, entityType, ...rest }) => {
@@ -96,7 +107,6 @@ const GameProvider = ({ children }) => {
             worldRepository: {},
             regionRepository: {},
             borderRepository: {},
-            survivorRepository: {},
             partyRepository: {},
             resourcenodeRepository: {},
             settlementRepository: {},
@@ -107,7 +117,6 @@ const GameProvider = ({ children }) => {
         setWorldRepository(prev => ({ ...prev, ...entitiesFormatted.worldRepository }))
         setRegionRepository(prev => ({ ...prev, ...entitiesFormatted.regionRepository }))
         setBorderRepository(prev => ({ ...prev, ...entitiesFormatted.borderRepository }))
-        setSurvivorRepository(prev => ({ ...prev, ...entitiesFormatted.survivorRepository }))
         setPartyRepository(prev => ({ ...prev, ...entitiesFormatted.partyRepository }))
         setResourceNodeRepository(prev => ({ ...prev, ...entitiesFormatted.resourcenodeRepository }))
         setSettlementRepository(prev => ({ ...prev, ...entitiesFormatted.settlementRepository }))
@@ -121,8 +130,10 @@ const GameProvider = ({ children }) => {
 
     const notificationUpdater = ({ message, severity, categories, timestamp }) => {
         setNotificationLog(prev => {
-            prev.unshift({ message, severity, categories, timestamp: DateTime.fromISO(timestamp)
-                , localTimeStamp: (new Date()).getTime() })
+            prev.unshift({
+                message, severity, categories, timestamp: DateTime.fromISO(timestamp)
+                , localTimeStamp: (new Date()).getTime()
+            })
             return prev
         })
         // console.log({ message, severity })
@@ -180,9 +191,29 @@ const GameProvider = ({ children }) => {
     const selectedResourceNodes = Object.values(resourceNodeRepository).filter(resourceNode => resourceNode.region === selectedRegionId)
     const currentExpedition = Object.values(expeditionRepository).find(expedition => expedition.party === controlledParty.id && expedition.currentPhase !== "finished")
 
-    const partySurvivors = controlledParty && controlledParty.survivors.map(survivorId => survivorRepository[survivorId]).filter(survivorId => survivorId)
-    console.log(selectedSettlement)
-    const currentSettlementSurvivors = selectedSettlement && selectedSettlement.survivors ? selectedSettlement.survivors.map(survivorId => survivorRepository[survivorId]).filter(survivorId => survivorId) : []
+    const partySurvivors = controlledParty && controlledParty.survivors.filter(survivor => survivor)
+
+    const partySurvivorsGrouped = partySurvivors && partySurvivors.reduce((accum, value)=>{
+        const survivorGroupFound = accum.find(survivorGroup => survivorGroup.name === value.name)
+        if(survivorGroupFound){
+            survivorGroupFound.count += 1
+        } else {
+            accum.push(
+                {
+                    count: 1,
+                    name: value.name,
+                    content: value
+                }
+            )
+        }
+
+        return accum
+    },[])
+
+    console.log(partySurvivorsGrouped)
+
+    // console.log(selectedSettlement)
+    const currentSettlementSurvivors = selectedSettlement && selectedSettlement.survivors
 
     // console.log({controlledParty, survivorRepository, partySurvivors})
     const partyInventory = controlledParty && controlledParty.inventory.map(resourceId => resourceRepository[resourceId])
@@ -226,7 +257,7 @@ const GameProvider = ({ children }) => {
             originId,
             targetId,
         }, data => {
-            console.log(data)
+            // console.log(data)
             setTravelPaths(prev => {
                 if (prev[originId]) {
                     prev[originId][targetId] = data
@@ -248,8 +279,8 @@ const GameProvider = ({ children }) => {
         allEntities,
         loaded,
         currentRegionId,
-        worldRepository, regionRepository, borderRepository, survivorRepository, partyRepository, resourceNodeRepository, settlementRepository, voyageRepository, expeditionRepository, resourceRepository,
-        controlledParty, partyInventory, partySurvivors,
+        worldRepository, regionRepository, borderRepository, partyRepository, resourceNodeRepository, settlementRepository, voyageRepository, expeditionRepository, resourceRepository,
+        controlledParty, partyInventory, partySurvivors, partySurvivorsGrouped,
         currentSettlement, currentSettlementId, currentSettlementStorage, currentSettlementSurvivors,
         currentExpedition, currentExpeditionTravelPath,
         currentVoyage,
@@ -259,6 +290,7 @@ const GameProvider = ({ children }) => {
         tickLength,
         recruitSurvivor, dismissSurvivor,
         notificationLog,
+        resetRepositories,
 
     };
 

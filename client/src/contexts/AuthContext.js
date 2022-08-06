@@ -1,5 +1,6 @@
 import { useContext, useState, createContext, useEffect } from 'react';
 import { socket, socketPromise } from '../functions/SocketAPI';
+import { useGame } from './GameContext';
 
 const AuthContext = createContext();
 
@@ -32,7 +33,14 @@ const AuthProvider = ({ children }) => {
     const { token } = user
 
     const tbdToken = localStorage.getItem("tbd-token")
-    console.log({tbdToken, token})
+    
+
+    // console.log({tbdToken, token})
+
+    const resetAuth = () => {
+        localStorage.removeItem("tbd-token")
+        setUser({})
+    }
 
     const partyCreate = async name => {
 
@@ -66,7 +74,7 @@ const AuthProvider = ({ children }) => {
 
     }, [tbdToken])
 
-    console.log(user)
+    // console.log(user)
 
 
 
@@ -77,6 +85,7 @@ const AuthProvider = ({ children }) => {
 
     const value = {
         partyCreate,
+        resetAuth,
         user,
         signup,
         signin,

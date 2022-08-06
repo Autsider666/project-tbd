@@ -9,7 +9,7 @@ const Party = () => {
     const { controlledParty: party, partyInventory } = useGame()
     if (party === null) return <div />
 
-    // console.log({ party, partyInventory })
+    console.log({ party, partyInventory })
     const resourceTypes = [
         { type: 'wood', },
         { type: 'stone', },
@@ -55,7 +55,7 @@ const Upgrades = () => <div>Upgrades</div>
 const content = [
     { label: 'Party', Component: Party },
     { label: 'Survivors', Component: Survivors },
-    { label: 'Upgrades', Component: Upgrades },
+    // { label: 'Upgrades', Component: Upgrades },
     // { label: 'RandomTest', Component: RandomTest },
 ]
 

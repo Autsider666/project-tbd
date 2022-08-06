@@ -2,7 +2,7 @@ import React from 'react';
 import { Box, Button, Grid, ListItem, ListItemText, Typography, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { voyageStart } from '../../functions/socketCalls';
 import { useGame } from '../../contexts/GameContext';
-import AddCircleIcon from '@mui/icons-material/AddCircle'
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
 
 export const Settlement = () => {
     const {
@@ -15,7 +15,7 @@ export const Settlement = () => {
 
     const { id: partyId } = controlledParty || {}
 
-    const recruitHandler = survivorId => () => recruitSurvivor(survivorId, partyId)
+    const recruitHandler = survivorType => () => recruitSurvivor(survivorType, partyId)
 
     if (selectedRegionId === null) return <div />
 
@@ -72,24 +72,29 @@ export const Settlement = () => {
                                     <TableCell >Name</TableCell>
                                     <TableCell>HP</TableCell>
                                     <TableCell>DMG</TableCell>
+                                    <TableCell>Def</TableCell>
                                     <TableCell>Gather</TableCell>
+                                    <TableCell>Travel</TableCell>
                                     <TableCell></TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
                                 {
-                                    survivors.map(({ id, name, damage, hp, gatheringSpeed }) => {
+                                    survivors.map(({ name, stats }, index) => {
+                                        const { damage, hp, gatheringSpeed, travelSpeed, defense } = stats
                                         return (
-                                            <TableRow key={id} sx={{
+                                            <TableRow key={index} sx={{
                                                 "&:last-child td, &:last-child th": { border: 0, width: "80px" }
                                             }}>
                                                 <TableCell component="td" scope='row' >{name}</TableCell>
                                                 <TableCell align="right">{hp}</TableCell>
                                                 <TableCell align="right">{damage}</TableCell>
+                                                <TableCell align="right">{defense}</TableCell>
                                                 <TableCell align="right">{gatheringSpeed}</TableCell>
+                                                <TableCell align="right">{travelSpeed}</TableCell>
                                                 <TableCell align="right">
-                                                    <IconButton onClick={recruitHandler(id)} >
-                                                        <AddCircleIcon />
+                                                    <IconButton onClick={recruitHandler(name)} >
+                                                        <PersonAddIcon />
                                                     </IconButton>
                                                 </TableCell>
                                             </TableRow>
