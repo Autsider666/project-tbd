@@ -1,11 +1,15 @@
-import { Survivor } from './config/SurvivorData.js';
+import { ResourceType } from './config/ResourceData.js';
+import {
+	Survivor,
+	SurvivorData,
+	SurvivorDataMap,
+} from './config/SurvivorData.js';
 import { Client } from './controller/ClientController.js';
 import { EntityUpdate } from './controller/StateSyncController.js';
 import { Enemy } from './entity/CommonTypes/Combat.js';
 import { ExpeditionClientData } from './entity/Expedition.js';
 import { PartyId } from './entity/Party.js';
 import { RegionId } from './entity/Region.js';
-import { ResourceType } from './entity/Resource.js';
 import { ResourceNodeId } from './entity/ResourceNode.js';
 import {
 	SettlementBuilding,
@@ -52,6 +56,9 @@ export interface ClientToServerEvents {
 		callback: (expeditions: ExpeditionClientData[]) => void
 	) => void;
 	'world:list': (callback: (worlds: WorldClientData[]) => void) => void;
+	'survivor:list': (
+		callback: (survivors: { [key in Survivor]: SurvivorData }) => void
+	) => void;
 	'settlement:list': (
 		data: { worldId: WorldId },
 		callback: (settlements: SettlementClientData[]) => void
@@ -77,7 +84,11 @@ export interface ClientToServerEvents {
 		amount: number;
 		resource: ResourceType;
 	}) => void;
-	// 'test:resource:remove': (data: { settlementId: SettlementId, amount: number, resource: ResourceType }) => void;
+	'test:resource:remove': (data: {
+		containerId: SettlementId | PartyId;
+		amount: number;
+		resource: ResourceType;
+	}) => void;
 	// 'test:settlement:upgrade': (data: { settlementId: SettlementId }) => void;
 	'test:survivor:add': (data: {
 		containerId: SettlementId | PartyId;

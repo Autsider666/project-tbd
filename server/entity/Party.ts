@@ -1,4 +1,5 @@
 import { Socket } from 'socket.io';
+import { ResourceType } from '../config/ResourceData.js';
 import {
 	Survivor,
 	SurvivorData,
@@ -7,13 +8,14 @@ import {
 import { Client } from '../controller/ClientController.js';
 import { Uuid } from '../helper/UuidHelper.js';
 import { ExpeditionProperty } from './CommonProperties/ExpedtionProperty.js';
-import { ResourcesProperty } from './CommonProperties/ResourcesProperty.js';
 import { SettlementProperty } from './CommonProperties/SettlementProperty.js';
 import { VoyageProperty } from './CommonProperties/VoyageProperty.js';
-import { ResourceContainer } from './CommonTypes/ResourceContainer.js';
+import {
+	ResourceContainer,
+	Resources,
+} from './CommonTypes/ResourceContainer.js';
 import { SurvivorContainer } from './CommonTypes/SurvivorContainer.js';
 import { Expedition, ExpeditionId } from './Expedition.js';
-import { Resource, ResourceId, ResourceType } from './Resource.js';
 import { Settlement, SettlementId } from './Settlement.js';
 import { Opaque } from 'type-fest';
 import { Entity, EntityClientData, EntityStateData } from './Entity.js';
@@ -25,7 +27,7 @@ export type PartyStateData = {
 	name: string;
 	settlement: SettlementId;
 	survivors?: Survivor[];
-	inventory?: ResourceId[];
+	resources?: Resources;
 	currentVoyage?: VoyageId | null;
 	currentExpedition?: ExpeditionId | null;
 	dead?: boolean;
@@ -48,7 +50,7 @@ export class Party
 	public dead: boolean;
 	private readonly settlementProperty: SettlementProperty;
 	private readonly survivors: Survivor[];
-	private readonly inventoryProperty: ResourcesProperty;
+	private readonly resources: Resources;
 	private voyageProperty: VoyageProperty | null;
 	private expeditionProperty: ExpeditionProperty | null;
 	public readonly sockets: Socket[] = [];
@@ -60,10 +62,7 @@ export class Party
 		this.dead = data.dead ?? false;
 		this.settlementProperty = new SettlementProperty(data.settlement);
 		this.survivors = data.survivors ?? [];
-		this.inventoryProperty = new ResourcesProperty(
-			data.inventory ?? [],
-			this
-		);
+		this.resources = data.resources ?? {};
 		this.voyageProperty = data.currentVoyage
 			? new VoyageProperty(data.currentVoyage)
 			: null;
@@ -79,7 +78,7 @@ export class Party
 			dead: this.dead,
 			settlement: this.settlementProperty.toJSON(),
 			survivors: this.survivors,
-			inventory: this.inventoryProperty.toJSON(),
+			resources: this.resources,
 			currentVoyage: this.voyageProperty?.toJSON() ?? null,
 			currentExpedition: this.expeditionProperty?.toJSON() ?? null,
 		};
@@ -138,7 +137,8 @@ export class Party
 			return false;
 		}
 
-		delete this.survivors[index];
+		this.survivors.splice(index, 1);
+
 		return true;
 	}
 
@@ -227,20 +227,12 @@ export class Party
 		return carryCapacity;
 	}
 
-	public getInventory(): Resource[] {
-		return this.inventoryProperty.getAll();
+	public getResources(): Resources {
+		return this.resources;
 	}
 
-	public addResource(amount: number, type: ResourceType): void {
-		this.inventoryProperty.addResource(amount, type);
-	}
-
-	public getResources(): Resource[] {
-		return this.inventoryProperty.getAll();
-	}
-
-	public deleteResource(id: ResourceId): void {
-		this.inventoryProperty.remove(id);
+	public deleteResource(type: ResourceType): void {
+		delete this.resources[type];
 	}
 
 	transferSurvivorTo(
@@ -252,18 +244,24 @@ export class Party
 		}
 	}
 
-	removeResource(amount: number, type: ResourceType): void {
-		for (const resource of this.inventoryProperty.getAll()) {
-			if (resource.type !== type) {
-				continue;
-			}
+	addResource(amount: number, type: ResourceType): void {
+		this.resources[type] = (this.resources[type] ?? 0) + amount;
+	}
 
-			if (resource.getAmount() < amount) {
-				throw new Error(`Party does not have ${amount} ${type}.`);
-			}
-
-			resource.removeAmount(amount);
-			break;
+	removeResource(amount: number, type: ResourceType): boolean {
+		if (!(type in this.resources)) {
+			this.resources[type] = 0;
 		}
+
+		if ((this.resources[type] ?? 0) < amount) {
+			return false;
+		}
+
+		this.resources[type] = Math.max(
+			0,
+			(this.resources[type] ?? 0) - amount
+		);
+
+		return true;
 	}
 }

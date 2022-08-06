@@ -105,6 +105,27 @@ export class TestController {
 				);
 
 				socket.on(
+					'test:resource:remove',
+					({ containerId, amount, resource }) => {
+						let container: ResourceContainer | null =
+							this.settlementRepository.get(
+								containerId as SettlementId
+							);
+						if (container === null) {
+							container = this.partyRepository.get(
+								containerId as PartyId
+							);
+						}
+
+						if (container === null) {
+							return;
+						}
+
+						container.removeResource(amount, resource);
+					}
+				);
+
+				socket.on(
 					'test:raid:start',
 					({
 						settlementId,

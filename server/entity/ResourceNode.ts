@@ -1,41 +1,39 @@
 import { Opaque } from 'type-fest';
+import { ResourceNodeType, ResourceType } from '../config/ResourceData.js';
 import { Client } from '../controller/ClientController.js';
-import { EntityUpdate } from '../controller/StateSyncController.js';
 import { Uuid } from '../helper/UuidHelper.js';
 import { RegionProperty } from './CommonProperties/RegionProperty.js';
-import { ResourcesProperty } from './CommonProperties/ResourcesProperty.js';
+import {
+	ResourceContainer,
+	Resources,
+} from './CommonTypes/ResourceContainer.js';
 import { Entity, EntityClientData, EntityStateData } from './Entity.js';
 import { Region, RegionId } from './Region.js';
-import { Resource, ResourceId } from './Resource.js';
 
 export type ResourceNodeId = Opaque<Uuid, 'ResourceNodeId'>;
-
-export enum ResourceNodeType {
-	Tower = 'tower',
-	Ruin = 'ruin',
-	Forest = 'forest',
-	Mountain = 'mountain',
-}
 
 export type ResourceNodeStateData = {
 	name: string;
 	type: ResourceNodeType;
 	region: RegionId;
-	resources?: ResourceId[];
+	resources?: Resources;
 } & EntityStateData<ResourceNodeId>;
 
 export type ResourceNodeClientData = ResourceNodeStateData &
 	EntityClientData<ResourceNodeId>;
 
-export class ResourceNode extends Entity<
-	ResourceNodeId,
-	ResourceNodeStateData,
-	ResourceNodeClientData
-> {
+export class ResourceNode
+	extends Entity<
+		ResourceNodeId,
+		ResourceNodeStateData,
+		ResourceNodeClientData
+	>
+	implements ResourceContainer
+{
 	public readonly name: string;
 	public readonly type: ResourceNodeType;
 	private readonly regionProperty: RegionProperty;
-	private readonly resourcesProperty: ResourcesProperty;
+	private readonly resources: Resources;
 
 	constructor(data: ResourceNodeStateData) {
 		super(data);
@@ -43,10 +41,7 @@ export class ResourceNode extends Entity<
 		this.name = data.name;
 		this.type = data.type;
 		this.regionProperty = new RegionProperty(data.region);
-		this.resourcesProperty = new ResourcesProperty(
-			data.resources ?? [],
-			this
-		);
+		this.resources = data.resources ?? {};
 	}
 
 	normalize(forClient?: Client): ResourceNodeClientData {
@@ -62,26 +57,12 @@ export class ResourceNode extends Entity<
 			name: this.name,
 			type: this.type,
 			region: this.regionProperty.toJSON(),
-			resources: this.resourcesProperty.toJSON(),
+			resources: this.resources,
 		};
 	}
 
 	getUpdateRoomName(): string {
 		return this.regionProperty.get().getUpdateRoomName();
-	}
-
-	async prepareNestedEntityUpdate(
-		updateObject: EntityUpdate = {},
-		forClient?: Client
-	): Promise<EntityUpdate> {
-		for (const resource of this.resourcesProperty.getAll()) {
-			updateObject = await resource.prepareNestedEntityUpdate(
-				updateObject,
-				forClient
-			);
-		}
-
-		return super.prepareNestedEntityUpdate(updateObject, forClient);
 	}
 
 	getRegion(): Region {
@@ -92,11 +73,28 @@ export class ResourceNode extends Entity<
 		this.regionProperty.set(region);
 	}
 
-	getResources(): Resource[] {
-		return this.resourcesProperty.getAll();
+	getResources(): Resources {
+		return this.resources;
 	}
 
-	addResource(resource: Resource): void {
-		this.resourcesProperty.add(resource);
+	addResource(amount: number, type: ResourceType): void {
+		this.resources[type] = (this.resources[type] ?? 0) + amount;
+	}
+
+	removeResource(amount: number, type: ResourceType): boolean {
+		if (!(type in this.resources)) {
+			this.resources[type] = 0;
+		}
+
+		if ((this.resources[type] ?? 0) < amount) {
+			return false;
+		}
+
+		this.resources[type] = Math.max(
+			0,
+			(this.resources[type] ?? 0) - amount
+		);
+
+		return true;
 	}
 }

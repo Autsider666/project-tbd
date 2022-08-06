@@ -1,6 +1,6 @@
 import { singleton } from 'tsyringe';
+import { ResourceType } from '../../config/ResourceData.js';
 import { Expedition, ExpeditionPhase } from '../../entity/Expedition.js';
-import { ResourceType } from '../../entity/Resource.js';
 import {
 	ClientNotifier,
 	NotificationCategory,
@@ -37,7 +37,6 @@ export class ExpeditionGatheringSystem implements System {
 
 		const party = expedition.getParty();
 		const node = expedition.getTarget();
-		let resources = node.getResources();
 
 		const gathered: { [key in ResourceType]: number } = {
 			[ResourceType.iron]: 0,
@@ -47,21 +46,20 @@ export class ExpeditionGatheringSystem implements System {
 
 		let amountToGather = party.getGatheringSpeed();
 		while (amountToGather > 0) {
-			resources = resources.filter(
-				(resource) => resource.getAmount() > 0
-			);
-			if (resources.length === 0) {
+			let resources = node.getResources();
+			if (Object.keys(resources).length === 0) {
 				break;
 			}
 
-			const randomResource = getRandomItem(resources, (resource) =>
-				resource.getAmount()
-			);
-			const toTake = Math.min(amountToGather, randomResource.getAmount());
-			party.addResource(toTake, randomResource.type);
-			randomResource.removeAmount(toTake);
+			const [randomResourceType, randomResourceAmount] = getRandomItem(
+				Object.entries(resources),
+				([, amount]) => amount as number
+			) as [ResourceType, number];
+			const toTake = Math.min(amountToGather, randomResourceAmount);
+			party.addResource(toTake, randomResourceType);
+			node.removeResource(toTake, randomResourceType);
 			amountToGather -= toTake;
-			gathered[randomResource.type] += toTake;
+			gathered[randomResourceType] += toTake;
 		}
 
 		ClientNotifier.info(
@@ -73,7 +71,7 @@ export class ExpeditionGatheringSystem implements System {
 			[NotificationCategory.expedition]
 		);
 
-		if (resources.length === 0) {
+		if (Object.keys(node.getResources()).length === 0) {
 			expedition.setCurrentPhase(ExpeditionPhase.gather, this.now);
 			ClientNotifier.info(
 				`${node.name} seems to be completely depleted, so party "${party.name}" is going to head back soon.`,

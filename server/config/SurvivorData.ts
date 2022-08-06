@@ -1,4 +1,4 @@
-import { ResourceNodeType } from '../entity/ResourceNode.js';
+import { ResourceNodeType } from './ResourceData.js';
 
 export enum Survivor {
 	Villager = 'Villager',

@@ -1,5 +1,15 @@
-import { ResourceType } from '../entity/Resource.js';
-import { ResourceNodeType } from '../entity/ResourceNode.js';
+export enum ResourceNodeType {
+	Tower = 'Tower',
+	Ruin = 'Ruin',
+	Forest = 'Forest',
+	Mountain = 'Mountain',
+}
+
+export enum ResourceType {
+	wood = 'wood',
+	stone = 'stone',
+	iron = 'iron',
+}
 
 export const ResourceNodeMapping: {
 	[key in ResourceNodeType]: { [key in ResourceType]?: number };
