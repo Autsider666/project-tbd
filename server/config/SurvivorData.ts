@@ -14,7 +14,7 @@ export enum SurvivorTree {
 	Generic = 'Generic',
 }
 
-enum SurvivorStat {
+export enum SurvivorStat {
 	hp = 'hp',
 	travelSpeed = 'travelSpeed',
 	damage = 'damage',
@@ -23,7 +23,7 @@ enum SurvivorStat {
 	gatheringSpeed = 'gatheringSpeed',
 }
 
-type PartyBoost = {
+export type PartyBoost = {
 	percentage: number;
 	stat: SurvivorStat;
 	type: ResourceNodeType | null;

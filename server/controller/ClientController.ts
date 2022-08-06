@@ -437,7 +437,6 @@ export class ClientController {
 				);
 				return;
 			}
-			console.log(survivors, type);
 
 			for (const survivor of survivors) {
 				if (survivor !== type) {
