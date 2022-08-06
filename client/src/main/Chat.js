@@ -1,7 +1,6 @@
 import { Box, Button, Grid, List, ListItem, ListItemText, Stack, TextField } from '@mui/material'
 import React, { useState } from 'react'
 import TabsWrapper from '../components/TabsWrapper'
-import { useChat } from '../contexts/ChatContext'
 import { Log } from '../tabs/Log'
 
 
@@ -65,14 +64,21 @@ export const getColorFromSeverity = severity => {
 
 const World = () => <div>World</div>
 const Global = () => <div>Global</div>
-const content = [
-    { label: 'World', Component: ChatComponent, props: { room: 'world' } },
-    { label: 'Global', Component: ChatComponent, props: { room: 'global' } },
-    { label: 'Whisper', Component: ChatComponent, props: { room: 'whisper' } },
-    { label: 'Log', Component: Log, tabSx: { marginLeft: 'auto' } },
-]
+
+
+
+
+
+
 
 const Chat = () => {
+    const content = [
+        { label: 'World', Component: ChatComponent, props: { room: 'world' } },
+        { label: 'Global', Component: ChatComponent, props: { room: 'global' } },
+        { label: 'Whisper', Component: ChatComponent, props: { room: 'whisper' } },
+        { label: 'Log', Component: Log, tabSx: { marginLeft: 'auto' } },
+    ]
+
     const [tabIndexValue, setTabIndexValue] = useState(0)
 
     const handleIndexChange = (event, newValue) => setTabIndexValue(newValue);

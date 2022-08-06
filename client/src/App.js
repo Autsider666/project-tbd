@@ -29,7 +29,7 @@ function App() {
 		}}>
 			<Header />
 			<Box sx={{
-				height: { xs: "850px", sm: "1070px", md: "1200px", lg: `calc(100% - 24px - ${marginAmount * 2}px)` },
+				height: { xs: "650", sm: "1070px", md: "1200px", lg: `calc(100% - 24px - ${marginAmount * 2}px)` },
 				// width: `calc(100% - ${marginAmount * 2}px)`,
 				padding: 3,
 			}} >

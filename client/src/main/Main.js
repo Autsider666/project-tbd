@@ -39,7 +39,7 @@ const Main = ({ marginAmount }) => {
                 xl: 'minmax(468px, 1.4fr) 1.1fr 4fr',
             },
             gridTemplateRows: {
-                xs: '3fr 2fr',
+                xs: '3fr auto',
                 sm: '3fr 2fr',
                 md: '3fr 2fr',
                 lg: 'auto auto 3fr',
