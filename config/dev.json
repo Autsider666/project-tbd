@@ -1,6 +1,6 @@
 {
 	"stackTraceLimit": 50,
-	"corsOrigin": ["http://localhost:3000", "https://admin.socket.io"],
+	"corsOrigin": ["http://localhost:3000", "https://project-tbd.opusvrye.com/"],
 	"gatherSpeedMultiplier": 10,
 	"maxPartySize": 10,
 	"expeditionRecruitmentChance": 2,

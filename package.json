@@ -4,12 +4,13 @@
 	"exports": "./server/index.ts",
 	"type": "module",
 	"scripts": {
-		"start": "concurrently --kill-others-on-fail \"npm run start:server\" \"npm run start:client\"",
+		"start": "concurrently --kill-others-on-fail \"npm run dev:server\" \"npm run start:client\"",
 		"build": "cd client && npm run build",
-		"dev": "concurrently --kill-others-on-fail \"npm run start:server\" \"npm run start:client\"",
+		"dev": "concurrently --kill-others-on-fail \"npm run dev:server\" \"npm run start:client\"",
 		"start:client": "cd client && npm start",
-		"start:server": "tsc-watch --preserveWatchOutput --onFirstSuccess \"nodemand --node-modules build/index.js\"",
-		"start:server:old": "ts-node-dev -r esm --transpile-only server/index.ts",
+		"dev:server": "tsc-watch --preserveWatchOutput --onFirstSuccess \"nodemand --node-modules build/index.js\"",
+		"start:server": "ts-node build/index.js",
+		"build:server": "tsc -p .",
 		"prettier": "prettier --check .",
 		"prettier:fix": "prettier --write .",
 		"postinstall": "cd client && npm install"

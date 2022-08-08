@@ -39,7 +39,8 @@ const io = new Server<
 container.register(Server, { useValue: io });
 container.register(EventEmitter, { useValue: new EventEmitter() });
 
-app.get('/', (_, res) => res.sendFile(path.resolve('./server/test.html')));
+// app.get('/', (_, res) => res.sendFile(path.resolve('./server/test.html')));
+app.get('/', (_, res) => res.send({ running: true }));
 
 const worldFactory = container.resolve(WorldFactory);
 app.get('/state', (_, res) =>
@@ -52,9 +53,9 @@ app.get('/state', (_, res) =>
 	)
 );
 
-instrument(io, {
-	auth: false,
-});
+// instrument(io, {
+// 	auth: false,
+// });
 
 const port = config.get('port');
 const host = config.get('host');
