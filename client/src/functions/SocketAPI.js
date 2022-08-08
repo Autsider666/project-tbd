@@ -1,18 +1,6 @@
 import { io } from 'socket.io-client';
 
-let socketURL = "";
-socketURL = "backend.opusvrye.com"
-
-if (process.env.NODE_ENV === 'development') {
-    socketURL = "localhost:5000"
-}
-
-const socket = io(socketURL, {
-    cors: {
-        origin: "localhost:3000",
-        credentials: true,
-    }
-})
+const socket = io(process.env.BACKEND)
 
 // socket.on('connect', function () {
 //     socket.emit('authenticate', { token: localStorage.getItem('idToken') }, data => { console.log(data) });

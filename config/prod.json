@@ -1,0 +1,14 @@
+{
+  "port": 8080,
+	"stackTraceLimit": 50,
+	"corsOrigin": ["https://project-tbd.opusvrye.com/"],
+	"gatherSpeedMultiplier": 10,
+	"maxPartySize": 10,
+	"expeditionRecruitmentChance": 2,
+	"expeditionCombatChance": 5,
+	"settlementStartingHp": 10000,
+	"settlementStartingDamage": 100,
+	"settlementRaidChance": 1,
+	"maxPartyEnergy": 2000,
+	"serverTickTime": 6000
+}

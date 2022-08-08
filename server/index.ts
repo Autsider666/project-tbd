@@ -1,6 +1,7 @@
 import 'reflect-metadata';
 import EventEmitter from 'events';
 import { container } from 'tsyringe';
+import { fileURLToPath } from 'url';
 import { TestController } from './controller/TestController.js';
 import { ServerConfig } from './serverConfig.js';
 import { ServerController } from './controller/ServerController.js';
@@ -24,24 +25,34 @@ const app = express();
 
 const httpServer = createServer(app);
 
-const io = new Server<
-	ClientToServerEvents,
+const io = new Server<ClientToServerEvents,
 	ServerToClientEvents,
 	any,
-	SocketData
->(httpServer, {
+	SocketData>(httpServer, {
 	cors: {
 		origin: config.get('corsOrigin'),
 		// credentials: true,
 	},
 });
 
-container.register(Server, { useValue: io });
-container.register(EventEmitter, { useValue: new EventEmitter() });
+container.register(Server, {useValue: io});
+container.register(EventEmitter, {useValue: new EventEmitter()});
 
-// app.get('/', (_, res) => res.sendFile(path.resolve('./server/test.html')));
-app.get('/', (_, res) => res.send({ running: true }));
+console.log(config.get('env'));
+if (config.get('env') === 'prod') {
+	const __dirname = path.dirname(fileURLToPath(import.meta.url));
+	app.use(express.static(path.join(__dirname, '..', 'client', 'build')));
 
+	app.get('/', function (req, res) {
+		res.sendFile(path.join(__dirname,'..', 'client',  'build', 'index.html'));
+	});
+} else {
+	app.get('/', (_, res) => res.sendFile(path.resolve('./server/test.html')));
+
+	instrument(io, {
+		auth: false,
+	});
+}
 const worldFactory = container.resolve(WorldFactory);
 app.get('/state', (_, res) =>
 	res.send(
@@ -52,10 +63,6 @@ app.get('/state', (_, res) =>
 		)}</pre>`
 	)
 );
-
-// instrument(io, {
-// 	auth: false,
-// });
 
 const port = config.get('port');
 const host = config.get('host');
