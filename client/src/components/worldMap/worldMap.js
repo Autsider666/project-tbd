@@ -18,7 +18,7 @@ const WorldMap = ({ world, regions, selectedRegionId, setSelectedRegionId, setTa
         setSelectedRegionId(regionId)
     }
 
-    const dev = false
+    const dev = true
 
     return (
         <Box sx={{ position: 'relative', width: '100%', marginBottom: '-8px' }} >

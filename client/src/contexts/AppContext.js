@@ -14,6 +14,8 @@ const AppProvider = ({ children }) => {
         severity: 'warning',
     })
 
+    const [wikiModal, setWikiModal] = useState(false)
+
     // 'success' | 'info' | 'warning' | 'error'
 
     const hideSnackbar = () => setSnackbar({ visible: false })
@@ -21,7 +23,8 @@ const AppProvider = ({ children }) => {
 
 
     const value = {
-        snackbar, hideSnackbar, displaySnackbar
+        snackbar, hideSnackbar, displaySnackbar,
+        wikiModal, setWikiModal,
     };
 
     return (

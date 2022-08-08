@@ -1,21 +1,23 @@
 import React from 'react'
-import { ListItem, ListItemText } from '@mui/material'
+import { ListItem, ListItemText, Tooltip } from '@mui/material'
 
 const StatListItem = ({ stats = {} }) => {
     const statTypes = [
-        { key: 'hp', label: 'Health', },
-        { key: 'damage', label: 'Damage', },
-        { key: 'defense', label: 'Defense', },
-        { key: 'gatheringSpeed', label: 'Gathering', },
-        { key: 'carryCapacity', label: 'Carry', },
-        { key: 'travelSpeed', label: 'Travel', },
+        { key: 'hp', label: 'Health', tooltip: "Total Health"},
+        { key: 'damage', label: 'Damage', tooltip: "Total Damage Dealt" },
+        { key: 'defense', label: 'Defense', tooltip: "Total Damage Negated per attack" },
+        { key: 'gatheringSpeed', label: 'Gathering', tooltip: "Amount gathered/repaired & built by tick" },
+        { key: 'carryCapacity', label: 'Carry', tooltip: "Total inventory size" },
+        { key: 'travelSpeed', label: 'Travel', tooltip: "Affects how fast Expeditions & Voyages takes" },
     ]
 
     return (
         <ListItem sx={{ justifyContent: 'center' }}>
             <ListItemText sx={{ minWidth: '80px' }} primary="Stats" />
-            {statTypes.map(({ key, label }) => (
-                <ListItemText sx={{ mx: 0.5, textAlign: 'center' }} key={key} primary={stats[key] || 0} secondary={label} />
+            {statTypes.map(({ key, label, tooltip = "" }) => (
+                <Tooltip key={key} title={tooltip}>
+                    <ListItemText sx={{ mx: 0.5, textAlign: 'center' }} key={key} primary={stats[key] || 0} secondary={label} />
+                </Tooltip>
             ))}
         </ListItem>
     )

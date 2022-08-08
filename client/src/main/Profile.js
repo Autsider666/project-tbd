@@ -15,9 +15,9 @@ const Profile = () => {
     const matches = useMediaQuery(theme.breakpoints.up('lg'));
 
     const content = [
-        { label: 'Survivors', Component: Survivors },
-        { label: 'Settlement', Component: Settlement },
-        { label: 'Region', Component: ExpeditionSites },
+        { label: 'Survivors', Component: Survivors, tooltip:"Combined Survivor Stats, Inventory and Management" },
+        { label: 'Settlement', Component: Settlement, tooltip:"Settlement Overview and Upgrades" },
+        { label: 'Region', Component: ExpeditionSites, tooltip:"Expeditions and Voyages" },
 
 
         // { label: 'Inventory', Component: Party },

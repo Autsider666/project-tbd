@@ -6,16 +6,14 @@ import StatListItem from '../components/StatListItem';
 import ResourceListItem from '../components/ResourceListItem';
 
 
-const Survivors = () => {
+const Survivors = ({ height, width }) => {
     const { controlledParty, partySurvivorsGrouped } = useGame()
     return (
-        <Box sx={{ height: '300px', width: '100%' }}>
-            <List sx={{ height: '310px' }} >
-                <ResourceListItem resources={controlledParty.resources} />
-                <StatListItem stats={controlledParty.stats} />
-                <SurvivorList partySurvivorsGrouped={partySurvivorsGrouped} />
-            </List>
-        </Box>
+        <List sx={{ height, width: "100%" }} >
+            <ResourceListItem resources={controlledParty.resources} />
+            <StatListItem stats={controlledParty.stats} />
+            <SurvivorList height={height - 150} partySurvivorsGrouped={partySurvivorsGrouped} />
+        </List>
     )
 }
 

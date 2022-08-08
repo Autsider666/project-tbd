@@ -35,14 +35,14 @@ const Main = ({ marginAmount }) => {
                 xs: '1fr',
                 sm: '1fr',
                 md: '1.5fr',
-                lg: '1.5fr 1.5fr 5fr',
-                xl: 'minmax(468px, 1.4fr) 1.1fr 4fr',
+                lg: 'minmax(400px, 1.5fr) 1.5fr 5fr',
+                xl: 'minmax(400px, 1.4fr) 1.1fr 4fr',
             },
             gridTemplateRows: {
-                xs: '3fr auto',
+                xs: '1fr 1fr',
                 sm: '3fr 2fr',
                 md: '3fr 2fr',
-                lg: 'auto auto 3fr',
+                lg: '5fr 3fr',
                 xl: 'minmax(300px, 3fr) 2fr 3fr',
             },
             gridTemplateAreas: {
@@ -53,7 +53,6 @@ const Main = ({ marginAmount }) => {
                 md: `"Map"
                      "Profile"`,
                 lg: `"Profile Profile Map "
-                     "Profile Profile Map"
                      "Chat Chat Map"`,
                 xl: `"Profile Profile Map "
                      "Profile Profile Map"

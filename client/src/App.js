@@ -9,6 +9,7 @@ import { useGame } from './contexts/GameContext';
 // import './App.css'
 import { Box } from "@mui/system";
 import { useApp } from "./contexts/AppContext";
+import WikiModal from "./components/WikiModal"
 
 
 
@@ -29,7 +30,7 @@ function App() {
 		}}>
 			<Header />
 			<Box sx={{
-				height: { xs: "650", sm: "1070px", md: "1200px", lg: `calc(100% - 24px - ${marginAmount * 2}px)` },
+				height: { xs: "980px", sm: "1070px", md: "1200px", lg: `calc(100% - 24px - ${marginAmount * 2}px)` },
 				// width: `calc(100% - ${marginAmount * 2}px)`,
 				padding: 3,
 			}} >
@@ -49,6 +50,7 @@ function App() {
 					{snackbar.message}
 				</Alert>
 			</Snackbar>
+			<WikiModal />
 		</Box>
 	);
 }

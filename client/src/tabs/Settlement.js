@@ -10,7 +10,7 @@ const Settlement = () => {
         currentSettlement,
     } = useGame()
 
-    console.log(currentSettlement)
+    // console.log(currentSettlement)
 
     if (currentSettlement === null) return <div />
 
