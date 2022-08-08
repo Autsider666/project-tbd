@@ -1,6 +1,6 @@
 import { io } from 'socket.io-client';
 
-const socket = io(process.env.BACKEND)
+const socket = io(process.env.NODE_ENV === 'development' ? 'localhost:5000' : undefined);
 
 // socket.on('connect', function () {
 //     socket.emit('authenticate', { token: localStorage.getItem('idToken') }, data => { console.log(data) });
