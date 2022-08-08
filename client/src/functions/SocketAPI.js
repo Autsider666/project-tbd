@@ -1,7 +1,7 @@
 import { io } from 'socket.io-client';
 
 let socketURL = "";
-socketURL = "backend.domain.com"
+socketURL = "backend.opusvrye.com"
 
 if (process.env.NODE_ENV === 'development') {
     socketURL = "localhost:5000"
