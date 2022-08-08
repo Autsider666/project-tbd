@@ -43,11 +43,11 @@ if (config.get('env') === 'prod') {
 	const __dirname = path.dirname(fileURLToPath(import.meta.url));
 	app.use(express.static(path.join(__dirname, '..', 'client', 'build')));
 
-	app.get('/', function (req, res) {
+	app.get('*', function (req, res) {
 		res.sendFile(path.join(__dirname,'..', 'client',  'build', 'index.html'));
 	});
 } else {
-	app.get('/', (_, res) => res.sendFile(path.resolve('./server/test.html')));
+	app.get('*', (_, res) => res.sendFile(path.resolve('./server/test.html')));
 
 	instrument(io, {
 		auth: false,

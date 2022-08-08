@@ -1,7 +1,7 @@
 {
   "port": 8080,
 	"stackTraceLimit": 50,
-	"corsOrigin": ["https://project-tbd.opusvrye.com/"],
+	"corsOrigin": ["https://project-tbd.opusvrye.com"],
 	"gatherSpeedMultiplier": 10,
 	"maxPartySize": 10,
 	"expeditionRecruitmentChance": 2,
