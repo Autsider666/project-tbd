@@ -52,7 +52,7 @@ export const SurvivorDataMap: { [key in Survivor]: SurvivorData } = {
 		tier: 1,
 		stats: {
 			[SurvivorStat.hp]: 50,
-			[SurvivorStat.travelSpeed]: 10,
+			[SurvivorStat.travelSpeed]: 100,
 			[SurvivorStat.damage]: 10,
 			[SurvivorStat.defense]: 2,
 			[SurvivorStat.carryCapacity]: 250,
@@ -68,7 +68,7 @@ export const SurvivorDataMap: { [key in Survivor]: SurvivorData } = {
 		tier: 2,
 		stats: {
 			[SurvivorStat.hp]: 50,
-			[SurvivorStat.travelSpeed]: 10,
+			[SurvivorStat.travelSpeed]: 100,
 			[SurvivorStat.damage]: 10,
 			[SurvivorStat.defense]: 2,
 			[SurvivorStat.carryCapacity]: 350,
@@ -84,7 +84,7 @@ export const SurvivorDataMap: { [key in Survivor]: SurvivorData } = {
 		tier: 3,
 		stats: {
 			[SurvivorStat.hp]: 50,
-			[SurvivorStat.travelSpeed]: 10,
+			[SurvivorStat.travelSpeed]: 100,
 			[SurvivorStat.damage]: 10,
 			[SurvivorStat.defense]: 2,
 			[SurvivorStat.carryCapacity]: 350,
@@ -104,7 +104,7 @@ export const SurvivorDataMap: { [key in Survivor]: SurvivorData } = {
 		tier: 3,
 		stats: {
 			[SurvivorStat.hp]: 50,
-			[SurvivorStat.travelSpeed]: 10,
+			[SurvivorStat.travelSpeed]: 100,
 			[SurvivorStat.damage]: 10,
 			[SurvivorStat.defense]: 2,
 			[SurvivorStat.carryCapacity]: 350,
@@ -124,7 +124,7 @@ export const SurvivorDataMap: { [key in Survivor]: SurvivorData } = {
 		tier: 2,
 		stats: {
 			[SurvivorStat.hp]: 75,
-			[SurvivorStat.travelSpeed]: 10,
+			[SurvivorStat.travelSpeed]: 100,
 			[SurvivorStat.damage]: 15,
 			[SurvivorStat.defense]: 5,
 			[SurvivorStat.carryCapacity]: 200,
@@ -140,7 +140,7 @@ export const SurvivorDataMap: { [key in Survivor]: SurvivorData } = {
 		tier: 3,
 		stats: {
 			[SurvivorStat.hp]: 75,
-			[SurvivorStat.travelSpeed]: 10,
+			[SurvivorStat.travelSpeed]: 100,
 			[SurvivorStat.damage]: 20,
 			[SurvivorStat.defense]: 5,
 			[SurvivorStat.carryCapacity]: 200,
@@ -160,7 +160,7 @@ export const SurvivorDataMap: { [key in Survivor]: SurvivorData } = {
 		tier: 3,
 		stats: {
 			[SurvivorStat.hp]: 75,
-			[SurvivorStat.travelSpeed]: 10,
+			[SurvivorStat.travelSpeed]: 100,
 			[SurvivorStat.damage]: 15,
 			[SurvivorStat.defense]: 10,
 			[SurvivorStat.carryCapacity]: 200,

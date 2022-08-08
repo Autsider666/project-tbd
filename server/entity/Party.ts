@@ -13,11 +13,7 @@ import { Uuid } from '../helper/UuidHelper.js';
 import { ExpeditionProperty } from './CommonProperties/ExpedtionProperty.js';
 import { SettlementProperty } from './CommonProperties/SettlementProperty.js';
 import { VoyageProperty } from './CommonProperties/VoyageProperty.js';
-import {
-	generateEmptyResourcesObject,
-	ResourceContainer,
-	Resources,
-} from './CommonTypes/ResourceContainer.js';
+import { generateEmptyResourcesObject, ResourceContainer, Resources, } from './CommonTypes/ResourceContainer.js';
 import { SurvivorContainer } from './CommonTypes/SurvivorContainer.js';
 import { Entity, EntityClientData, EntityStateData } from './Entity.js';
 import { Expedition, ExpeditionId, ExpeditionPhase } from './Expedition.js';
@@ -46,8 +42,7 @@ export type PartyClientData = Omit<PartyStateData, 'survivors'> & {
 
 export class Party
 	extends Entity<PartyId, PartyStateData, PartyClientData>
-	implements SurvivorContainer, ResourceContainer
-{
+	implements SurvivorContainer, ResourceContainer {
 	public name: string;
 	public dead: boolean;
 	private readonly settlementProperty: SettlementProperty;
@@ -83,7 +78,7 @@ export class Party
 			dead: this.dead,
 			settlement: this.settlementProperty.toJSON(),
 			survivors: this.survivors,
-			resources: { ...generateEmptyResourcesObject(), ...this.resources },
+			resources: {...generateEmptyResourcesObject(), ...this.resources},
 			currentVoyage: this.voyageProperty?.toJSON() ?? null,
 			currentExpedition: this.expeditionProperty?.toJSON() ?? null,
 			energy: this.energy,
@@ -233,7 +228,7 @@ export class Party
 			}
 
 			if (applicableBoost === null) {
-				boosts.push({ ...survivorBoost });
+				boosts.push({...survivorBoost});
 				continue;
 			}
 
@@ -265,91 +260,38 @@ export class Party
 	}
 
 	public getHp(): number {
-		let hp = 0;
-		this.getSurvivors().forEach(
-			(survivor) => (hp += SurvivorDataMap[survivor].stats.hp)
-		);
-
-		return Math.round(
-			hp *
-				((100 + (this.getBoost(SurvivorStat.hp)?.percentage ?? 0)) /
-					100)
-		);
+		return Math.round(this.getStat(SurvivorStat.hp));
 	}
 
 	public getDamage(): number {
-		let damage = 0;
-		this.getSurvivors().forEach(
-			(survivor) => (damage += SurvivorDataMap[survivor].stats.damage)
-		);
-
-		return Math.round(
-			damage *
-				((100 + (this.getBoost(SurvivorStat.damage)?.percentage ?? 0)) /
-					100)
-		);
+		return Math.round(this.getStat(SurvivorStat.damage));
 	}
 
 	public getGatheringSpeed(): number {
-		let gatheringSpeed = 0;
-		this.getSurvivors().forEach(
-			(survivor) =>
-				(gatheringSpeed +=
-					SurvivorDataMap[survivor].stats.gatheringSpeed)
-		);
-
-		return Math.round(
-			gatheringSpeed *
-				((100 +
-					(this.getBoost(SurvivorStat.gatheringSpeed)?.percentage ??
-						0)) /
-					100)
-		);
+		return Math.round(this.getStat(SurvivorStat.gatheringSpeed));
 	}
 
 	public getCarryCapacity(): number {
-		let carryCapacity = 0;
-		this.getSurvivors().forEach(
-			(survivor) =>
-				(carryCapacity += SurvivorDataMap[survivor].stats.carryCapacity)
-		);
-
-		return Math.round(
-			carryCapacity *
-				((100 +
-					(this.getBoost(SurvivorStat.carryCapacity)?.percentage ??
-						0)) /
-					100)
-		);
+		return Math.round(this.getStat(SurvivorStat.carryCapacity));
 	}
 
 	public getDefense(): number {
-		let defense = 0;
-		this.getSurvivors().forEach(
-			(survivor) => (defense += SurvivorDataMap[survivor].stats.defense)
-		);
-
-		return Math.round(
-			defense *
-				((100 +
-					(this.getBoost(SurvivorStat.defense)?.percentage ?? 0)) /
-					100)
-		);
+		return Math.round(this.getStat(SurvivorStat.defense));
 	}
 
 	public getTravelSpeed(): number {
-		let travelSpeed = 0;
+		return Math.round(this.getStat(SurvivorStat.travelSpeed) / this.getSurvivors().length);
+	}
+
+	private getStat(stat: SurvivorStat): number {
+		let totalStat = 0;
 		const survivors = this.getSurvivors();
 		survivors.forEach(
 			(survivor) =>
-				(travelSpeed += SurvivorDataMap[survivor].stats.defense)
+				(totalStat += SurvivorDataMap[survivor].stats[stat])
 		);
 
-		return Math.round(
-			(travelSpeed / survivors.length) *
-				((100 + (this.getBoost(SurvivorStat.hp)?.percentage ?? 0)) /
-					100)
-		);
+		return totalStat * ((100 + (this.getBoost(stat)?.percentage ?? 0)) / 100);
 	}
 
 	public getResources(): Resources {
