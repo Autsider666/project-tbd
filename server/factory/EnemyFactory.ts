@@ -10,7 +10,7 @@ export class EnemyFactory {
 		world: World
 	): Enemy {
 		const worldAge = Math.floor(
-			(now.getTime() - world.createdAt.getTime()) / (60000 * 60)
+			(now.getTime() - new Date(world.createdAt).getTime()) / (60000 * 60)
 		);
 		return {
 			name: enemy.name,
