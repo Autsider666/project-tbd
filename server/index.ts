@@ -25,18 +25,20 @@ const app = express();
 
 const httpServer = createServer(app);
 
-const io = new Server<ClientToServerEvents,
+const io = new Server<
+	ClientToServerEvents,
 	ServerToClientEvents,
 	any,
-	SocketData>(httpServer, {
+	SocketData
+>(httpServer, {
 	cors: {
 		origin: config.get('corsOrigin'),
 		// credentials: true,
 	},
 });
 
-container.register(Server, {useValue: io});
-container.register(EventEmitter, {useValue: new EventEmitter()});
+container.register(Server, { useValue: io });
+container.register(EventEmitter, { useValue: new EventEmitter() });
 
 console.log(config.get('env'));
 if (config.get('env') === 'prod') {
@@ -44,7 +46,9 @@ if (config.get('env') === 'prod') {
 	app.use(express.static(path.join(__dirname, '..', 'client', 'build')));
 
 	app.get('*', function (req, res) {
-		res.sendFile(path.join(__dirname,'..', 'client',  'build', 'index.html'));
+		res.sendFile(
+			path.join(__dirname, '..', 'client', 'build', 'index.html')
+		);
 	});
 } else {
 	app.get('*', (_, res) => res.sendFile(path.resolve('./server/test.html')));

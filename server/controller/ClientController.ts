@@ -153,14 +153,19 @@ export class ClientController {
 	private handlePartyInitialization(): void {
 		this.socket.on('party:init', (token: string) => {
 			if (token.length === 0) {
-				return; //TODO add error handling
+				ClientNotifier.error('This token is empty', this.socket.id);
+				return;
 			}
 
 			const payload = jwt.verify(token, secret) as PartyPayload; //TODO add error handling
 
 			const party = this.partyRepository.get(payload.party);
 			if (party === null) {
-				return; //TODO error handling
+				ClientNotifier.error(
+					'The payload is empty' + JSON.stringify(payload.party),
+					this.socket.id
+				);
+				return;
 			}
 
 			this.initializeParty(party);
@@ -174,8 +179,6 @@ export class ClientController {
 				data: { name: string; settlementId: SettlementId },
 				callback: (token: string) => void
 			) => {
-				console.log('create party', data);
-
 				const settlement = this.settlementRepository.get(
 					data.settlementId ?? ('a' as SettlementId)
 				);
@@ -188,6 +191,14 @@ export class ClientController {
 				}
 
 				const name = data.name;
+				if (name.length > 25) {
+					ClientNotifier.error(
+						"Party name isn't allowed to be longer than 25 characters.",
+						this.socket.id
+					);
+					return;
+				}
+
 				const world = settlement.getRegion().getWorld();
 				for (const region of world.getRegions()) {
 					for (const existingParty of region

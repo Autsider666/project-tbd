@@ -1,9 +1,13 @@
+import debounce from 'debounce';
 import EventEmitter from 'events';
 import onChange from 'on-change';
 import { container } from 'tsyringe';
+import { StatePersister } from '../helper/StatePersister.js';
 import { generateUUID, Uuid } from '../helper/UuidHelper.js';
 import { Constructor } from 'type-fest';
 import { Entity, EntityStateData } from '../entity/Entity.js';
+
+const saveState = debounce(async () => await StatePersister.writeState(), 1000);
 
 export abstract class Repository<
 	T extends Entity<TId, TStateData, any>,
@@ -17,17 +21,18 @@ export abstract class Repository<
 	public constructor() {
 		this.eventEmitter.on(
 			'create:entity:' + this.entity().name.toLowerCase(),
-			(entity) => this.emitEntity(entity)
+			async (entity) => this.emitEntity(entity)
 		);
 
 		this.eventEmitter.on(
 			'update:entity:' + this.entity().name.toLowerCase(),
-			(entity: T) => this.emitEntity(entity)
+			async (entity: T) => this.emitEntity(entity)
 		);
 	}
 
-	protected emitEntity(entity: T): void {
+	protected async emitEntity(entity: T) {
 		this.eventEmitter.emit('emit:entity', entity);
+		await saveState();
 	}
 
 	protected abstract entity(): Constructor<T>;
