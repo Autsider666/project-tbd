@@ -1,6 +1,6 @@
 export function getRandomItem<T>(
 	items: T[],
-	getAmount: (item: T) => number
+	getAmount: (item: T) => number = () => 1
 ): T {
 	const weights: number[] = [];
 	for (let i = 0; i < items.length; i++) {

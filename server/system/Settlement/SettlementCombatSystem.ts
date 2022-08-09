@@ -1,10 +1,12 @@
 import { singleton } from 'tsyringe';
+import { SettlementEnemies } from '../../config/EnemyData.js';
 import { Settlement } from '../../entity/Settlement.js';
 import { EnemyFactory } from '../../factory/EnemyFactory.js';
 import {
 	ClientNotifier,
 	NotificationCategory,
 } from '../../helper/ClientNotifier.js';
+import { getRandomItem } from '../../helper/Randomizer.js';
 import { SettlementRepository } from '../../repository/SettlementRepository.js';
 import { ServerConfig } from '../../serverConfig.js';
 import { System } from '../System.js';
@@ -42,14 +44,12 @@ export class SettlementCombatSystem implements System {
 		}
 
 		settlement.raid = this.enemyFactory.create(
-			{
-				name: 'a horde of 42 zombies',
-				hp: 1000,
-				damage: 50,
-			},
+			getRandomItem(SettlementEnemies),
 			this.now,
 			settlement.getRegion().getWorld()
 		);
+
+		console.log(settlement.raid);
 
 		ClientNotifier.warning(
 			`Settlement "${settlement.name}" is under attack by ${settlement.raid.name}!`,

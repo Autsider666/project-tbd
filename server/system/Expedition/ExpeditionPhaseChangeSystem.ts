@@ -1,4 +1,5 @@
 import { singleton } from 'tsyringe';
+import { PartyEnemies } from '../../config/EnemyData.js';
 import { ResourceType } from '../../config/ResourceData.js';
 import { Expedition, ExpeditionPhase } from '../../entity/Expedition.js';
 import { EnemyFactory } from '../../factory/EnemyFactory.js';
@@ -6,6 +7,7 @@ import {
 	ClientNotifier,
 	NotificationCategory,
 } from '../../helper/ClientNotifier.js';
+import { getRandomItem } from '../../helper/Randomizer.js';
 import { TravelTimeCalculator } from '../../helper/TravelTimeCalculator.js';
 import { ExpeditionRepository } from '../../repository/ExpeditionRepository.js';
 import { ServerConfig } from '../../serverConfig.js';
@@ -149,14 +151,12 @@ export class ExpeditionPhaseChangeSystem implements System {
 
 		const party = expedition.getParty();
 		expedition.enemy = this.enemyFactory.create(
-			{
-				name: 'Zombie',
-				hp: 500,
-				damage: 10,
-			},
+			getRandomItem(PartyEnemies),
 			this.now,
 			party.getSettlement().getRegion().getWorld()
 		);
+
+		console.log(expedition.enemy);
 
 		expedition.setCurrentPhase(ExpeditionPhase.combat, this.now, null);
 
