@@ -53,6 +53,7 @@ const Map = () => {
     })
 
     const travelling = currentExpedition && currentExpedition.currentPhase !== 'finished';
+    console.log(currentExpedition)
     // console.log(currentExpedition)
 
     if (hide) return <img style={{ opacity: 0.3, marginBottom: '-16px' }} src={Water} position="absolute" width="100%" />

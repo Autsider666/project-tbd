@@ -198,6 +198,7 @@ const GameProvider = ({ children }) => {
     const currentVoyage = Object.values(voyageRepository).find(voyage => voyage.party === controlledParty.id && voyage.finished === false)
 
     const selectedResourceNodes = Object.values(resourceNodeRepository).filter(resourceNode => resourceNode.region === selectedRegionId)
+    console.log(expeditionRepository)
     const currentExpedition = Object.values(expeditionRepository).find(expedition => expedition.party === controlledParty.id && expedition.currentPhase !== "finished")
     const currentExpeditionPhaseStartedAt = currentExpedition && DateTime.fromISO(currentExpedition.currentPhaseStartedAt)
     const currentExpeditionPhaseEndsAt = currentExpedition && DateTime.fromISO(currentExpedition.currentPhaseEndsAt)

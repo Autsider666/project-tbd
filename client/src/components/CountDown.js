@@ -13,7 +13,7 @@ const CountDown = ({ seconds = 0 }) => {
         return () => {
             clearInterval(timer)
         }
-    }, seconds, setSecondsDisplay)
+    }, [seconds, setSecondsDisplay])
 
 
 
