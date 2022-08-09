@@ -9,8 +9,9 @@ import { useGame } from '../contexts/GameContext.js'
 import { capitalizeFirstLetter } from '../functions/utils'
 
 const Map = () => {
-    const { controlledParty, currentRegionId, settlementRepository, regionRepository, worldRepository, selectedRegionId, setSelectedRegionId, currentExpedition, currentExpeditionTravelPath = {}, selectedSettlement = {}, selectedRegion = {}, travelPaths = {}, setTabSelected, currentExpeditionPhaseTimeRemaining, tickLength } = useGame()
-
+    const { currentSettlement, controlledParty, currentRegionId, settlementRepository, regionRepository, worldRepository, selectedRegionId, setSelectedRegionId, currentExpedition, currentExpeditionTravelPath = {}, selectedSettlement = {}, selectedRegion = {}, travelPaths = {}, setTabSelected, currentExpeditionPhaseTimeRemaining, tickLength } = useGame()
+    console.log(currentExpedition)
+    console.log(currentSettlement)
     const worldSelected = Object.values(worldRepository)[0] // Add future code to take more than one map.
 
     const [popoverEl, setPopoverEl] = useState(null)
@@ -77,7 +78,7 @@ const Map = () => {
                                 {
                                     currentExpedition.currentPhase === 'gather'
                                         ? <CountDown key={gatherETA} seconds={gatherETA} />
-                                        : <CountDown seconds={Math.round(currentExpeditionPhaseTimeRemaining.seconds)} />
+                                        : currentExpeditionPhaseTimeRemaining && <CountDown seconds={Math.round(currentExpeditionPhaseTimeRemaining.seconds || 0)} />
                                 }
                                 {/* {`(${Math.round(currentExpeditionPhaseTimeRemaining.seconds)})`} */}
                                 )

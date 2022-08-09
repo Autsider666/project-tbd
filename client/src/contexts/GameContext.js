@@ -202,12 +202,12 @@ const GameProvider = ({ children }) => {
     const currentExpeditionPhaseStartedAt = currentExpedition && DateTime.fromISO(currentExpedition.currentPhaseStartedAt)
     const currentExpeditionPhaseEndsAt = currentExpedition && DateTime.fromISO(currentExpedition.currentPhaseEndsAt)
     const currentExpeditionPhaseTimeRemaining = currentExpedition && currentExpeditionPhaseEndsAt.diff(currentExpeditionPhaseStartedAt,'seconds').toObject()
-    console.log(currentExpeditionPhaseTimeRemaining)
+    // con  sole.log(currentExpeditionPhaseTimeRemaining)
 
     const currentExpeditionStartedAt = currentExpedition && DateTime.fromISO(currentExpedition.startedAt)
-
     
-    console.log(currentSettlement)
+    
+    // console.log(currentSettlement)
 
     const partySurvivors = controlledParty && controlledParty.survivors.filter(survivor => survivor)
 
