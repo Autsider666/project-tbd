@@ -5,7 +5,7 @@
 	"type": "module",
 	"scripts": {
 		"start": "concurrently --kill-others-on-fail \"npm run dev:server\" \"npm run start:client\"",
-		"build": "tsc -p . && cd client && npm run build",
+		"build": "npm install && tsc -p . && cd client && npm run build",
 		"dev": "concurrently --kill-others-on-fail \"npm run dev:server\" \"npm run start:client\"",
 		"start:client": "cd client && npm start",
 		"dev:server": "tsc-watch --preserveWatchOutput --onFirstSuccess \"nodemand --node-modules build/index.js\"",

@@ -13,7 +13,11 @@ import { Uuid } from '../helper/UuidHelper.js';
 import { ExpeditionProperty } from './CommonProperties/ExpedtionProperty.js';
 import { SettlementProperty } from './CommonProperties/SettlementProperty.js';
 import { VoyageProperty } from './CommonProperties/VoyageProperty.js';
-import { generateEmptyResourcesObject, ResourceContainer, Resources, } from './CommonTypes/ResourceContainer.js';
+import {
+	generateEmptyResourcesObject,
+	ResourceContainer,
+	Resources,
+} from './CommonTypes/ResourceContainer.js';
 import { SurvivorContainer } from './CommonTypes/SurvivorContainer.js';
 import { Entity, EntityClientData, EntityStateData } from './Entity.js';
 import { Expedition, ExpeditionId, ExpeditionPhase } from './Expedition.js';
@@ -42,7 +46,8 @@ export type PartyClientData = Omit<PartyStateData, 'survivors'> & {
 
 export class Party
 	extends Entity<PartyId, PartyStateData, PartyClientData>
-	implements SurvivorContainer, ResourceContainer {
+	implements SurvivorContainer, ResourceContainer
+{
 	public name: string;
 	public dead: boolean;
 	private readonly settlementProperty: SettlementProperty;
@@ -78,7 +83,7 @@ export class Party
 			dead: this.dead,
 			settlement: this.settlementProperty.toJSON(),
 			survivors: this.survivors,
-			resources: {...generateEmptyResourcesObject(), ...this.resources},
+			resources: { ...generateEmptyResourcesObject(), ...this.resources },
 			currentVoyage: this.voyageProperty?.toJSON() ?? null,
 			currentExpedition: this.expeditionProperty?.toJSON() ?? null,
 			energy: this.energy,
@@ -228,7 +233,7 @@ export class Party
 			}
 
 			if (applicableBoost === null) {
-				boosts.push({...survivorBoost});
+				boosts.push({ ...survivorBoost });
 				continue;
 			}
 
@@ -280,18 +285,21 @@ export class Party
 	}
 
 	public getTravelSpeed(): number {
-		return Math.round(this.getStat(SurvivorStat.travelSpeed) / this.getSurvivors().length);
+		return Math.round(
+			this.getStat(SurvivorStat.travelSpeed) / this.getSurvivors().length
+		);
 	}
 
 	private getStat(stat: SurvivorStat): number {
 		let totalStat = 0;
 		const survivors = this.getSurvivors();
 		survivors.forEach(
-			(survivor) =>
-				(totalStat += SurvivorDataMap[survivor].stats[stat])
+			(survivor) => (totalStat += SurvivorDataMap[survivor].stats[stat])
 		);
 
-		return totalStat * ((100 + (this.getBoost(stat)?.percentage ?? 0)) / 100);
+		return (
+			totalStat * ((100 + (this.getBoost(stat)?.percentage ?? 0)) / 100)
+		);
 	}
 
 	public getResources(): Resources {

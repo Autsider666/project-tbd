@@ -1,6 +1,7 @@
 import { singleton } from 'tsyringe';
 import { ResourceType } from '../../config/ResourceData.js';
 import { Expedition, ExpeditionPhase } from '../../entity/Expedition.js';
+import { EnemyFactory } from '../../factory/EnemyFactory.js';
 import {
 	ClientNotifier,
 	NotificationCategory,
@@ -17,7 +18,8 @@ export class ExpeditionPhaseChangeSystem implements System {
 	constructor(
 		private readonly expeditionRepository: ExpeditionRepository,
 		private readonly travelTimeCalculator: TravelTimeCalculator,
-		private readonly config: ServerConfig
+		private readonly config: ServerConfig,
+		private readonly enemyFactory: EnemyFactory
 	) {}
 
 	tick(now: Date): void {
@@ -145,16 +147,19 @@ export class ExpeditionPhaseChangeSystem implements System {
 			return;
 		}
 
-		expedition.enemy = {
-			name: 'Zombie',
-			hp: 500,
-			damageTaken: 0,
-			damage: 10,
-		};
+		const party = expedition.getParty();
+		expedition.enemy = this.enemyFactory.create(
+			{
+				name: 'Zombie',
+				hp: 500,
+				damage: 10,
+			},
+			this.now,
+			party.getSettlement().getRegion().getWorld()
+		);
 
 		expedition.setCurrentPhase(ExpeditionPhase.combat, this.now, null);
 
-		const party = expedition.getParty();
 		ClientNotifier.warning(
 			`Party "${party.name}" has encountered an enemy and is now fighting with it.`,
 			party.getUpdateRoomName(),
