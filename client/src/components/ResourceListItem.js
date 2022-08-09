@@ -10,7 +10,7 @@ const ResourceListItem = ({ resources }) => {
     ]
 
     return (
-        <ListItem sx={{ justifyContent: 'center' }}>
+        <ListItem sx={{ justifyContent: 'center', pt: 0 }}>
             <ListItemText sx={{ minWidth: '80px' }} primary="Resources" />
             {resourceTypes.map(({ key, label, tooltip = "" }) => (
                 <Tooltip key={key} title={tooltip}>

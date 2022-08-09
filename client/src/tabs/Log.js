@@ -11,7 +11,7 @@ export const Log = () => {
     // console.log(sortedNotifications)
     return (
         <Box sx={{ height: '100%', overflow: 'auto', display: 'flex', flexDirection: 'column' }}>
-            {notificationLog.map((notification, index) => {
+            {notificationLog.filter((_,index)=>index < 500).map((notification, index) => {
                 { /* console.log(notification) */ }
                 const backgroundColor = getColorFromSeverity(notification.severity);
                 return <Box sx={{ backgroundColor, margin: '1px', padding: '4px', borderRadius: '4px' }} key={index}>

@@ -17,7 +17,7 @@ const Profile = () => {
     const content = [
         { label: 'Survivors', Component: Survivors, tooltip:"Combined Survivor Stats, Inventory and Management" },
         { label: 'Settlement', Component: Settlement, tooltip:"Settlement Overview and Upgrades" },
-        { label: 'Region', Component: ExpeditionSites, tooltip:"Expeditions and Voyages" },
+        // { label: 'Region', Component: ExpeditionSites, tooltip:"Expeditions and Voyages" },
 
 
         // { label: 'Inventory', Component: Party },

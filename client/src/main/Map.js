@@ -1,21 +1,38 @@
-import { Divider, Typography } from '@mui/material'
+import { Divider, Popover, Typography } from '@mui/material'
 import { Box } from '@mui/system'
-import React from 'react'
+import React, { useState } from 'react'
+import CountDown from '../components/CountDown'
+import MapPopover from '../components/MapPopover'
 import Water from '../components/worldMap/Map1/water.png'
 import WorldMap from '../components/worldMap/worldMap.js'
 import { useGame } from '../contexts/GameContext.js'
 import { capitalizeFirstLetter } from '../functions/utils'
 
 const Map = () => {
-    const { currentRegionId, settlementRepository, regionRepository, worldRepository, selectedRegionId, setSelectedRegionId, currentExpedition, currentExpeditionTravelPath = {}, selectedSettlement = {}, selectedRegion = {}, travelPaths = {}, setTabSelected } = useGame()
+    const { controlledParty, currentRegionId, settlementRepository, regionRepository, worldRepository, selectedRegionId, setSelectedRegionId, currentExpedition, currentExpeditionTravelPath = {}, selectedSettlement = {}, selectedRegion = {}, travelPaths = {}, setTabSelected, currentExpeditionPhaseTimeRemaining, tickLength } = useGame()
 
     const worldSelected = Object.values(worldRepository)[0] // Add future code to take more than one map.
+
+    const [popoverEl, setPopoverEl] = useState(null)
+
+    const regionClickHandler = regionId => event => {
+        // setTabSelected(2)
+        setSelectedRegionId(regionId)
+        setPopoverEl(event.currentTarget)
+    }
 
     const hide = false
 
     const { path } = currentExpeditionTravelPath
     // console.log(travelPaths)
     // travelPaths && currentRegionId && selectedRegionId && console.log(travelPaths[currentRegionId][selectedRegionId])
+
+
+    const controlledPartyResourceSum = Object.values(controlledParty.resources).reduce((accum, value) => {
+        accum += value
+        return accum
+    })
+    const gatherETA = Math.round((controlledParty.stats.carryCapacity - controlledPartyResourceSum) / controlledParty.stats.gatheringSpeed * 6)
 
     const regions = Object.values(regionRepository).map(region => {
         region.expeditionInProgress = path && path.find((pathRegionId, index) => pathRegionId === region.id && index === path.length - 1) ? currentExpedition?.currentPhase : ''
@@ -53,10 +70,38 @@ const Map = () => {
                     && <>
                         {/* <Divider sx={{ backgroundColor: theme => theme.palette.primary, my: 1, width: 4 }} orientation="vertical" flexItem /> */}
                         <Typography color="primary" sx={{ m: 1 }} textAlign={"center"} variant="h6">{`Expedition Status: ${capitalizeFirstLetter(currentExpedition?.currentPhase)}`}</Typography>
+                        {
+                            currentExpedition.currentPhase !== "combat"
+                            && <Typography key={tickLength.seconds} color="primary" sx={{ my: 1, mr: 1 }} textAlign={"center"} variant="h6">
+                                (
+                                {
+                                    currentExpedition.currentPhase === 'gather'
+                                        ? <CountDown key={gatherETA} seconds={gatherETA} />
+                                        : <CountDown seconds={Math.round(currentExpeditionPhaseTimeRemaining.seconds)} />
+                                }
+                                {/* {`(${Math.round(currentExpeditionPhaseTimeRemaining.seconds)})`} */}
+                                )
+                            </Typography>
+                        }
                     </>
                 }
             </Box>
-            <WorldMap setTabSelected={setTabSelected} world={worldSelected} selectedRegionId={selectedRegionId} setSelectedRegionId={setSelectedRegionId} regions={regions} />
+            <WorldMap regionClickHandler={regionClickHandler} world={worldSelected} selectedRegionId={selectedRegionId} regions={regions} />
+            <Popover
+                anchorEl={popoverEl}
+                open={Boolean(popoverEl)}
+                onClose={() => setPopoverEl(null)}
+                anchorOrigin={{
+                    vertical: 'center',
+                    horizontal: 'center',
+                }}
+                transformOrigin={{
+                    vertical: 'center',
+                    horizontal: 'center',
+                }}
+            >
+                <MapPopover />
+            </Popover>
         </Box>
     )
 }

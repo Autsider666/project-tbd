@@ -1,4 +1,4 @@
-import { Box, Button, Grid, List, ListItem, ListItemText, Stack, TextField } from '@mui/material'
+import { Box, Button, Grid, List, ListItem, ListItemText, TextField } from '@mui/material'
 import React, { useState } from 'react'
 import TabsWrapper from '../components/TabsWrapper'
 import { Log } from '../tabs/Log'
@@ -73,9 +73,9 @@ const Global = () => <div>Global</div>
 
 const Chat = () => {
     const content = [
-        { label: 'World', Component: ChatComponent, props: { room: 'world' } },
-        { label: 'Global', Component: ChatComponent, props: { room: 'global' } },
-        { label: 'Whisper', Component: ChatComponent, props: { room: 'whisper' } },
+        // { label: 'World', Component: ChatComponent, props: { room: 'world' } },
+        // { label: 'Global', Component: ChatComponent, props: { room: 'global' } },
+        // { label: 'Whisper', Component: ChatComponent, props: { room: 'whisper' } },
         { label: 'Log', Component: Log, tabSx: { marginLeft: 'auto' } },
     ]
 

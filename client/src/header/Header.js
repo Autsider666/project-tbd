@@ -50,7 +50,7 @@ const ResponsiveAppBar = () => {
 
   return (
     <AppBar position="static">
-      <Container sx={{ marginLeft: 0 }} maxWidth="xl">
+      <Container sx={{ marginLeft: 0 }} maxWidth={false}>
         <Toolbar disableGutters sx={{ position: 'relative' }} >
           {
             controlledParty && <Box sx={{ mx: 1, display: 'flex' }}>

@@ -9,14 +9,9 @@ const WorldMaps = [
     }
 ]
 
-const WorldMap = ({ world, regions, selectedRegionId, setSelectedRegionId, setTabSelected }) => {
+const WorldMap = ({ world, regions, selectedRegionId, regionClickHandler }) => {
 
     const worldMapSelected = WorldMaps[0]
-
-    const regionClickHandler = regionId => () => {
-        setTabSelected(2)
-        setSelectedRegionId(regionId)
-    }
 
     const dev = true
 

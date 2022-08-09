@@ -38,7 +38,7 @@ const ExpeditionSites = () => {
 
                 {selectedResourceNodes.map(resourceNode => {
                     return (
-                        <Grid key={resourceNode.id} item container xs={6}>
+                        <Grid key={resourceNode.id} item container xs={3}>
                             <Button sx={{ margin: 1, flexGrow: 1 }} key={resourceNode.id} onClick={handleClick(resourceNode.id)} color={resourceNode.id === resourceNodeButton ? 'secondary' : 'primary'} variant="contained">{resourceNode.name}</Button>
                         </Grid>
                     );
