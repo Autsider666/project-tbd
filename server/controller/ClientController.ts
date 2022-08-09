@@ -93,6 +93,7 @@ export class ClientController {
 			callback(
 				this.worldRepository
 					.getAll()
+					.filter((world) => !world.destroyed)
 					.map((world) => world.normalize(this.client))
 			);
 		});

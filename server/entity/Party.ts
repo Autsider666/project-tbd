@@ -9,6 +9,7 @@ import {
 	SurvivorStat,
 } from '../config/SurvivorData.js';
 import { Client } from '../controller/ClientController.js';
+import { EntityUpdate } from '../controller/StateSyncController.js';
 import { Uuid } from '../helper/UuidHelper.js';
 import { ExpeditionProperty } from './CommonProperties/ExpedtionProperty.js';
 import { SettlementProperty } from './CommonProperties/SettlementProperty.js';
@@ -92,6 +93,21 @@ export class Party
 
 	getUpdateRoomName(): string {
 		return this.getSettlement().getUpdateRoomName();
+	}
+
+	async prepareNestedEntityUpdate(
+		updateObject: EntityUpdate = {},
+		forClient?: Client
+	): Promise<EntityUpdate> {
+		const expedition = this.getExpedition();
+		if (expedition && forClient?.parties.has(this.id)) {
+			updateObject = await expedition.prepareNestedEntityUpdate(
+				updateObject,
+				forClient
+			);
+		}
+
+		return super.prepareNestedEntityUpdate(updateObject, forClient);
 	}
 
 	public override normalize(forClient?: Client): PartyClientData {
