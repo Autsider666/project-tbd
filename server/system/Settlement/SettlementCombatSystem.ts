@@ -1,5 +1,6 @@
 import { singleton } from 'tsyringe';
 import { Settlement } from '../../entity/Settlement.js';
+import { EnemyFactory } from '../../factory/EnemyFactory.js';
 import {
 	ClientNotifier,
 	NotificationCategory,
@@ -14,7 +15,8 @@ export class SettlementCombatSystem implements System {
 
 	constructor(
 		private readonly settlementRepository: SettlementRepository,
-		private readonly config: ServerConfig
+		private readonly config: ServerConfig,
+		private readonly enemyFactory: EnemyFactory
 	) {}
 
 	tick(now: Date): void {
@@ -39,12 +41,15 @@ export class SettlementCombatSystem implements System {
 			return;
 		}
 
-		settlement.raid = {
-			name: 'a horde of 42 zombies',
-			hp: 1000,
-			damage: 50,
-			damageTaken: 0,
-		};
+		settlement.raid = this.enemyFactory.create(
+			{
+				name: 'a horde of 42 zombies',
+				hp: 1000,
+				damage: 50,
+			},
+			this.now,
+			settlement.getRegion().getWorld()
+		);
 
 		ClientNotifier.warning(
 			`Settlement "${settlement.name}" is under attack by ${settlement.raid.name}!`,
@@ -89,6 +94,7 @@ export class SettlementCombatSystem implements System {
 			[NotificationCategory.combat]
 		);
 		if (raid.damageTaken >= raid.hp) {
+			settlement.raid = null;
 			ClientNotifier.success(
 				`Settlement "${settlement.name}" has defeated ${raid.name}.`,
 				settlement.getUpdateRoomName(),
