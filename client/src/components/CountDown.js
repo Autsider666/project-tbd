@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 
-const CountDown = ({ seconds }) => {
+const CountDown = ({ seconds = 0 }) => {
 
     const [secondsDisplay, setSecondsDisplay] = useState()
 
