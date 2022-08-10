@@ -2,6 +2,7 @@ import { Divider, Popover, Typography } from '@mui/material'
 import { Box } from '@mui/system'
 import React, { useState } from 'react'
 import CountDown from '../components/CountDown'
+import HealthBar from '../components/HealthBar'
 import MapPopover from '../components/MapPopover'
 import Water from '../components/worldMap/Map1/water.png'
 import WorldMap from '../components/worldMap/worldMap.js'
@@ -9,12 +10,13 @@ import { useGame } from '../contexts/GameContext.js'
 import { capitalizeFirstLetter } from '../functions/utils'
 
 const Map = () => {
-    const { currentSettlement, controlledParty, currentRegionId, settlementRepository, regionRepository, worldRepository, selectedRegionId, setSelectedRegionId, currentExpedition, currentExpeditionTravelPath = {}, selectedSettlement = {}, selectedRegion = {}, travelPaths = {}, setTabSelected, currentExpeditionPhaseTimeRemaining, tickLength } = useGame()
-    console.log(currentExpedition)
-    console.log(currentSettlement)
+    const { loaded, currentVoyage, currentVoyagePhaseTimeRemaining, controlledParty, currentRegionId, settlementRepository, regionRepository, worldRepository, selectedRegionId, setSelectedRegionId, currentExpedition, currentExpeditionTravelPath = {}, selectedSettlement = {}, selectedRegion = {}, travelPaths = {}, setTabSelected, currentExpeditionPhaseTimeRemaining, tickLength } = useGame()
+    // console.log(currentVoyage)
+    // console.log(currentSettlement)
     const worldSelected = Object.values(worldRepository)[0] // Add future code to take more than one map.
 
     const [popoverEl, setPopoverEl] = useState(null)
+    if (!loaded || !controlledParty) return <div />
 
     const regionClickHandler = regionId => event => {
         // setTabSelected(2)
@@ -29,7 +31,7 @@ const Map = () => {
     // travelPaths && currentRegionId && selectedRegionId && console.log(travelPaths[currentRegionId][selectedRegionId])
 
 
-    const controlledPartyResourceSum = Object.values(controlledParty.resources).reduce((accum, value) => {
+    const controlledPartyResourceSum = controlledParty && Object.values(controlledParty.resources).reduce((accum, value) => {
         accum += value
         return accum
     })
@@ -49,17 +51,20 @@ const Map = () => {
             region.selectionInProgress = ''
         }
         region.settlementName = settlementRepository[region.settlement] ? settlementRepository[region.settlement].name : null
+        region.settlementRaidInProgress = settlementRepository[region.settlement] ? settlementRepository[region.settlement].raid : null
         return region
     })
 
     const travelling = currentExpedition && currentExpedition.currentPhase !== 'finished';
-    console.log(currentExpedition)
+
+    // console.log(currentExpedition)
     // console.log(currentExpedition)
 
     if (hide) return <img style={{ opacity: 0.3, marginBottom: '-16px' }} src={Water} position="absolute" width="100%" />
     return (
-        <Box>
-            <Box sx={{ height: 48, display: 'flex' }}>
+        <Box sx={{ position: 'relative' }}>
+
+            <Box sx={{ height: 48, display: 'flex', zIndex: 55, }}>
                 <Typography color="primary" sx={{ m: 1 }} textAlign={"center"} variant="h6">{`Region: ${selectedRegion?.name}`}</Typography>
                 {selectedSettlement.id
                     && <>
@@ -87,8 +92,33 @@ const Map = () => {
                         }
                     </>
                 }
+                {currentVoyage && currentVoyage.finished === false
+                    && <>
+                        <Typography color="primary" sx={{ m: 1 }} textAlign={"center"} variant="h6">{`On Voyage to: ${settlementRepository[currentVoyage.target].name}`}</Typography>
+                        <Typography key={tickLength.seconds} color="primary" sx={{ my: 1, mr: 1 }} textAlign={"center"} variant="h6">
+                            <CountDown seconds={Math.round(currentVoyagePhaseTimeRemaining.seconds || 0)} />
+                        </Typography>
+
+                    </>}
             </Box>
+
             <WorldMap regionClickHandler={regionClickHandler} world={worldSelected} selectedRegionId={selectedRegionId} regions={regions} />
+            {currentExpedition && <Box sx={{ transition: 'all 1s', position: 'absolute', top: '50px', height: currentExpedition ? 30 : 0, width: '100%', display: 'flex', zIndex: 48, backgroundColor: 'white', alignItems: 'center', justifyContent: 'space-between' }}>
+                {
+
+                    <>
+                        <Typography sx={{ px: 1 }}> Party </Typography>
+                        <HealthBar maxValue={controlledParty.stats.hp} currentValue={controlledParty.stats.hp - currentExpedition.damageTaken} />
+                        <Box sx={{ flexGrow: 1 }} />
+                        {
+                            currentExpedition.enemy && currentExpedition.enemy.hp > currentExpedition.enemy.damageTaken && <>
+                                <HealthBar flip={true} maxValue={currentExpedition.enemy.hp} currentValue={currentExpedition.enemy.hp - currentExpedition.enemy.damageTaken} />
+                                <Typography sx={{ px: 1 }}>Zombie</Typography>
+                            </>
+                        }
+                    </>
+                }
+            </Box>}
             <Popover
                 anchorEl={popoverEl}
                 open={Boolean(popoverEl)}
@@ -102,7 +132,7 @@ const Map = () => {
                     horizontal: 'center',
                 }}
             >
-                <MapPopover />
+                <MapPopover onClick={() => setPopoverEl(null)} />
             </Popover>
         </Box>
     )

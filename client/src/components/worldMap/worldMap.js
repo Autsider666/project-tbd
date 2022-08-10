@@ -31,6 +31,7 @@ const WorldMap = ({ world, regions, selectedRegionId, regionClickHandler }) => {
                                 key={region.id}
                                 className={`
                                 mapRegion 
+                                ${region.settlementRaidInProgress ? 'raidInProgress' : ''}
                                 ${selectedRegionId === region.id ? 'selected' : ''}
                                 ${region.selectionInProgress === 'gray' ? 'selected' : ''}
                                 ${region.expeditionInProgress !== '' ? `expedition ${region.expeditionInProgress}` : ''}

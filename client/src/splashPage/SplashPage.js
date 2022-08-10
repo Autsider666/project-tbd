@@ -56,6 +56,13 @@ const SplashPage = ({ marginAmount }) => {
     const { displaySnackbar } = useApp()
     const [partyName, setPartyName] = useState("")
 
+    const textFieldChangeHandler = event => setPartyName(event.target.value);
+    const textFieldKeyPressHandler = event => {
+        if(event.key === 'Enter') partyCreate(partyName)
+    }
+
+    
+
     return (
         <>
             <Box sx={{
@@ -68,7 +75,7 @@ const SplashPage = ({ marginAmount }) => {
                 borderRadius: '8px',
                 border: '1px solid black',
                 backgroundImage: 'url(/images/waterBackground.png)',
-                backgroundRepeat: 'round',
+                backgroundSize: 'cover',
             }}>
                 <Box sx={{
                     opacity: 0.3,
@@ -84,7 +91,7 @@ const SplashPage = ({ marginAmount }) => {
 
                 <Box sx={{
                     position: 'absolute',
-                    height: '30%',
+                    // height: '30%',
                     width: { xs: '60%', md: '40%' },
                     backgroundColor: (theme) => theme.palette.background.paper,
                     borderRadius: '10px',
@@ -107,14 +114,17 @@ const SplashPage = ({ marginAmount }) => {
                                 <Typography sx={{ textAlign: 'center', color: theme => theme.palette.primary.contrastText, fontSize: { xs: '1m', md: "1.5em", lg: "2em" } }}  >
                                     Welcome to Project TBD
                                 </Typography>
+                                <Typography>
+                                    "There you are.... You're too late, the fractured timestream has already destroyed most of the world. Do you think you can still do something for us.... After The End?"
+                                </Typography>
                             </Box>
                         </Grid>
                         <Grid item xs={6} md={6} my={1}>
-                            <TextField fullWidth={true} label="Party Name" value={partyName} onChange={event => setPartyName(event.target.value)} />
+                            <TextField fullWidth={true} label="Party Name" value={partyName} onChange={textFieldChangeHandler} onKeyPress={textFieldKeyPressHandler} />
                         </Grid>
                         <Grid item xs={4} md={6} my={1}>
                             <Button sx={{ height: '100%', width: '100%' }} variant="contained" onClick={() => {
-                                displaySnackbar(`The party called ${partyName} joined the game!`, 'success')
+                                // displaySnackbar(`The party called ${partyName} joined the game!`, 'success')
                                 partyCreate(partyName)
                             }}>
                                 Create

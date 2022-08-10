@@ -279,8 +279,8 @@ const WorldTemplates: { [key: string]: WorldTemplate } = {
 						type: ResourceNodeType.Ruin,
 					},
 					{
-						name: 'The Forgotten Ruins',
-						type: ResourceNodeType.Ruin,
+						name: 'The Abandoned Tower',
+						type: ResourceNodeType.Tower,
 					},
 					{
 						name: 'The Wild Forest',

@@ -8,6 +8,7 @@ import ResourceListItem from '../components/ResourceListItem';
 
 const Survivors = ({ height }) => {
     const { controlledParty } = useGame()
+    if(!controlledParty) return <div />
     return (
         <List sx={{ height, width: "100%", py: 0 }} >
             <ResourceListItem resources={controlledParty.resources} />

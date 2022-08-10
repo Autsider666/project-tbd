@@ -151,10 +151,10 @@ const GameProvider = ({ children }) => {
 
     useEffect(() => {
         if (loaded) {
-            const partySettlementId = Object.values(partyRepository).find(party => party.controllable === true).settlement
+            const partySettlementId = Object.values(partyRepository).find(party => party.controllable === true)?.settlement
             // console.log({ partySettlementId })
             // console.log(settlementRepository)
-            const regionOfPartySettlement = settlementRepository[partySettlementId].region
+            const regionOfPartySettlement = settlementRepository[partySettlementId]?.region
             // console.log({ regionOfPartySettlement })
             setSelectedRegionId(regionOfPartySettlement)
         }
@@ -198,14 +198,21 @@ const GameProvider = ({ children }) => {
     const currentVoyage = Object.values(voyageRepository).find(voyage => voyage.party === controlledParty.id && voyage.finished === false)
 
     const selectedResourceNodes = Object.values(resourceNodeRepository).filter(resourceNode => resourceNode.region === selectedRegionId)
-    console.log(expeditionRepository)
+    // console.log(expeditionRepository)
     const currentExpedition = Object.values(expeditionRepository).find(expedition => expedition.party === controlledParty.id && expedition.currentPhase !== "finished")
     const currentExpeditionPhaseStartedAt = currentExpedition && DateTime.fromISO(currentExpedition.currentPhaseStartedAt)
     const currentExpeditionPhaseEndsAt = currentExpedition && DateTime.fromISO(currentExpedition.currentPhaseEndsAt)
     const currentExpeditionPhaseTimeRemaining = currentExpedition && currentExpeditionPhaseEndsAt.diff(currentExpeditionPhaseStartedAt,'seconds').toObject()
+
+
+    const currentVoyagePhaseStartedAt = currentVoyage && DateTime.fromISO(currentVoyage.startedAt)
+    const currentVoyagePhaseEndsAt = currentVoyage && DateTime.fromISO(currentVoyage.arrivalAt)
+    const currentVoyagePhaseTimeRemaining = currentVoyage && currentVoyagePhaseEndsAt.diff(currentVoyagePhaseStartedAt,'seconds').toObject()
+    
+
     // con  sole.log(currentExpeditionPhaseTimeRemaining)
 
-    const currentExpeditionStartedAt = currentExpedition && DateTime.fromISO(currentExpedition.startedAt)
+    // const currentExpeditionStartedAt = currentExpedition && DateTime.fromISO(currentExpedition.startedAt)
     
     
     // console.log(currentSettlement)
@@ -311,7 +318,7 @@ const GameProvider = ({ children }) => {
         controlledParty, partyResources, partySurvivors, partySurvivorsGrouped,
         currentSettlement, currentSettlementId, currentSettlementResources, currentSettlementSurvivors, currentSettlementSurvivorsGrouped, currentSettlementParties,
         currentExpedition, currentExpeditionTravelPath, currentExpeditionPhaseTimeRemaining,
-        currentVoyage,
+        currentVoyage, currentVoyagePhaseTimeRemaining,
         selectedResourceNodes,
         selectedRegion, selectedRegionId, setSelectedRegionId, selectedSettlement,
         travelPaths, selectedRegionTravelPath,

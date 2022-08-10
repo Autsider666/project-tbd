@@ -6,6 +6,7 @@ import Settlement from '../tabs/Settlement'
 import Survivors from '../tabs/Survivors'
 import { useMediaQuery, useTheme } from '@mui/material'
 import { Log } from '../tabs/Log'
+import Parties from '../tabs/Parties'
 
 
 
@@ -20,7 +21,7 @@ const Profile = () => {
         // { label: 'Region', Component: ExpeditionSites, tooltip:"Expeditions and Voyages" },
 
 
-        // { label: 'Inventory', Component: Party },
+        { label: 'Parties', Component: Parties },
         // { label: 'Upgrades', Component: Upgrades },
         // { label: 'RandomTest', Component: RandomTest },
     ]

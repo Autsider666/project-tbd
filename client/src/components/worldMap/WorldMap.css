@@ -10,9 +10,10 @@
     top: 0;
     left: 0;
 }
+
 .mapRegion {
-    display: "inline"; 
-    fill: lightgoldenrodyellow; 
+    display: "inline";
+    fill: lightgoldenrodyellow;
     fill-opacity: 0.065;
     stroke: black;
     stroke-width: 1px;
@@ -27,12 +28,15 @@
     stroke-opacity: 1 !important;
 }
 
+
+
 .mapRegion.selected {
     fill: lightgray !important;
     fill-opacity: 0.8 !important;
     stroke-width: 2px !important;
     stroke-opacity: 1 !important;
 }
+
 .mapRegion.expedition.travel {
     fill: lightgreen !important;
     fill-opacity: 0.8 !important;
@@ -53,6 +57,12 @@
     fill-opacity: 0.8 !important;
 }
 
+.mapRegion.raidInProgress {
+    fill: red !important;
+    fill-opacity: 0.8 !important;
+    animation: rotate 2s linear infinite;
+}
+
 /* .mapRegion.expedition.finished {
     fill: lightgreen !important;
     fill-opacity: 0.8 !important;
@@ -61,4 +71,28 @@
 #mapSymbolsLayer {
     z-index: 25;
     pointer-events: none;
+}
+
+@keyframes rotate {
+    0% {
+        filter: contrast(0)
+    }
+
+    25% {
+        filter: contrast(5)
+    }
+
+    50% {
+        filter: contrast(15);
+        fill-opacity: 1 !important;
+        filter: blur(1);
+    }
+
+    75% {
+        filter: contrast(5)
+    }
+
+    100% {
+        filter: contrast(0)
+    }
 }

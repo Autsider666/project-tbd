@@ -61,7 +61,7 @@ const ExpeditionSites = () => {
                         {isInSettlement
                             ? `You're already in ${settlementName}!`
                             : traveling
-                                ? `Travelling to ${settlementRepository[currentVoyage.target].name}`
+                                ? `Travelling to    `
                                 : `Travel to ${settlementName}. It takes ${cost} seconds.`}
                     </Button>
                 </Grid>

@@ -20,14 +20,20 @@ const ResponsiveAppBar = () => {
   const { resetAuth } = useAuth()
 
   const { hp: settlementHp = 100, damageTaken: settlementDamageTaken = 0 } = currentSettlement || {}
-  const currentSettlementHealthRemaining = settlementDamageTaken === 0 ? 100 : Math.round((settlementHp - settlementDamageTaken) / settlementHp)
-  const controlledPartyHealthRemaining = currentExpedition ? Math.round((controlledParty.stats.hp - currentExpedition.damageTaken) / controlledParty.stats.hp * 100) : 100
-  currentExpedition && console.log(controlledParty.stats.hp - currentExpedition.damageTaken)
-  currentExpedition && console.log(controlledParty.stats.hp)
-  currentExpedition && console.log(Math.round((controlledParty.stats.hp - currentExpedition.damageTaken) / controlledParty.stats.hp * 100))
-  console.log(controlledPartyHealthRemaining)
+  const currentSettlementCurrentHealth = settlementHp - settlementDamageTaken
+  const currentSettlementCurrentHealthPercent = settlementDamageTaken === 0 ? 100 : Math.round((settlementHp - settlementDamageTaken) / settlementHp * 100)
 
-  console.log({ controlledParty, currentSettlement, currentExpedition })
+  const controlledPartyHp = controlledParty ? controlledParty.stats.hp : 1;
+  const controlledPartyCurrentHealth = controlledParty && currentExpedition ? controlledPartyHp - currentExpedition.damageTaken : controlledPartyHp
+
+  const controlledPartyCurrentHealthPercent = currentExpedition ? Math.round((controlledPartyHp - currentExpedition.damageTaken) / controlledPartyHp * 100) : 100
+
+
+  currentExpedition && console.log(controlledPartyHp - currentExpedition.damageTaken)
+  currentExpedition && console.log(controlledPartyHp)
+  currentExpedition && console.log(Math.round((controlledPartyHp - currentExpedition.damageTaken) / controlledPartyHp * 100))
+
+  // console.log({ controlledParty, currentSettlement, currentExpedition })
   const maxEnergy = 2000
 
   return (
@@ -37,18 +43,22 @@ const ResponsiveAppBar = () => {
           {
             controlledParty && <Box sx={{ mx: 1, display: 'flex' }}>
               <Box>
-                <Typography sx={{ color: controlledParty.dead ? 'red' : 'white' }}>
-                  {`Party:   ${controlledParty.name} ${controlledParty.dead ? '(DEAD)' : ''}`}
-                </Typography>
+                <Box sx={{ display: 'flex' }}>
+                  <Typography sx={{ color: controlledParty.dead ? 'red' : 'white' }}>
+                    {`Party:   ${controlledParty.name} ${controlledParty.dead ? '(DEAD)' : ''}`}
+                  </Typography>
+                  <Tooltip title="Current Party Size / Max Party Size">
+                    <Typography sx={{ ml: 1, color: controlledParty.survivors.length > 10 ? 'red' : 'white' }}>
+                      {`(${controlledParty.survivors.length} / 10)`}
+                    </Typography>
+                  </Tooltip>
+                </Box>
                 <Typography>
-                  {`Health Remaining: ${controlledPartyHealthRemaining}%`}
+                  {`Health: ${controlledPartyCurrentHealth} / ${controlledPartyHp} (${controlledPartyCurrentHealthPercent}%)`}
                 </Typography>
+
               </Box>
-              <Tooltip title="Current Party Size / Max Party Size">
-                <Typography sx={{ ml: 0, color: controlledParty.survivors.length > 10 ? 'red' : 'white' }}>
-                  {`(${controlledParty.survivors.length} / 10)`}
-                </Typography>
-              </Tooltip>
+
 
             </Box>
           }
@@ -120,7 +130,7 @@ const ResponsiveAppBar = () => {
                     {`Settlement: ${currentSettlement.name}`}
                   </Typography>
                   <Typography>
-                    {`Health Remaining: ${currentSettlementHealthRemaining}%`}
+                    {`Health: ${currentSettlementCurrentHealth} / ${settlementHp} (${currentSettlementCurrentHealthPercent}%)`}
                   </Typography>
                 </Box>
               </Tooltip>

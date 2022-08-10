@@ -1,10 +1,24 @@
-import { Box, Button, Divider, FormControl, FormControlLabel, InputLabel, MenuItem, Select, Typography } from '@mui/material'
+import { Box, Button, Divider, FormControl, FormControlLabel, InputLabel, MenuItem, Select, Tooltip, Typography } from '@mui/material'
 import React, { useState } from 'react'
 import { useGame } from '../contexts/GameContext';
 import { expeditionStart, voyageStart } from '../functions/socketCalls';
+import { capitalizeFirstLetter } from '../functions/utils';
 import ExpeditionSites from '../tabs/ExpeditionSites'
 
-const MapPopover = () => {
+const resourceNodeTooltipSelector = resourceNodeType => {
+    console.log(resourceNodeType)
+    switch (resourceNodeType) {
+        case 0:
+
+            break;
+
+        default:
+            break;
+    }
+    return "null"
+}
+
+const MapPopover = ({ onClick }) => {
     const [resourceNodeSelected, setResourceNodeSelected] = useState(0);
 
     const {
@@ -25,6 +39,9 @@ const MapPopover = () => {
     const traveling = currentVoyage && currentVoyage.finished === false;
     const isInSettlement = selectedSettlement.id === controlledParty.settlement
 
+    // console.log(selectedResourceNodes)
+
+
     return <Box sx={{ minHeight: "100px", maxWidth: "250px", p: 1 }}>
         <Typography sx={{ m: 1 }} variant="h6" >
             {`Distance: ${cost} seconds`}
@@ -40,7 +57,11 @@ const MapPopover = () => {
                 {selectedResourceNodes.map((resourceNode, index) => {
                     return (
                         <MenuItem value={index} key={resourceNode.id}>
-                            {resourceNode.name}
+                            <Tooltip key={resourceNode.id} title={Object.entries(resourceNode.resources).filter(([key, value]) => value > 0).map(([key]) => capitalizeFirstLetter(key)).join(", ")}>
+                                <Typography>
+                                    {resourceNode.name}
+                                </Typography>
+                            </Tooltip>
                         </MenuItem>
                     )
                 })}
@@ -48,7 +69,12 @@ const MapPopover = () => {
             </Select>
         </FormControl>
         <Button
-            onClick={() => expeditionStart(controlledParty.id, selectedResourceNodes[resourceNodeSelected].id)}
+            onClick={() => {
+                {
+                    expeditionStart(controlledParty.id, selectedResourceNodes[resourceNodeSelected].id)
+                    onClick()
+                }
+            }}
             disabled={(currentExpedition && currentExpedition.currentPhase !== 'finished')}
             variant="contained"
             fullWidth
@@ -58,12 +84,16 @@ const MapPopover = () => {
                 ? `Currently on expedition to ${resourceNodeRepository[currentExpedition.target].name}`
                 : `Go on Expedition.`}
         </Button>
-        {settlementName
+        {
+            settlementName
             && <>
                 <Divider sx={{ pt: 0.5 }} />
                 <Button
                     sx={{ p: 1, mt: 0.5 }} disabled={traveling || isInSettlement}
-                    onClick={() => voyageStart(controlledParty.id, selectedSettlement.id)}
+                    onClick={() => {
+                        voyageStart(controlledParty.id, selectedSettlement.id)
+                        onClick()
+                    }}
                     variant="contained"
                     fullWidth
                 >
@@ -76,7 +106,7 @@ const MapPopover = () => {
             </>
         }
 
-    </Box>
+    </Box >
 }
 
 export default MapPopover
