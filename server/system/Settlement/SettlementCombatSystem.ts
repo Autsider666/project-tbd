@@ -49,8 +49,6 @@ export class SettlementCombatSystem implements System {
 			settlement.getRegion().getWorld()
 		);
 
-		console.log(settlement.raid);
-
 		ClientNotifier.warning(
 			`Settlement "${settlement.name}" is under attack by ${settlement.raid.name}!`,
 			settlement.getUpdateRoomName()

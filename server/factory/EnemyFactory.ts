@@ -9,22 +9,15 @@ export class EnemyFactory {
 		now: Date,
 		world: World
 	): Enemy {
-		// const createdAt = world.createdAt;
-		// const worldAge = Math.floor(
-		// 	(now.getTime() -
-		// 		(typeof createdAt === 'object'
-		// 			? createdAt
-		// 			: new Date(createdAt)
-		// 		).getTime()) /
-		// 		(60000 * 60)
-		// );
+		const createdAt = world.createdAt;
+		const worldAge = Math.floor(
+			(now.getTime() - new Date(createdAt).getTime()) / (60000 * 60)
+		);
 
 		return {
 			name: enemy.name,
-			// hp: Math.round(enemy.hp * Math.pow(1.5, worldAge)),
-			hp: enemy.hp,
-			damage: enemy.damage,
-			// damage: Math.round(enemy.damage * Math.pow(1.25, worldAge)),
+			hp: Math.round(enemy.hp * Math.pow(1.5, worldAge)),
+			damage: Math.round(enemy.damage * Math.pow(1.25, worldAge)),
 			damageTaken: 0,
 		};
 	}

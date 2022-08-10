@@ -11,7 +11,7 @@ export type WorldId = Opaque<Uuid, 'WorldId'>;
 export type WorldStateData = {
 	name: string;
 	regions: RegionId[];
-	createdAt?: Date;
+	createdAt?: string;
 	destroyed?: boolean;
 } & EntityStateData<WorldId>;
 
@@ -20,7 +20,7 @@ export type WorldClientData = WorldStateData & EntityClientData<WorldId>;
 export class World extends Entity<WorldId, WorldStateData, WorldClientData> {
 	public name: string;
 	public destroyed: boolean;
-	public readonly createdAt: Date;
+	public readonly createdAt: string;
 	private readonly regions: RegionsProperty;
 
 	constructor(data: WorldStateData) {
@@ -28,7 +28,7 @@ export class World extends Entity<WorldId, WorldStateData, WorldClientData> {
 
 		this.name = data.name;
 		this.regions = new RegionsProperty(data.regions);
-		this.createdAt = data.createdAt ?? new Date();
+		this.createdAt = data.createdAt ?? new Date().toString();
 		this.destroyed = data.destroyed ?? false;
 	}
 

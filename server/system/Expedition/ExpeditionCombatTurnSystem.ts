@@ -41,7 +41,10 @@ export class ExpeditionCombatTurnSystem implements System {
 			if (enemy.damageTaken >= enemy.hp) {
 				const previousPhase = expedition.previousPhase;
 				const previousPhaseEndedAt = expedition.previousPhaseEndedAt;
-				const startedAt = expedition.getCurrentPhaseStartedAt();
+				const startedAtString = expedition.getCurrentPhaseStartedAt();
+				const startedAt = startedAtString
+					? new Date(startedAtString)
+					: null;
 				if (!previousPhase || !previousPhaseEndedAt || !startedAt) {
 					throw new Error(
 						'This should not be able to be null right now....  ' +
@@ -56,7 +59,7 @@ export class ExpeditionCombatTurnSystem implements System {
 					this.now,
 					new Date(this.now.getTime() + timeCombatHasTaken)
 				);
-				expedition.previousPhaseEndedAt = this.now; //TODO fix some day
+				expedition.previousPhaseEndedAt = this.now.toString(); //TODO fix some day
 
 				ClientNotifier.success(
 					`Party "${party.name}" has killed ${enemy.name}.`,

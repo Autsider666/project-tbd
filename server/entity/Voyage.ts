@@ -13,8 +13,8 @@ export type VoyageStateData = {
 	party: PartyId;
 	origin: SettlementId;
 	target: SettlementId;
-	startedAt: Date;
-	arrivalAt: Date;
+	startedAt: string;
+	arrivalAt: string;
 	finished: boolean;
 } & EntityStateData<VoyageId>;
 
@@ -28,8 +28,8 @@ export class Voyage extends Entity<
 	private readonly partyProperty: PartyProperty;
 	private readonly originProperty: SettlementProperty;
 	private readonly targetProperty: SettlementProperty;
-	public readonly startedAt: Date;
-	public readonly arrivalAt: Date;
+	public readonly startedAt: string;
+	public readonly arrivalAt: string;
 	public finished: boolean;
 
 	constructor(data: VoyageStateData) {

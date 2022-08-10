@@ -37,7 +37,10 @@ export class ExpeditionPhaseChangeSystem implements System {
 
 		for (const expedition of activeExpedition) {
 			const currentPhaseEndsAt = expedition.getCurrentPhaseEndsAt();
-			if (!currentPhaseEndsAt || currentPhaseEndsAt >= this.now) {
+			if (
+				!currentPhaseEndsAt ||
+				new Date(currentPhaseEndsAt) >= this.now
+			) {
 				this.checkForCombat(expedition);
 				return;
 			}
@@ -99,7 +102,6 @@ export class ExpeditionPhaseChangeSystem implements System {
 			const settlement = expedition.getOrigin();
 			for (const [type, amount] of Object.entries(party.getResources())) {
 				// TODO test/find better solution
-				console.log(type, amount);
 				settlement.addResource(amount as number, type as ResourceType);
 				party.removeResource(amount as number, type as ResourceType);
 			}
@@ -129,11 +131,10 @@ export class ExpeditionPhaseChangeSystem implements System {
 		if (expedition.previousPhase === ExpeditionPhase.combat) {
 			const previous = expedition.previousPhaseEndedAt;
 			if (previous === null) {
-				console.log(expedition);
 				throw new Error('Should not be null right now');
 			}
 			const secondsInPast =
-				previous.getTime() - this.now.getTime() / 1000;
+				new Date(previous).getTime() - this.now.getTime() / 1000;
 			if (
 				secondsInPast <
 				this.config.get('secondsBetweenCombatInSamePhase')
@@ -155,8 +156,6 @@ export class ExpeditionPhaseChangeSystem implements System {
 			this.now,
 			party.getSettlement().getRegion().getWorld()
 		);
-
-		console.log(expedition.enemy);
 
 		expedition.setCurrentPhase(ExpeditionPhase.combat, this.now, null);
 

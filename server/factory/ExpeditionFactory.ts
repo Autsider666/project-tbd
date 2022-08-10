@@ -39,8 +39,8 @@ export class ExpeditionFactory {
 			currentPhase: ExpeditionPhase.travel,
 			origin: party.getSettlement().getId(),
 			target: node.getId(),
-			startedAt,
-			currentPhaseEndsAt,
+			startedAt: startedAt.toString(),
+			currentPhaseEndsAt: currentPhaseEndsAt.toString(),
 		});
 
 		if (!party.setExpedition(expedition)) {

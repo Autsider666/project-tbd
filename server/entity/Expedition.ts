@@ -24,12 +24,12 @@ export type ExpeditionStateData = {
 	party: PartyId;
 	origin: SettlementId;
 	target: ResourceNodeId;
-	startedAt: Date;
+	startedAt: string;
 	currentPhase: ExpeditionPhase;
-	currentPhaseStartedAt?: Date;
-	currentPhaseEndsAt: Date | null;
+	currentPhaseStartedAt?: string | null;
+	currentPhaseEndsAt: string | null;
 	previousPhase?: ExpeditionPhase | null;
-	previousPhaseEndedAt?: Date | null;
+	previousPhaseEndedAt?: string | null;
 	damageTaken?: number;
 	enemy?: Enemy | null;
 } & EntityStateData<ExpeditionId>;
@@ -47,10 +47,10 @@ export class Expedition extends Entity<
 	public previousPhase: ExpeditionPhase | null = null;
 	private readonly originProperty: SettlementProperty;
 	private readonly targetProperty: ResourceNodeProperty;
-	public readonly startedAt: Date;
-	private currentPhaseStartedAt: Date;
-	private currentPhaseEndsAt: Date | null;
-	public previousPhaseEndedAt: Date | null;
+	public readonly startedAt: string;
+	private currentPhaseStartedAt: string;
+	private currentPhaseEndsAt: string | null;
+	public previousPhaseEndedAt: string | null;
 	public damageTaken: number;
 	public enemy: Enemy | null;
 
@@ -63,8 +63,9 @@ export class Expedition extends Entity<
 		this.originProperty = new SettlementProperty(data.origin);
 		this.targetProperty = new ResourceNodeProperty(data.target);
 		this.startedAt = data.startedAt;
-		this.currentPhaseStartedAt = data.currentPhaseStartedAt ?? new Date();
-		this.currentPhaseEndsAt = data.currentPhaseEndsAt;
+		this.currentPhaseStartedAt =
+			data.currentPhaseStartedAt ?? new Date().toString();
+		this.currentPhaseEndsAt = data.currentPhaseEndsAt ?? null;
 		this.previousPhaseEndedAt = data.previousPhaseEndedAt ?? null;
 		this.damageTaken = data.damageTaken ?? 0;
 		this.enemy = data.enemy ?? null;
@@ -114,11 +115,11 @@ export class Expedition extends Entity<
 		return this.currentPhase;
 	}
 
-	public getCurrentPhaseEndsAt(): Date | null {
+	public getCurrentPhaseEndsAt(): string | null {
 		return this.currentPhaseEndsAt;
 	}
 
-	public getCurrentPhaseStartedAt(): Date | null {
+	public getCurrentPhaseStartedAt(): string | null {
 		return this.currentPhaseStartedAt;
 	}
 
@@ -129,9 +130,9 @@ export class Expedition extends Entity<
 	): void {
 		this.previousPhase = this.currentPhase;
 		this.currentPhase = phase;
-		this.currentPhaseStartedAt = currentDate;
+		this.currentPhaseStartedAt = currentDate.toString();
 
 		this.previousPhaseEndedAt = this.currentPhaseEndsAt;
-		this.currentPhaseEndsAt = phaseEndsAt;
+		this.currentPhaseEndsAt = phaseEndsAt?.toString() || null;
 	}
 }
