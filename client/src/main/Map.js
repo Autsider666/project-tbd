@@ -10,7 +10,7 @@ import { useGame } from '../contexts/GameContext.js'
 import { capitalizeFirstLetter } from '../functions/utils'
 
 const Map = () => {
-    const { loaded, currentVoyage, currentVoyagePhaseTimeRemaining, controlledParty, currentRegionId, settlementRepository, regionRepository, worldRepository, selectedRegionId, setSelectedRegionId, currentExpedition, currentExpeditionTravelPath = {}, selectedSettlement = {}, selectedRegion = {}, travelPaths = {}, setTabSelected, currentExpeditionPhaseTimeRemaining, tickLength } = useGame()
+    const { loaded, currentVoyage, currentVoyagePhaseTimeRemaining, controlledParty, currentRegionId, settlementRepository, regionRepository, worldRepository, selectedRegionId, setSelectedRegionId, currentExpedition, currentExpeditionTravelPath = {}, selectedSettlement = {}, selectedRegion = {}, travelPaths = {}, currentExpeditionPhaseTimeRemaining, tickLength } = useGame()
     // console.log(currentVoyage)
     // console.log(currentSettlement)
     const worldSelected = Object.values(worldRepository)[0] // Add future code to take more than one map.
