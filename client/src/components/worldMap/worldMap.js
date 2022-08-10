@@ -9,7 +9,7 @@ const WorldMaps = [
     }
 ]
 
-const WorldMap = ({ world, regions, selectedRegionId, regionClickHandler }) => {
+const WorldMap = ({ regions, selectedRegionId, regionClickHandler }) => {
 
     const worldMapSelected = WorldMaps[0]
 

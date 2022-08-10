@@ -8,16 +8,23 @@ import InfoIcon from '@mui/icons-material/Info'
 import Container from '@mui/material/Container';
 import Tooltip from '@mui/material/Tooltip';
 import { useGame } from '../contexts/GameContext';
-import { Divider } from '@mui/material';
+import { Badge, Divider, List, ListItem, ListItemText, Popover } from '@mui/material';
 import { useAuth } from '../contexts/AuthContext';
 import { socket } from '../functions/SocketAPI';
 import { useApp } from '../contexts/AppContext';
+import CrisisAlertIcon from '@mui/icons-material/CrisisAlert';
+import { useState } from 'react';
 
 const ResponsiveAppBar = () => {
 
   const { setWikiModal } = useApp()
-  const { controlledParty, currentSettlement, setSelectedRegionId, resetRepositories, currentExpedition } = useGame()
+  const { controlledParty, currentSettlement, setSelectedRegionId, resetRepositories, currentExpedition, settlementRepository, partyRepository } = useGame()
   const { resetAuth } = useAuth()
+  const [popoverEl, setPopoverEl] = useState(null)
+
+  const questIconClicker = event => {
+    setPopoverEl(event.currentTarget)
+  }
 
   const { hp: settlementHp = 100, damageTaken: settlementDamageTaken = 0 } = currentSettlement || {}
   const currentSettlementCurrentHealth = settlementHp - settlementDamageTaken
@@ -31,7 +38,10 @@ const ResponsiveAppBar = () => {
 
   currentExpedition && console.log(controlledPartyHp - currentExpedition.damageTaken)
   currentExpedition && console.log(controlledPartyHp)
+
   currentExpedition && console.log(Math.round((controlledPartyHp - currentExpedition.damageTaken) / controlledPartyHp * 100))
+
+  const currentRaidedSettlements = settlementRepository ? Object.values(settlementRepository).filter(settlement => settlement.raid) : []
 
   // console.log({ controlledParty, currentSettlement, currentExpedition })
   const maxEnergy = 2000
@@ -108,18 +118,19 @@ const ResponsiveAppBar = () => {
           <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'flex' } }} />
           {
             controlledParty && controlledParty.dead
-            && <Box onClick={() => {
-              resetAuth()
-              resetRepositories()
-            }} sx={{ mx: 1, cursor: 'pointer' }}>
-              <Typography>
-                {`Restart Game`}
-              </Typography>
-            </Box>
+            &&
+            <Tooltip title="You've Died! Click to restart and create a new party!">
+              <Box onClick={() => {
+                resetAuth()
+                resetRepositories()
+                window.location.reload();
+              }} sx={{ mx: 1, cursor: 'pointer' }}>
+                <Typography>
+                  {`Restart Game`}
+                </Typography>
+              </Box>
+            </Tooltip>
           }
-
-
-
           {
             currentSettlement
             && <>
@@ -137,13 +148,63 @@ const ResponsiveAppBar = () => {
               <Divider sx={{ backgroundColor: 'white', my: 2, ml: 1, width: 2 }} orientation="vertical" flexItem />
             </>
           }
-          <Tooltip title="Wiki Modal">
+          <Tooltip title="On-going Quests">
+            <IconButton onClick={questIconClicker} >
+              <Badge badgeContent={currentRaidedSettlements.length} color="error">
+                <CrisisAlertIcon sx={{ color: 'white' }} />
+              </Badge>
+            </IconButton>
+          </Tooltip>
+
+          <Tooltip title="Quick Start / Wiki">
             <IconButton onClick={() => setWikiModal(true)} size="large" >
               <InfoIcon sx={{ color: 'white' }} />
             </IconButton>
           </Tooltip>
         </Toolbar>
       </Container>
+      <Popover
+        anchorEl={popoverEl}
+        open={Boolean(popoverEl)}
+        onClose={() => setPopoverEl(null)}
+        anchorOrigin={{
+          vertical: 'center',
+          horizontal: 'center',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
+      >
+        <List>
+          {currentRaidedSettlements.length > 0
+            ? currentRaidedSettlements.map(settlement => {
+              const survivorParties = settlement.parties.map(partyId => partyRepository[partyId])
+              const partyCount = survivorParties.reduce((accum, party) => {
+                if (party.currentVoyage === null && party.currentExpedition === null) {
+                  accum += party.survivors.length
+                }
+                return accum
+              }, 0)
+              const survivorCount = partyCount + settlement.survivors.length
+              return (
+                <ListItem key={settlement.id} sx={{ m: 1 }}>
+                  <ListItemText primary={settlement.name} secondary="Name" sx={{ width: '120px' }} />
+                  <Divider sx={{ mx: 1, my: 1, width: 2 }} orientation="vertical" flexItem />
+                  <ListItemText primary={`${settlement.hp - settlement.damageTaken} / ${settlement.hp}`} secondary="Settlement HP" />
+                  <Divider sx={{ mx: 1, my: 1, width: 2 }} orientation="vertical" flexItem />
+                  <ListItemText primary={survivorCount} secondary="Survivors" />
+                  <Divider sx={{ mx: 1, my: 1, width: 2 }} orientation="vertical" flexItem />
+                  <ListItemText primary={`${settlement.raid.hp - settlement.raid.damageTaken} / ${settlement.raid.hp}`} secondary="Enemy HP" />
+                </ListItem>
+              )
+            })
+            : <Typography sx={{ m: 2 }}>
+              There are no quest at the moment.
+            </Typography>
+          }
+        </List>
+      </Popover>
     </AppBar >
   );
 };

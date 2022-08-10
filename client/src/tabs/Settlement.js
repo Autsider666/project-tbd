@@ -1,10 +1,9 @@
 import React from 'react';
-import { Box, Button, ButtonGroup, Divider, LinearProgress, List, ListItem, ListItemButton, ListItemSecondaryAction, ListItemText, Tooltip, Typography } from '@mui/material';
+import { Box, Button, Divider, LinearProgress, List, ListItem, ListItemSecondaryAction, ListItemText, Tooltip, Typography } from '@mui/material';
 import { useGame } from '../contexts/GameContext';
 import ResourceListItem from '../components/ResourceListItem';
 import { settlementUpgrade } from '../functions/socketCalls';
 import { normalise } from '../functions/utils';
-import SurvivorList from '../components/SurvivorList';
 import StatListItem from '../components/StatListItem';
 import { Scrollbars } from 'react-custom-scrollbars-2';
 import HealthBar from '../components/HealthBar';
@@ -83,7 +82,7 @@ const Settlement = ({ height }) => {
                         {
                             currentSettlementParties.map(party => {
                                 return (
-                                    <StatListItem stats={party.stats} title={`Party of ${party.name}`} />
+                                    <StatListItem key={party.id} stats={party.stats} title={`Party of ${party.name}`} />
                                 )
                             })
                         }

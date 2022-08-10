@@ -1,7 +1,6 @@
 import React from 'react'
 import TabsWrapper from '../components/TabsWrapper'
 import { useGame } from '../contexts/GameContext'
-import ExpeditionSites from '../tabs/ExpeditionSites'
 import Settlement from '../tabs/Settlement'
 import Survivors from '../tabs/Survivors'
 import { useMediaQuery, useTheme } from '@mui/material'

@@ -10,7 +10,7 @@ import { useGame } from '../contexts/GameContext.js'
 import { capitalizeFirstLetter } from '../functions/utils'
 
 const Map = () => {
-    const { loaded, currentVoyage, currentVoyagePhaseTimeRemaining, controlledParty, currentRegionId, settlementRepository, regionRepository, worldRepository, selectedRegionId, setSelectedRegionId, currentExpedition, currentExpeditionTravelPath = {}, selectedSettlement = {}, selectedRegion = {}, travelPaths = {}, setTabSelected, currentExpeditionPhaseTimeRemaining, tickLength } = useGame()
+    const { loaded, currentVoyage, currentVoyagePhaseTimeRemaining, controlledParty, currentRegionId, settlementRepository, regionRepository, worldRepository, selectedRegionId, setSelectedRegionId, currentExpedition, currentExpeditionTravelPath = {}, selectedSettlement = {}, selectedRegion = {}, travelPaths = {}, currentExpeditionPhaseTimeRemaining, tickLength } = useGame()
     // console.log(currentVoyage)
     // console.log(currentSettlement)
     const worldSelected = Object.values(worldRepository)[0] // Add future code to take more than one map.
@@ -79,7 +79,7 @@ const Map = () => {
                         <Typography color="primary" sx={{ m: 1 }} textAlign={"center"} variant="h6">{`Expedition Status: ${capitalizeFirstLetter(currentExpedition?.currentPhase)}`}</Typography>
                         {
                             currentExpedition.currentPhase !== "combat"
-                            && <Typography key={tickLength.seconds} color="primary" sx={{ my: 1, mr: 1 }} textAlign={"center"} variant="h6">
+                            && <Typography key={tickLength.seconds || 0} color="primary" sx={{ my: 1, mr: 1 }} textAlign={"center"} variant="h6">
                                 (
                                 {
                                     currentExpedition.currentPhase === 'gather'
@@ -95,7 +95,7 @@ const Map = () => {
                 {currentVoyage && currentVoyage.finished === false
                     && <>
                         <Typography color="primary" sx={{ m: 1 }} textAlign={"center"} variant="h6">{`On Voyage to: ${settlementRepository[currentVoyage.target].name}`}</Typography>
-                        <Typography key={tickLength.seconds} color="primary" sx={{ my: 1, mr: 1 }} textAlign={"center"} variant="h6">
+                        <Typography key={tickLength.seconds || 0} color="primary" sx={{ my: 1, mr: 1 }} textAlign={"center"} variant="h6">
                             <CountDown seconds={Math.round(currentVoyagePhaseTimeRemaining.seconds || 0)} />
                         </Typography>
 

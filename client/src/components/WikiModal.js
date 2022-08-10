@@ -11,7 +11,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import Typography from '@mui/material/Typography';
 import { useGame } from '../contexts/GameContext';
 import { useApp } from '../contexts/AppContext';
-import { ListItem, ListItemText, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import { Grid, List, ListItem, ListItemText, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {
@@ -70,8 +70,57 @@ const WikiModal = () => {
             open={open}
         >
             <BootstrapDialogTitle id="customized-dialog-title" onClose={handleClose}>
-                Wiki Modal - ( Survivor Overview & Stats )
+                Quick Start Guide & Wiki - ( Survivor Overview & Stats, Settlement Information & Upgrades )
             </BootstrapDialogTitle>
+            <DialogContent dividers sx={{ minHeight: '310px' }} >
+                <Grid container>
+                    <Grid item xs={8} sx={{ borderRight: '1px solid', borderRightColor: 'rgba(0, 0, 0, 0.12)' }}>
+                        {/* <Typography variant="h6"> Quick Start Guide: </Typography> */}
+                        <Typography sx={{ p: 0.5 }}>
+                            You start with a party of 5 survivors.
+                            You must go on expeditions to gather resources and upgrade your settlement.
+                            Meanwhile you need to upgrade your survivors into stronger units and fight off the repeating raid of Zombies that are attack your settlement.
+                        </Typography>
+                        <Typography sx={{ p: 0.5 }}>
+                            While on Expeditions you will have a chance to find survivors but more likely just more Zombies. If you do not make it through an expedition alive or your settlement dies with you defending it, you party dies and you must restart.
+                        </Typography>
+                        <Typography sx={{ p: 0.5 }}   >
+                            Click on the various regions to get a list of potential expedition targets and other settlements to travel to. You can have a maximum of 10 survivors in your party. If you exceed this number, you must first dismiss some before continuing your adventures.
+                        </Typography>
+                        <Typography sx={{ p: 0.5 }}>
+                            Build the best combination of Survivors and out live the zombie raids longer than the rest!
+                        </Typography>
+                    </Grid>
+                    <Grid item xs={4}>
+                        <List>
+                            <ListItem>
+                                <ListItemText>
+                                    Building
+                                </ListItemText>
+                                <ListItemText>
+                                    Upgrade
+                                </ListItemText>
+                            </ListItem>
+                            <ListItem>
+                                <ListItemText secondary="Tower Default Damage">
+                                    100
+                                </ListItemText>
+                                <ListItemText secondary="Per Upgraded Level">
+                                    100
+                                </ListItemText>
+                            </ListItem>
+                            <ListItem>
+                                <ListItemText secondary="Walls Default Health">
+                                    10,000.
+                                </ListItemText>
+                                <ListItemText secondary="Per Upgraded Level">
+                                    1000.
+                                </ListItemText>
+                            </ListItem>
+                        </List>
+                    </Grid>
+                </Grid>
+            </DialogContent>
             <DialogContent dividers  >
                 <TableContainer>
                     <Table>
@@ -109,11 +158,12 @@ const WikiModal = () => {
 
                                 </TableRow>
                             })}
+                            
                         </TableBody>
                     </Table>
                 </TableContainer>
-                
-                
+
+
             </DialogContent>
             <DialogActions>
                 <Button autoFocus onClick={handleClose}>
