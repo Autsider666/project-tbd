@@ -226,7 +226,7 @@ export class Settlement
 	}
 
 	getSurvivors(): Survivor[] {
-		return this.survivors;
+		return [...this.survivors];
 	}
 
 	getResource(type: ResourceType): number {

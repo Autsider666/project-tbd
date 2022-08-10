@@ -159,7 +159,7 @@ export class Party
 	}
 
 	public getSurvivors(): Survivor[] {
-		return this.survivors;
+		return [...this.survivors];
 	}
 
 	public addSurvivor(survivor: Survivor): void {
