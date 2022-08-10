@@ -114,7 +114,10 @@ export class ClientController {
 
 			const regionsWithSettlement = world
 				.getRegions()
-				.filter((region) => region.getSettlement());
+				.filter((region) => {
+					const settlement = region.getSettlement();
+					return settlement && !settlement.destroyed;
+				});
 			const settlements = regionsWithSettlement.map((region) =>
 				(region.getSettlement() as Settlement).normalize(this.client)
 			);
@@ -186,6 +189,14 @@ export class ClientController {
 				if (settlement === null) {
 					ClientNotifier.error(
 						'This settlement does not exist.',
+						this.socket.id
+					);
+					return;
+				}
+
+				if (settlement.destroyed) {
+					ClientNotifier.error(
+						"This settlement has been destroyed, so it's not safe to spawn here.",
 						this.socket.id
 					);
 					return;
@@ -276,6 +287,14 @@ export class ClientController {
 			if (target === null) {
 				ClientNotifier.error(
 					'This settlement does not exist.',
+					party.getUpdateRoomName()
+				);
+				return;
+			}
+
+			if (target.destroyed) {
+				ClientNotifier.error(
+					"This settlement has been destroyed, so it's not safe to travel to it.",
 					party.getUpdateRoomName()
 				);
 				return;

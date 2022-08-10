@@ -1,4 +1,5 @@
 import { singleton } from 'tsyringe';
+import { ResourceType } from '../../config/ResourceData.js';
 import { SurvivorDataMap } from '../../config/SurvivorData.js';
 import { SettlementRepository } from '../../repository/SettlementRepository.js';
 import { System } from '../System.js';
@@ -30,8 +31,13 @@ export class SettlementRepairSystem implements System {
 				availableWork += SurvivorDataMap[survivor].stats.gatheringSpeed;
 			}
 
-			const workDone = Math.min(availableWork, settlement.damageTaken);
+			const workDone = Math.min(
+				availableWork,
+				settlement.damageTaken,
+				settlement.getResource(ResourceType.wood)
+			);
 			settlement.damageTaken -= workDone;
+			settlement.removeResource(workDone, ResourceType.wood);
 		}
 	}
 }

@@ -229,6 +229,10 @@ export class Settlement
 		return this.survivors;
 	}
 
+	getResource(type: ResourceType): number {
+		return this.resources[type];
+	}
+
 	addResource(amount: number, type: ResourceType): void {
 		this.resources[type] = (this.resources[type] ?? 0) + amount;
 	}

@@ -99,12 +99,22 @@ export class Party
 		updateObject: EntityUpdate = {},
 		forClient?: Client
 	): Promise<EntityUpdate> {
-		const expedition = this.getExpedition();
-		if (expedition && forClient?.parties.has(this.id)) {
-			updateObject = await expedition.prepareNestedEntityUpdate(
-				updateObject,
-				forClient
-			);
+		if (forClient?.parties.has(this.id)) {
+			const expedition = this.getExpedition();
+			if (expedition) {
+				updateObject = await expedition.prepareNestedEntityUpdate(
+					updateObject,
+					forClient
+				);
+			}
+
+			const voyage = this.getVoyage();
+			if (voyage) {
+				updateObject = await voyage.prepareNestedEntityUpdate(
+					updateObject,
+					forClient
+				);
+			}
 		}
 
 		return super.prepareNestedEntityUpdate(updateObject, forClient);
