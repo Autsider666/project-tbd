@@ -118,19 +118,19 @@ const ResponsiveAppBar = () => {
           <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'flex' } }} />
           {
             controlledParty && controlledParty.dead
-            && <Box onClick={() => {
-              resetAuth()
-              resetRepositories()
-              window.location.reload();
-            }} sx={{ mx: 1, cursor: 'pointer' }}>
-              <Typography>
-                {`Restart Game`}
-              </Typography>
-            </Box>
+            &&
+            <Tooltip title="You've Died! Click to restart and create a new party!">
+              <Box onClick={() => {
+                resetAuth()
+                resetRepositories()
+                window.location.reload();
+              }} sx={{ mx: 1, cursor: 'pointer' }}>
+                <Typography>
+                  {`Restart Game`}
+                </Typography>
+              </Box>
+            </Tooltip>
           }
-
-
-
           {
             currentSettlement
             && <>
@@ -148,13 +148,15 @@ const ResponsiveAppBar = () => {
               <Divider sx={{ backgroundColor: 'white', my: 2, ml: 1, width: 2 }} orientation="vertical" flexItem />
             </>
           }
-          <IconButton onClick={questIconClicker} >
-            <Badge badgeContent={currentRaidedSettlements.length} color="error">
-              <CrisisAlertIcon sx={{ color: 'white' }} />
-            </Badge>
-          </IconButton>
+          <Tooltip title="On-going Quests">
+            <IconButton onClick={questIconClicker} >
+              <Badge badgeContent={currentRaidedSettlements.length} color="error">
+                <CrisisAlertIcon sx={{ color: 'white' }} />
+              </Badge>
+            </IconButton>
+          </Tooltip>
 
-          <Tooltip title="Wiki Modal">
+          <Tooltip title="Quick Start / Wiki">
             <IconButton onClick={() => setWikiModal(true)} size="large" >
               <InfoIcon sx={{ color: 'white' }} />
             </IconButton>
@@ -177,18 +179,17 @@ const ResponsiveAppBar = () => {
         <List>
           {currentRaidedSettlements.length > 0
             ? currentRaidedSettlements.map(settlement => {
-              console.log(settlement)
               const survivorParties = settlement.parties.map(partyId => partyRepository[partyId])
-              const partyCount = survivorParties.reduce((accum,party)=>{
-                if(party.currentVoyage === null && party.currentExpedition === null) {
+              const partyCount = survivorParties.reduce((accum, party) => {
+                if (party.currentVoyage === null && party.currentExpedition === null) {
                   accum += party.survivors.length
                 }
                 return accum
-              },0)
+              }, 0)
               const survivorCount = partyCount + settlement.survivors.length
               return (
                 <ListItem key={settlement.id} sx={{ m: 1 }}>
-                  <ListItemText primary={settlement.name} secondary="Name" sx={{width: '120px'}} />
+                  <ListItemText primary={settlement.name} secondary="Name" sx={{ width: '120px' }} />
                   <Divider sx={{ mx: 1, my: 1, width: 2 }} orientation="vertical" flexItem />
                   <ListItemText primary={`${settlement.hp - settlement.damageTaken} / ${settlement.hp}`} secondary="Settlement HP" />
                   <Divider sx={{ mx: 1, my: 1, width: 2 }} orientation="vertical" flexItem />
