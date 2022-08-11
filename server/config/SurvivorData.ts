@@ -4,7 +4,7 @@ export enum Survivor {
 	Peasant = 'Peasant',
 	Villager = 'Villager',
 	Scout = 'Scout',
-	["Town Militia"] = 'Town Militia',
+	['Town Militia'] = 'Town Militia',
 	Laborer = 'Laborer',
 	Fighter = 'Fighter',
 	MuleRider = 'MuleRider',
@@ -17,16 +17,11 @@ export enum Survivor {
 	Pikeman = 'Pikeman',
 	Spearman = 'Spearman',
 	Caravan = 'Caravan',
-	["Knights Templar"] = 'Knights Templar',
-	["Crossbow Man"] = 'Crossbow Man',
+	['Knights Templar'] = 'Knights Templar',
+	['Crossbow Man'] = 'Crossbow Man',
 	Warrior = 'Warrior',
-	["Zwei Hander"] = 'Zwei Hander',
+	['Zwei Hander'] = 'Zwei Hander',
 }
-
-
-
-
-
 
 export enum SurvivorTree {
 	Generic = 'Generic',
@@ -71,18 +66,28 @@ export const SurvivorDataMap: { [key in Survivor]: SurvivorData } = {
 		tree: SurvivorTree.Generic,
 		tier: 1,
 		stats: {
-			[SurvivorStat.hp]: 50, [SurvivorStat.travelSpeed]: 10, [SurvivorStat.damage]: 10, [SurvivorStat.defense]: 2, [SurvivorStat.carryCapacity]: 250, [SurvivorStat.gatheringSpeed]: 5,
+			[SurvivorStat.hp]: 50,
+			[SurvivorStat.travelSpeed]: 10,
+			[SurvivorStat.damage]: 10,
+			[SurvivorStat.defense]: 2,
+			[SurvivorStat.carryCapacity]: 250,
+			[SurvivorStat.gatheringSpeed]: 5,
 		},
 		upgrades: [Survivor.Villager, Survivor.Scout],
 		nextUpgradeCost: tier1UpgradeCost,
-		boost: null
+		boost: null,
 	},
 	[Survivor.Villager]: {
 		name: Survivor.Villager,
 		tree: SurvivorTree.Generic,
 		tier: 2,
 		stats: {
-			[SurvivorStat.hp]: 75, [SurvivorStat.travelSpeed]: 10, [SurvivorStat.damage]: 15, [SurvivorStat.defense]: 4, [SurvivorStat.carryCapacity]: 350, [SurvivorStat.gatheringSpeed]: 9,
+			[SurvivorStat.hp]: 75,
+			[SurvivorStat.travelSpeed]: 10,
+			[SurvivorStat.damage]: 15,
+			[SurvivorStat.defense]: 4,
+			[SurvivorStat.carryCapacity]: 350,
+			[SurvivorStat.gatheringSpeed]: 9,
 		},
 		boost: null,
 		upgrades: [Survivor.Laborer, Survivor['Town Militia']],
@@ -93,10 +98,20 @@ export const SurvivorDataMap: { [key in Survivor]: SurvivorData } = {
 		tree: SurvivorTree.Generic,
 		tier: 2,
 		stats: {
-			[SurvivorStat.hp]: 75, [SurvivorStat.travelSpeed]: 10, [SurvivorStat.damage]: 15, [SurvivorStat.defense]: 4, [SurvivorStat.carryCapacity]: 450, [SurvivorStat.gatheringSpeed]: 7,
+			[SurvivorStat.hp]: 75,
+			[SurvivorStat.travelSpeed]: 10,
+			[SurvivorStat.damage]: 15,
+			[SurvivorStat.defense]: 4,
+			[SurvivorStat.carryCapacity]: 450,
+			[SurvivorStat.gatheringSpeed]: 7,
 		},
 		boost: null,
-		upgrades: [Survivor.Fighter, Survivor.MuleRider, Survivor.Knight, Survivor.Archer],
+		upgrades: [
+			Survivor.Fighter,
+			Survivor.MuleRider,
+			Survivor.Knight,
+			Survivor.Archer,
+		],
 		nextUpgradeCost: tier2UpgradeCost,
 	},
 	[Survivor['Town Militia']]: {
@@ -104,11 +119,16 @@ export const SurvivorDataMap: { [key in Survivor]: SurvivorData } = {
 		tree: SurvivorTree.Generic,
 		tier: 3,
 		stats: {
-			[SurvivorStat.hp]: 100, [SurvivorStat.travelSpeed]: 10, [SurvivorStat.damage]: 20, [SurvivorStat.defense]: 4, [SurvivorStat.carryCapacity]: 350, [SurvivorStat.gatheringSpeed]: 10,
+			[SurvivorStat.hp]: 100,
+			[SurvivorStat.travelSpeed]: 10,
+			[SurvivorStat.damage]: 20,
+			[SurvivorStat.defense]: 4,
+			[SurvivorStat.carryCapacity]: 350,
+			[SurvivorStat.gatheringSpeed]: 10,
 		},
 		upgrades: [Survivor.Warrior],
 		nextUpgradeCost: tier3UpgradeCost,
-		boost: null
+		boost: null,
 	},
 
 	[Survivor.Laborer]: {
@@ -116,7 +136,12 @@ export const SurvivorDataMap: { [key in Survivor]: SurvivorData } = {
 		tree: SurvivorTree.Generic,
 		tier: 3,
 		stats: {
-			[SurvivorStat.hp]: 75, [SurvivorStat.travelSpeed]: 10, [SurvivorStat.damage]: 15, [SurvivorStat.defense]: 3, [SurvivorStat.carryCapacity]: 350, [SurvivorStat.gatheringSpeed]: 12,
+			[SurvivorStat.hp]: 75,
+			[SurvivorStat.travelSpeed]: 10,
+			[SurvivorStat.damage]: 15,
+			[SurvivorStat.defense]: 3,
+			[SurvivorStat.carryCapacity]: 350,
+			[SurvivorStat.gatheringSpeed]: 12,
 		},
 		boost: {
 			percentage: 5,
@@ -131,7 +156,12 @@ export const SurvivorDataMap: { [key in Survivor]: SurvivorData } = {
 		tree: SurvivorTree.Generic,
 		tier: 3,
 		stats: {
-			[SurvivorStat.hp]: 200, [SurvivorStat.travelSpeed]: 10, [SurvivorStat.damage]: 20, [SurvivorStat.defense]: 10, [SurvivorStat.carryCapacity]: 250, [SurvivorStat.gatheringSpeed]: 5,
+			[SurvivorStat.hp]: 200,
+			[SurvivorStat.travelSpeed]: 10,
+			[SurvivorStat.damage]: 20,
+			[SurvivorStat.defense]: 10,
+			[SurvivorStat.carryCapacity]: 250,
+			[SurvivorStat.gatheringSpeed]: 5,
 		},
 		boost: {
 			percentage: 1,
@@ -146,7 +176,12 @@ export const SurvivorDataMap: { [key in Survivor]: SurvivorData } = {
 		tree: SurvivorTree.Generic,
 		tier: 3,
 		stats: {
-			[SurvivorStat.hp]: 75, [SurvivorStat.travelSpeed]: 10, [SurvivorStat.damage]: 15, [SurvivorStat.defense]: 5, [SurvivorStat.carryCapacity]: 650, [SurvivorStat.gatheringSpeed]: 7,
+			[SurvivorStat.hp]: 75,
+			[SurvivorStat.travelSpeed]: 10,
+			[SurvivorStat.damage]: 15,
+			[SurvivorStat.defense]: 5,
+			[SurvivorStat.carryCapacity]: 650,
+			[SurvivorStat.gatheringSpeed]: 7,
 		},
 		upgrades: [Survivor.Caravan],
 		nextUpgradeCost: tier3UpgradeCost,
@@ -154,14 +189,19 @@ export const SurvivorDataMap: { [key in Survivor]: SurvivorData } = {
 			percentage: 5,
 			stat: SurvivorStat.carryCapacity,
 			type: null,
-		}
+		},
 	},
 	[Survivor.Knight]: {
 		name: Survivor.Knight,
 		tree: SurvivorTree.Generic,
 		tier: 3,
 		stats: {
-			[SurvivorStat.hp]: 100, [SurvivorStat.travelSpeed]: 10, [SurvivorStat.damage]: 20, [SurvivorStat.defense]: 15, [SurvivorStat.carryCapacity]: 400, [SurvivorStat.gatheringSpeed]: 6,
+			[SurvivorStat.hp]: 100,
+			[SurvivorStat.travelSpeed]: 10,
+			[SurvivorStat.damage]: 20,
+			[SurvivorStat.defense]: 15,
+			[SurvivorStat.carryCapacity]: 400,
+			[SurvivorStat.gatheringSpeed]: 6,
 		},
 		boost: {
 			percentage: 1,
@@ -176,7 +216,12 @@ export const SurvivorDataMap: { [key in Survivor]: SurvivorData } = {
 		tree: SurvivorTree.Generic,
 		tier: 3,
 		stats: {
-			[SurvivorStat.hp]: 100, [SurvivorStat.travelSpeed]: 10, [SurvivorStat.damage]: 30, [SurvivorStat.defense]: 5, [SurvivorStat.carryCapacity]: 400, [SurvivorStat.gatheringSpeed]: 6,
+			[SurvivorStat.hp]: 100,
+			[SurvivorStat.travelSpeed]: 10,
+			[SurvivorStat.damage]: 30,
+			[SurvivorStat.defense]: 5,
+			[SurvivorStat.carryCapacity]: 400,
+			[SurvivorStat.gatheringSpeed]: 6,
 		},
 		upgrades: [Survivor['Crossbow Man']],
 		nextUpgradeCost: tier3UpgradeCost,
@@ -191,7 +236,12 @@ export const SurvivorDataMap: { [key in Survivor]: SurvivorData } = {
 		tree: SurvivorTree.Generic,
 		tier: 4,
 		stats: {
-			[SurvivorStat.hp]: 100, [SurvivorStat.travelSpeed]: 10, [SurvivorStat.damage]: 20, [SurvivorStat.defense]: 4, [SurvivorStat.carryCapacity]: 350, [SurvivorStat.gatheringSpeed]: 20,
+			[SurvivorStat.hp]: 100,
+			[SurvivorStat.travelSpeed]: 10,
+			[SurvivorStat.damage]: 20,
+			[SurvivorStat.defense]: 4,
+			[SurvivorStat.carryCapacity]: 350,
+			[SurvivorStat.gatheringSpeed]: 20,
 		},
 		boost: {
 			percentage: 20,
@@ -206,7 +256,12 @@ export const SurvivorDataMap: { [key in Survivor]: SurvivorData } = {
 		tree: SurvivorTree.Generic,
 		tier: 4,
 		stats: {
-			[SurvivorStat.hp]: 100, [SurvivorStat.travelSpeed]: 10, [SurvivorStat.damage]: 20, [SurvivorStat.defense]: 4, [SurvivorStat.carryCapacity]: 350, [SurvivorStat.gatheringSpeed]: 20,
+			[SurvivorStat.hp]: 100,
+			[SurvivorStat.travelSpeed]: 10,
+			[SurvivorStat.damage]: 20,
+			[SurvivorStat.defense]: 4,
+			[SurvivorStat.carryCapacity]: 350,
+			[SurvivorStat.gatheringSpeed]: 20,
 		},
 		boost: {
 			percentage: 20,
@@ -221,7 +276,12 @@ export const SurvivorDataMap: { [key in Survivor]: SurvivorData } = {
 		tree: SurvivorTree.Generic,
 		tier: 4,
 		stats: {
-			[SurvivorStat.hp]: 100, [SurvivorStat.travelSpeed]: 10, [SurvivorStat.damage]: 15, [SurvivorStat.defense]: 4, [SurvivorStat.carryCapacity]: 350, [SurvivorStat.gatheringSpeed]: 16,
+			[SurvivorStat.hp]: 100,
+			[SurvivorStat.travelSpeed]: 10,
+			[SurvivorStat.damage]: 15,
+			[SurvivorStat.defense]: 4,
+			[SurvivorStat.carryCapacity]: 350,
+			[SurvivorStat.gatheringSpeed]: 16,
 		},
 		upgrades: [],
 		nextUpgradeCost: tier4UpgradeCost,
@@ -236,7 +296,12 @@ export const SurvivorDataMap: { [key in Survivor]: SurvivorData } = {
 		tree: SurvivorTree.Generic,
 		tier: 4,
 		stats: {
-			[SurvivorStat.hp]: 400, [SurvivorStat.travelSpeed]: 10, [SurvivorStat.damage]: 20, [SurvivorStat.defense]: 10, [SurvivorStat.carryCapacity]: 250, [SurvivorStat.gatheringSpeed]: 5,
+			[SurvivorStat.hp]: 400,
+			[SurvivorStat.travelSpeed]: 10,
+			[SurvivorStat.damage]: 20,
+			[SurvivorStat.defense]: 10,
+			[SurvivorStat.carryCapacity]: 250,
+			[SurvivorStat.gatheringSpeed]: 5,
 		},
 		upgrades: [],
 		nextUpgradeCost: tier4UpgradeCost,
@@ -251,7 +316,12 @@ export const SurvivorDataMap: { [key in Survivor]: SurvivorData } = {
 		tree: SurvivorTree.Generic,
 		tier: 4,
 		stats: {
-			[SurvivorStat.hp]: 200, [SurvivorStat.travelSpeed]: 10, [SurvivorStat.damage]: 40, [SurvivorStat.defense]: 10, [SurvivorStat.carryCapacity]: 250, [SurvivorStat.gatheringSpeed]: 5,
+			[SurvivorStat.hp]: 200,
+			[SurvivorStat.travelSpeed]: 10,
+			[SurvivorStat.damage]: 40,
+			[SurvivorStat.defense]: 10,
+			[SurvivorStat.carryCapacity]: 250,
+			[SurvivorStat.gatheringSpeed]: 5,
 		},
 		upgrades: [],
 		nextUpgradeCost: tier4UpgradeCost,
@@ -266,7 +336,12 @@ export const SurvivorDataMap: { [key in Survivor]: SurvivorData } = {
 		tree: SurvivorTree.Generic,
 		tier: 4,
 		stats: {
-			[SurvivorStat.hp]: 200, [SurvivorStat.travelSpeed]: 10, [SurvivorStat.damage]: 20, [SurvivorStat.defense]: 20, [SurvivorStat.carryCapacity]: 250, [SurvivorStat.gatheringSpeed]: 5,
+			[SurvivorStat.hp]: 200,
+			[SurvivorStat.travelSpeed]: 10,
+			[SurvivorStat.damage]: 20,
+			[SurvivorStat.defense]: 20,
+			[SurvivorStat.carryCapacity]: 250,
+			[SurvivorStat.gatheringSpeed]: 5,
 		},
 		upgrades: [],
 		nextUpgradeCost: tier4UpgradeCost,
@@ -281,7 +356,12 @@ export const SurvivorDataMap: { [key in Survivor]: SurvivorData } = {
 		tree: SurvivorTree.Generic,
 		tier: 4,
 		stats: {
-			[SurvivorStat.hp]: 100, [SurvivorStat.travelSpeed]: 10, [SurvivorStat.damage]: 10, [SurvivorStat.defense]: 2, [SurvivorStat.carryCapacity]: 1000, [SurvivorStat.gatheringSpeed]: 5,
+			[SurvivorStat.hp]: 100,
+			[SurvivorStat.travelSpeed]: 10,
+			[SurvivorStat.damage]: 10,
+			[SurvivorStat.defense]: 2,
+			[SurvivorStat.carryCapacity]: 1000,
+			[SurvivorStat.gatheringSpeed]: 5,
 		},
 		upgrades: [],
 		nextUpgradeCost: tier4UpgradeCost,
@@ -289,14 +369,19 @@ export const SurvivorDataMap: { [key in Survivor]: SurvivorData } = {
 			percentage: 5,
 			stat: SurvivorStat.carryCapacity,
 			type: null,
-		}
+		},
 	},
 	[Survivor['Knights Templar']]: {
 		name: Survivor['Knights Templar'],
 		tree: SurvivorTree.Generic,
 		tier: 4,
 		stats: {
-			[SurvivorStat.hp]: 150, [SurvivorStat.travelSpeed]: 10, [SurvivorStat.damage]: 20, [SurvivorStat.defense]: 30, [SurvivorStat.carryCapacity]: 400, [SurvivorStat.gatheringSpeed]: 6,
+			[SurvivorStat.hp]: 150,
+			[SurvivorStat.travelSpeed]: 10,
+			[SurvivorStat.damage]: 20,
+			[SurvivorStat.defense]: 30,
+			[SurvivorStat.carryCapacity]: 400,
+			[SurvivorStat.gatheringSpeed]: 6,
 		},
 		upgrades: [],
 		nextUpgradeCost: tier4UpgradeCost,
@@ -311,7 +396,12 @@ export const SurvivorDataMap: { [key in Survivor]: SurvivorData } = {
 		tree: SurvivorTree.Generic,
 		tier: 4,
 		stats: {
-			[SurvivorStat.hp]: 100, [SurvivorStat.travelSpeed]: 10, [SurvivorStat.damage]: 60, [SurvivorStat.defense]: 5, [SurvivorStat.carryCapacity]: 400, [SurvivorStat.gatheringSpeed]: 6,
+			[SurvivorStat.hp]: 100,
+			[SurvivorStat.travelSpeed]: 10,
+			[SurvivorStat.damage]: 60,
+			[SurvivorStat.defense]: 5,
+			[SurvivorStat.carryCapacity]: 400,
+			[SurvivorStat.gatheringSpeed]: 6,
 		},
 		upgrades: [],
 		nextUpgradeCost: tier4UpgradeCost,
@@ -335,17 +425,22 @@ export const SurvivorDataMap: { [key in Survivor]: SurvivorData } = {
 		},
 		upgrades: [Survivor['Zwei Hander']],
 		nextUpgradeCost: tier4UpgradeCost,
-		boost: null
+		boost: null,
 	},
 	[Survivor['Zwei Hander']]: {
 		name: Survivor['Zwei Hander'],
 		tree: SurvivorTree.Generic,
 		tier: 5,
 		stats: {
-			[SurvivorStat.hp]: 300, [SurvivorStat.travelSpeed]: 10, [SurvivorStat.damage]: 45, [SurvivorStat.defense]: 23, [SurvivorStat.carryCapacity]: 750, [SurvivorStat.gatheringSpeed]: 16,
+			[SurvivorStat.hp]: 300,
+			[SurvivorStat.travelSpeed]: 10,
+			[SurvivorStat.damage]: 45,
+			[SurvivorStat.defense]: 23,
+			[SurvivorStat.carryCapacity]: 750,
+			[SurvivorStat.gatheringSpeed]: 16,
 		},
 		upgrades: [],
 		nextUpgradeCost: tier5UpgradeCost,
-		boost: null
-	}
+		boost: null,
+	},
 };

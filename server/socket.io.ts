@@ -47,6 +47,7 @@ export interface ClientToServerEvents {
 		partyId: PartyId;
 		targetId: ResourceNodeId;
 	}) => void;
+	'expedition:retreat': (data: { partyId: PartyId }) => void;
 	'expedition:list': (
 		data: { partyId: PartyId },
 		callback: (expeditions: ExpeditionClientData[]) => void

@@ -32,7 +32,7 @@ export type SettlementStateData = {
 	parties?: PartyId[];
 	resources?: Resources;
 	survivors?: Survivor[];
-	destroyed?: boolean;
+	destroyedAt?: string | null;
 	upgrade?: SettlementUpgrade | null;
 	buildings?: { [key in SettlementBuilding]: number };
 } & Combatant &
@@ -85,7 +85,7 @@ export class Settlement
 	damage: number;
 	damageTaken: number;
 	raid: Enemy | null;
-	destroyed: boolean;
+	destroyedAt: string | null;
 	upgrade: SettlementUpgrade | null;
 	buildings: { [key in SettlementBuilding]: number };
 
@@ -97,7 +97,7 @@ export class Settlement
 		this.damage = data.damage;
 		this.damageTaken = data.damageTaken ?? 0;
 		this.raid = data.raid ?? null;
-		this.destroyed = data.destroyed ?? false;
+		this.destroyedAt = data.destroyedAt ?? null;
 		this.upgrade = data.upgrade ?? null;
 		this.buildings = data.buildings ?? {
 			[SettlementBuilding.Tower]: 0,
@@ -144,7 +144,7 @@ export class Settlement
 			hp: this.hp,
 			damage: this.damage,
 			damageTaken: this.damageTaken,
-			destroyed: this.destroyed,
+			destroyedAt: this.destroyedAt,
 			raid: this.raid,
 			upgrade: this.upgrade,
 			buildings: this.buildings,
@@ -212,6 +212,10 @@ export class Settlement
 	}
 
 	addSurvivor(survivor: Survivor): void {
+		if (this.destroyedAt) {
+			return;
+		}
+
 		this.survivors.push(survivor);
 	}
 
@@ -246,6 +250,10 @@ export class Settlement
 	}
 
 	addResource(amount: number, type: ResourceType): void {
+		if (this.destroyedAt) {
+			return;
+		}
+
 		this.resources[type] = (this.resources[type] ?? 0) + amount;
 	}
 
@@ -266,15 +274,15 @@ export class Settlement
 		return true;
 	}
 
-	destroy(): void {
-		this.destroyed = true;
+	destroy(date: Date): void {
+		this.destroyedAt = date.toString();
 		this.resources = generateEmptyResourcesObject();
 		this.survivors = [];
 
 		for (const party of this.partiesProperty
 			.getAll()
 			.filter((party) => party.getVoyage() === null)) {
-			party.dead = true;
+			party.destroyedAt = this.destroyedAt;
 			ClientNotifier.warning(
 				`Party "${party.name}" has died during the raid on settlement "${this.name}"`,
 				party.getUpdateRoomName()

@@ -13,7 +13,7 @@ export class SettlementUpgradeSystem implements System {
 			.getAll()
 			.filter(
 				(settlement) =>
-					!settlement.destroyed &&
+					!settlement.destroyedAt &&
 					settlement.raid === null &&
 					settlement.upgrade !== null
 			)) {

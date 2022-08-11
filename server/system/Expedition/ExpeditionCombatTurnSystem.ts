@@ -84,7 +84,7 @@ export class ExpeditionCombatTurnSystem implements System {
 				continue;
 			}
 
-			party.dead = true;
+			party.destroyedAt = now.toString();
 			ClientNotifier.warning(
 				`Party "${party.name}" has died fighting a ${enemy.name}`,
 				party.getUpdateRoomName(),

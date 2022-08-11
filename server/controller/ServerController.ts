@@ -20,6 +20,7 @@ import { SettlementUpgradeSystem } from '../system/Settlement/SettlementUpgradeS
 import { StatusLoggerSystem } from '../system/StatusLoggerSystem.js';
 import { System } from '../system/System.js';
 import { VoyageSystem } from '../system/VoyageSystem.js';
+import { WorldStatusSystem } from '../system/WorldStatusSystem.js';
 import { WorldTimestampSystem } from '../system/WorldTimestampSystem.js';
 import { ClientController } from './ClientController.js';
 import { Server, Socket } from 'socket.io';
@@ -34,6 +35,7 @@ import { Server, Socket } from 'socket.io';
 	{ token: 'System', useClass: SettlementCombatSystem },
 	{ token: 'System', useClass: SettlementUpgradeSystem },
 	{ token: 'System', useClass: SettlementRepairSystem },
+	{ token: 'System', useClass: WorldStatusSystem },
 	{ token: 'System', useClass: IncrementalEnergySystem },
 	{ token: 'System', useClass: StatusLoggerSystem },
 	{ token: 'System', useClass: WorldTimestampSystem },
@@ -54,7 +56,7 @@ export class ServerController {
 		await StatePersister.readState();
 		if (this.worldRepository.getAll().length === 0) {
 			console.log('Creating world!');
-			await this.worldFactory.create();
+			this.worldFactory.create();
 			await StatePersister.writeState();
 		}
 
@@ -83,7 +85,13 @@ export class ServerController {
 
 		setInterval(() => {
 			const now = new Date();
-			this.systems.forEach((system) => system.tick(now));
+			this.systems.forEach((system) => {
+				try {
+					system.tick(now);
+				} catch (e) {
+					console.error(e);
+				}
+			});
 		}, this.config.get('serverTickTime'));
 	}
 }

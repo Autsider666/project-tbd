@@ -27,7 +27,7 @@ export class SettlementCombatSystem implements System {
 
 		for (const settlement of this.settlementRepository
 			.getAll()
-			.filter((settlement) => !settlement.destroyed)) {
+			.filter((settlement) => !settlement.destroyedAt)) {
 			if (settlement.raid === null) {
 				this.checkForRaid(settlement);
 			} else {
@@ -78,7 +78,7 @@ export class SettlementCombatSystem implements System {
 				[NotificationCategory.general, NotificationCategory.combat]
 			);
 
-			settlement.destroy();
+			settlement.destroy(this.now);
 			settlement.raid = null;
 			return;
 		}

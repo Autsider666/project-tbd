@@ -1,7 +1,9 @@
 import jwt from 'jsonwebtoken';
 import { Socket } from 'socket.io';
 import { container } from 'tsyringe';
+import { ResourceType } from '../config/ResourceData.js';
 import { Survivor, SurvivorDataMap } from '../config/SurvivorData.js';
+import { ExpeditionPhase } from '../entity/Expedition.js';
 import { Party, PartyId } from '../entity/Party.js';
 import {
 	BuildingCost,
@@ -93,7 +95,7 @@ export class ClientController {
 			callback(
 				this.worldRepository
 					.getAll()
-					.filter((world) => !world.destroyed)
+					.filter((world) => !world.destroyedAt)
 					.map((world) => world.normalize(this.client))
 			);
 		});
@@ -116,7 +118,7 @@ export class ClientController {
 				.getRegions()
 				.filter((region) => {
 					const settlement = region.getSettlement();
-					return settlement && !settlement.destroyed;
+					return settlement && !settlement.destroyedAt;
 				});
 			const settlements = regionsWithSettlement.map((region) =>
 				(region.getSettlement() as Settlement).normalize(this.client)
@@ -194,7 +196,7 @@ export class ClientController {
 					return;
 				}
 
-				if (settlement.destroyed) {
+				if (settlement.destroyedAt) {
 					ClientNotifier.error(
 						"This settlement has been destroyed, so it's not safe to spawn here.",
 						this.socket.id
@@ -270,7 +272,7 @@ export class ClientController {
 
 	private handleTravel(): void {
 		this.socket.on('voyage:start', ({ partyId, targetId }): void => {
-			const party = this.validatePartyForActivity(partyId);
+			const party = this.validatePartyForActivity(partyId, true, false);
 			if (party === null) {
 				return;
 			}
@@ -292,7 +294,7 @@ export class ClientController {
 				return;
 			}
 
-			if (target.destroyed) {
+			if (target.destroyedAt) {
 				ClientNotifier.error(
 					"This settlement has been destroyed, so it's not safe to travel to it.",
 					party.getUpdateRoomName()
@@ -331,6 +333,49 @@ export class ClientController {
 			);
 		});
 
+		this.socket.on('expedition:retreat', ({ partyId }): void => {
+			const party = this.getParty(partyId);
+			if (party === null) {
+				return;
+			}
+
+			const expedition = party.getExpedition();
+			if (!expedition) {
+				ClientNotifier.error(
+					`Party "${party.name}" is not even on an expedition.`,
+					party.getUpdateRoomName(),
+					[
+						NotificationCategory.general,
+						NotificationCategory.expedition,
+					]
+				);
+				return;
+			}
+
+			if (expedition.getCurrentPhase() === ExpeditionPhase.returning) {
+				ClientNotifier.error(
+					`Party "${party.name}" is already returning to their settlement.`,
+					party.getUpdateRoomName(),
+					[
+						NotificationCategory.general,
+						NotificationCategory.expedition,
+					]
+				);
+				return;
+			}
+
+			party.setExpedition(null);
+			for (const [type, amount] of Object.entries(party.getResources())) {
+				party.removeResource(amount, type as ResourceType);
+			}
+
+			ClientNotifier.success(
+				`Party "${party.name}" has finished a forced march back to the settlement.`,
+				party.getUpdateRoomName(),
+				[NotificationCategory.general, NotificationCategory.expedition]
+			);
+		});
+
 		this.socket.on('expedition:list', ({ partyId }, callback) => {
 			const party = this.getParty(partyId);
 			if (!party) {
@@ -347,7 +392,8 @@ export class ClientController {
 
 	private validatePartyForActivity(
 		id: PartyId,
-		checkPartySize: boolean = true
+		checkPartySize: boolean = true,
+		checkSettlementState: boolean = true
 	): Party | null {
 		const party =
 			this.client.parties.get(id) ?? id === 'test'
@@ -361,7 +407,7 @@ export class ClientController {
 
 			return null;
 		}
-		if (party.dead) {
+		if (party.destroyedAt) {
 			ClientNotifier.error(
 				"This party has been defeated and can't do anything anymore.",
 				this.socket.id
@@ -373,6 +419,15 @@ export class ClientController {
 		if (checkPartySize && party.getSurvivors().length > this.maxPartySize) {
 			ClientNotifier.error(
 				`Party "${party.name}" can't do this because it has more than ${this.maxPartySize} survivors.`,
+				party.getUpdateRoomName()
+			);
+
+			return null;
+		}
+
+		if (checkSettlementState && party.getSettlement().destroyedAt) {
+			ClientNotifier.error(
+				`Party "${party.name}" can't do anything in a destroyed settlement except leave it.`,
 				party.getUpdateRoomName()
 			);
 
@@ -516,7 +571,7 @@ export class ClientController {
 				return;
 			}
 
-			const party = this.validatePartyForActivity(partyId, false);
+			const party = this.validatePartyForActivity(partyId, false, false);
 			if (party === null) {
 				return;
 			}

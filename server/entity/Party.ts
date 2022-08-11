@@ -34,7 +34,7 @@ export type PartyStateData = {
 	resources?: Resources;
 	currentVoyage?: VoyageId | null;
 	currentExpedition?: ExpeditionId | null;
-	dead?: boolean;
+	destroyedAt?: string | null;
 	energy?: number;
 } & EntityStateData<PartyId>;
 
@@ -43,6 +43,7 @@ export type PartyClientData = Omit<PartyStateData, 'survivors'> & {
 	stats: StatsBlock;
 	boosts: PartyBoost[];
 	survivors: SurvivorData[];
+	dead: boolean;
 } & EntityClientData<PartyId>;
 
 export class Party
@@ -50,7 +51,7 @@ export class Party
 	implements SurvivorContainer, ResourceContainer
 {
 	public name: string;
-	public dead: boolean;
+	public destroyedAt: string | null;
 	private readonly settlementProperty: SettlementProperty;
 	private readonly survivors: Survivor[];
 	private readonly resources: Resources;
@@ -64,7 +65,7 @@ export class Party
 		super(data);
 
 		this.name = data.name;
-		this.dead = data.dead ?? false;
+		this.destroyedAt = data.destroyedAt ?? null;
 		this.settlementProperty = new SettlementProperty(data.settlement);
 		this.survivors = data.survivors ?? [];
 		this.resources = data.resources ?? generateEmptyResourcesObject();
@@ -81,7 +82,7 @@ export class Party
 		return {
 			id: this.id,
 			name: this.name,
-			dead: this.dead,
+			destroyedAt: this.destroyedAt,
 			settlement: this.settlementProperty.toJSON(),
 			survivors: this.survivors,
 			resources: { ...generateEmptyResourcesObject(), ...this.resources },
@@ -137,6 +138,7 @@ export class Party
 			survivors: this.survivors.map(
 				(survivor) => SurvivorDataMap[survivor]
 			),
+			dead: !!this.destroyedAt,
 		};
 	}
 

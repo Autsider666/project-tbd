@@ -12,14 +12,14 @@ export type WorldStateData = {
 	name: string;
 	regions: RegionId[];
 	createdAt?: string;
-	destroyed?: boolean;
+	destroyedAt?: string | null;
 } & EntityStateData<WorldId>;
 
 export type WorldClientData = WorldStateData & EntityClientData<WorldId>;
 
 export class World extends Entity<WorldId, WorldStateData, WorldClientData> {
 	public name: string;
-	public destroyed: boolean;
+	public destroyedAt: string | null;
 	public readonly createdAt: string;
 	private readonly regions: RegionsProperty;
 
@@ -29,7 +29,7 @@ export class World extends Entity<WorldId, WorldStateData, WorldClientData> {
 		this.name = data.name;
 		this.regions = new RegionsProperty(data.regions);
 		this.createdAt = data.createdAt ?? new Date().toString();
-		this.destroyed = data.destroyed ?? false;
+		this.destroyedAt = data.destroyedAt ?? null;
 	}
 
 	toJSON(): WorldStateData {
@@ -38,7 +38,7 @@ export class World extends Entity<WorldId, WorldStateData, WorldClientData> {
 			name: this.name,
 			regions: this.regions.toJSON(),
 			createdAt: this.createdAt,
-			destroyed: this.destroyed,
+			destroyedAt: this.destroyedAt,
 		};
 	}
 

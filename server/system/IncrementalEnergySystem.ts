@@ -14,7 +14,7 @@ export class IncrementalEnergySystem implements System {
 		const maxEnergy = this.config.get('maxPartyEnergy');
 		const activeParties = this.partyRepository
 			.getAll()
-			.filter((party) => !party.dead && party.energy < maxEnergy);
+			.filter((party) => !party.destroyedAt && party.energy < maxEnergy);
 		for (const party of activeParties) {
 			party.energy++;
 		}

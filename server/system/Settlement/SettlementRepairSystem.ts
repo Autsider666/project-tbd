@@ -13,7 +13,7 @@ export class SettlementRepairSystem implements System {
 			.getAll()
 			.filter(
 				(settlement) =>
-					!settlement.destroyed && settlement.raid === null
+					!settlement.destroyedAt && settlement.raid === null
 			)) {
 			let availableWork = 0;
 			for (const survivor of settlement.getIdleSurvivors()) {
