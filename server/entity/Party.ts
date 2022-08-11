@@ -148,8 +148,8 @@ export class Party
 
 	public setSettlement(settlement: Settlement): void {
 		if (
-			this.settlementProperty.get().getUpdateRoomName() !==
-			settlement.getUpdateRoomName()
+			this.settlementProperty.get().getRegion().getWorld().getId() !==
+			settlement.getRegion().getWorld().getId()
 		) {
 			throw new Error('Settlement is not in the same world');
 		}

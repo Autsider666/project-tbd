@@ -1,3 +1,4 @@
+import { Server } from 'socket.io';
 import { singleton } from 'tsyringe';
 import { SettlementEnemies } from '../../config/EnemyData.js';
 import { SurvivorDataMap } from '../../config/SurvivorData.js';
@@ -19,7 +20,8 @@ export class SettlementCombatSystem implements System {
 	constructor(
 		private readonly settlementRepository: SettlementRepository,
 		private readonly config: ServerConfig,
-		private readonly enemyFactory: EnemyFactory
+		private readonly enemyFactory: EnemyFactory,
+		private readonly io: Server,
 	) {}
 
 	tick(now: Date): void {
@@ -37,6 +39,10 @@ export class SettlementCombatSystem implements System {
 	}
 
 	private checkForRaid(settlement: Settlement): void {
+		if (this.io.engine.clientsCount < this.config.get('minPlayerCountBeforeRaids')) {
+			return;
+		}
+
 		const encountersEnemy =
 			Math.floor(Math.random() * 101) <=
 			this.config.get('settlementRaidChance');

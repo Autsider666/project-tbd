@@ -20,8 +20,8 @@ export class VoyageFactory {
 		}
 
 		if (
-			party.getSettlement().getUpdateRoomName() !==
-			target.getUpdateRoomName()
+			party.getSettlement().getRegion().getWorld().getId() !==
+			target.getRegion().getWorld().getId()
 		) {
 			throw new Error("Target settlement isn't in the same world.");
 		}

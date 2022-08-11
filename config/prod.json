@@ -10,5 +10,6 @@
 	"settlementStartingDamage": 100,
 	"settlementRaidChance": 1,
 	"maxPartyEnergy": 2000,
-	"serverTickTime": 6000
+	"serverTickTime": 6000,
+  "minPlayerCountBeforeRaids": 1
 }
