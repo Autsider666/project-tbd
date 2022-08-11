@@ -13,6 +13,7 @@ import { useGame } from '../contexts/GameContext';
 import { useApp } from '../contexts/AppContext';
 import { Grid, List, ListItem, ListItemText, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { useAuth } from '../contexts/AuthContext';
+import Scrollbars from 'react-custom-scrollbars-2';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {
@@ -22,6 +23,16 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
         padding: theme.spacing(1),
     },
 }));
+
+const statTypes = [
+    { key: 'hp', label: 'Health', tooltip: "Total Health" },
+    { key: 'damage', label: 'Damage', tooltip: "Total Damage Dealt" },
+    { key: 'defense', label: 'Defense', tooltip: "Total Damage Negated per attack" },
+    { key: 'gatheringSpeed', label: 'Gathering', tooltip: "Amount gathered/repaired & built by tick" },
+    { key: 'carryCapacity', label: 'Carry', tooltip: "Total inventory size" },
+    { key: 'travelSpeed', label: 'Travel', tooltip: "Affects how fast Expeditions & Voyages takes" },
+]
+
 
 const BootstrapDialogTitle = (props) => {
     const { children, onClose, ...other } = props;
@@ -56,7 +67,7 @@ const WorldDeathModal = () => {
 
     // const { worldDeathModal: open, setWorldDeathModal: setOpen } = useApp()
     const { resetAuth } = useAuth()
-    const { worldRepository, resetRepositories } = useGame()
+    const { worldRepository, resetRepositories, partyRepository, settlementRepository } = useGame()
 
     const currentWorld = Object.values(worldRepository).find(world => world.id !== "a")
 
@@ -84,7 +95,55 @@ const WorldDeathModal = () => {
                 The world has ended!
             </BootstrapDialogTitle>
             <DialogContent dividers sx={{ minHeight: '150px' }} >
+                <List disablePadding sx={{ height: "300px", width: "600px" }}>
+                    <Scrollbars>
+                        {Object.values(partyRepository).map(party => {
+                            party.settlementName = settlementRepository[party.settlement].name
+                            party.tierSum = party.survivors.reduce((accum, value) => {
+                                accum += value.tier
+                                return accum
+                            }, 0)
+                            return party
+                        }).sort((a, b) => b.tierSum - a.tierSum).map(party => {
+                            return <ListItem key={party.id} >
+                                <ListItemText primary={party.settlementName} secondary={"Settlement"} />
 
+
+                                <ListItemText primary={party.name} secondary={"Party Name"} />
+                                {statTypes.map(({ key, label, tooltip = "" }) => (
+
+                                    <ListItemText sx={{ mx: 0.5, textAlign: 'center' }} key={key} primary={party.stats[key] || 0} secondary={label} />
+
+                                ))}
+                                <ListItemText primary={party.tierSum} secondary={"Tier Sum"} />
+                            </ListItem>
+                        })}
+                        {Object.values(partyRepository).map(party => {
+                            party.settlementName = settlementRepository[party.settlement].name
+                            party.tierSum = party.survivors.reduce((accum, value) => {
+                                accum += value.tier
+                                return accum
+                            }, 0)
+                            return party
+                        }).sort((a, b) => {
+                            if (a.tierSum > b.tierSum) return a
+                            return b
+                        }).map(party => {
+                            return <ListItem key={party.id} >
+                                <ListItemText primary={party.settlementName} secondary={"Settlement"} />
+
+
+                                <ListItemText primary={party.name} secondary={"Party Name"} />
+                                {statTypes.map(({ key, label, tooltip = "" }) => (
+
+                                    <ListItemText sx={{ mx: 0.5, textAlign: 'center' }} key={key} primary={party.stats[key] || 0} secondary={label} />
+
+                                ))}
+                                <ListItemText primary={party.tierSum} secondary={"Tier Sum"} />
+                            </ListItem>
+                        })}
+                    </Scrollbars>
+                </List>
 
             </DialogContent>
             <DialogActions>

@@ -35,7 +35,7 @@ const GameProvider = ({ children }) => {
     const lStartedAt = (startedAt && endsAt) && DateTime.fromISO(startedAt)
     const lEndsAt = (startedAt && endsAt) && DateTime.fromISO(endsAt)
     const tickLength = Object.values(currentTick).length > 0 ? (startedAt && endsAt) && lEndsAt.diff(lStartedAt, 'seconds').toObject() : { seconds: 6 }
-    console.log(tickLength)
+    // console.log(tickLength)
     // console.log({currentTick, lStartedAt, lEndsAt, tickLength})
 
     const [survivorTypes, setSurvivorTypes] = useState(null)
@@ -215,7 +215,7 @@ const GameProvider = ({ children }) => {
     // currentVoyage && console.log({currentVoyagePhaseEndsAt, currentVoyagePhaseTimeRemaining})
 
 
-    console.log({worldRepository, controlledParty})
+    // console.log({worldRepository, controlledParty})
 
     // con  sole.log(currentExpeditionPhaseTimeRemaining)
 

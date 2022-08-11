@@ -33,7 +33,7 @@ const AuthProvider = ({ children }) => {
     const { token } = user
 
     const tbdToken = localStorage.getItem("tbd-token")
-    
+
 
     // console.log({tbdToken, token})
 
@@ -46,7 +46,6 @@ const AuthProvider = ({ children }) => {
         const worlds = await getWorlds()
         const selectedWorld = worlds.find(world => world.id !== "a")
         const settlements = await getSettlements({ worldId: selectedWorld.id })
-
         const selectedSettlement = settlements.reduce((accum, value) => {
             if (value.parties.length < accum.parties.length) accum = value
             return accum

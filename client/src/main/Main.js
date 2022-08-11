@@ -36,7 +36,7 @@ const Main = ({ marginAmount }) => {
                 sm: '1fr',
                 md: '1.5fr',
                 lg: 'minmax(400px, 1.5fr) 1.5fr 5fr',
-                xl: 'minmax(400px, 1.4fr) 1.3fr 4fr',
+                xl: 'minmax(400px, 1.4fr) 1.5fr 4fr',
             },
             gridTemplateRows: {
                 xs: '1fr 1fr',

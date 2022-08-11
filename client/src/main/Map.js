@@ -61,7 +61,7 @@ const Map = () => {
     // console.log(currentExpedition)
     // console.log(currentExpedition)
 
-    currentExpeditionPhaseTimeRemaining && console.log({ currentExpeditionPhaseTimeRemaining, tickLength })
+    // currentExpeditionPhaseTimeRemaining && console.log({ currentExpeditionPhaseTimeRemaining, tickLength })
 
     if (hide) return <img style={{ opacity: 0.3, marginBottom: '-16px' }} src={Water} position="absolute" width="100%" />
     return (

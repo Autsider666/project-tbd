@@ -39,7 +39,7 @@ const Settlement = ({ height }) => {
                     // console.log(upgradeCost)
 
                     return (
-                        <ListItem>
+                        <ListItem key={building} >
                             <ListItemText sx={{ width: '50px' }}>
                                 {`Level ${level} ${building}`}
                             </ListItemText>
