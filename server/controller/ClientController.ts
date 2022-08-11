@@ -364,7 +364,20 @@ export class ClientController {
 				return;
 			}
 
+			if (expedition.getCurrentPhase() === ExpeditionPhase.combat) {
+				ClientNotifier.error(
+					`Party "${party.name}" is currently in combat, so it can't retreat.`,
+					party.getUpdateRoomName(),
+					[
+						NotificationCategory.general,
+						NotificationCategory.expedition,
+					]
+				);
+				return;
+			}
+
 			party.setExpedition(null);
+			this.expeditionRepository.removeEntity(expedition.getId());
 			for (const [type, amount] of Object.entries(party.getResources())) {
 				party.removeResource(amount, type as ResourceType);
 			}
