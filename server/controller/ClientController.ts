@@ -325,6 +325,20 @@ export class ClientController {
 				return;
 			}
 
+			const settlement = target.getRegion().getSettlement();
+			const regionId = settlement?.getId();
+			if (
+				!settlement?.destroyedAt &&
+				regionId &&
+				party.getSettlement().getId() !== regionId
+			) {
+				ClientNotifier.error(
+					`This region is only available for parties out of settlement "${settlement?.name}".`,
+					party.getUpdateRoomName()
+				);
+				return;
+			}
+
 			this.expeditionFactory.create(party, target);
 			ClientNotifier.success(
 				`Party "${party.name}" is starting it's expedition to ${target.name}.`,
