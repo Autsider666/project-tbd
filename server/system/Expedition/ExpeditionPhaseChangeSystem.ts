@@ -91,8 +91,7 @@ export class ExpeditionPhaseChangeSystem implements System {
 		const target = expedition.getTarget();
 		if (expedition.getCurrentPhase() === ExpeditionPhase.returning) {
 			party.setExpedition(null);
-			// expedition.setCurrentPhase(ExpeditionPhase.finished, this.now);
-			this.expeditionRepository.removeEntity(expedition.getId());
+			expedition.setCurrentPhase(ExpeditionPhase.finished, this.now);
 
 			ClientNotifier.success(
 				`Party "${party.name}" returned from their expedition to ${target.name}.`,

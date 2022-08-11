@@ -377,7 +377,7 @@ export class ClientController {
 			}
 
 			party.setExpedition(null);
-			this.expeditionRepository.removeEntity(expedition.getId());
+			expedition.setCurrentPhase(ExpeditionPhase.finished, new Date());
 			for (const [type, amount] of Object.entries(party.getResources())) {
 				party.removeResource(amount, type as ResourceType);
 			}
