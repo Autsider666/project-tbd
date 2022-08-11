@@ -3,6 +3,7 @@ import { singleton } from 'tsyringe';
 import { SettlementEnemies } from '../../config/EnemyData.js';
 import { SurvivorDataMap } from '../../config/SurvivorData.js';
 import { Settlement } from '../../entity/Settlement.js';
+import { WorldId } from '../../entity/World.js';
 import { EnemyFactory } from '../../factory/EnemyFactory.js';
 import {
 	ClientNotifier,
@@ -16,6 +17,7 @@ import { System } from '../System.js';
 @singleton()
 export class SettlementCombatSystem implements System {
 	private now: Date = new Date();
+	private activeWorlds = new Map<WorldId, boolean>();
 
 	constructor(
 		private readonly settlementRepository: SettlementRepository,
@@ -41,9 +43,32 @@ export class SettlementCombatSystem implements System {
 	private checkForRaid(settlement: Settlement): void {
 		if (
 			this.io.engine.clientsCount <
-			this.config.get('minPlayerCountBeforeRaids')
+			this.config.get('minActivePlayerCountBeforeRaids')
 		) {
 			return;
+		}
+
+		const world = settlement.getRegion().getWorld();
+		const worldId = world.getId();
+		let activeWorld = this.activeWorlds.get(worldId);
+		if (!activeWorld) {
+			let partyCount = 0;
+			for (const region of world
+				.getRegions()
+				.filter((region) => region.getSettlement())) {
+				const settlement = region.getSettlement();
+				partyCount += settlement?.getParties().length ?? 0;
+				if (partyCount >= this.config.get('minPartyCountBeforeRaids')) {
+					activeWorld = true;
+					break;
+				}
+			}
+
+			if (!activeWorld) {
+				return;
+			}
+
+			this.activeWorlds.set(worldId, activeWorld);
 		}
 
 		const encountersEnemy =
