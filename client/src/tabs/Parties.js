@@ -120,7 +120,9 @@ const Parties = ({ height }) => {
                                         <ListItemText sx={{ mx: 0.5, textAlign: 'center' }} key={key} primary={party.stats[key] || 0} secondary={label} />
                                     </Tooltip>
                                 ))}
+                                <Tooltip title={"Combined sum of the Tier of each Survivor"}>
                                 <ListItemText primary={party.tierSum} secondary={"Tier Sum"} />
+                                </Tooltip>
                             </ListItem>
                         })}
                         

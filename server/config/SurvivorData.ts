@@ -164,7 +164,7 @@ export const SurvivorDataMap: { [key in Survivor]: SurvivorData } = {
 			[SurvivorStat.gatheringSpeed]: 5,
 		},
 		boost: {
-			percentage: 1,
+			percentage: 2.5,
 			stat: SurvivorStat.hp,
 			type: null,
 		},
@@ -204,7 +204,7 @@ export const SurvivorDataMap: { [key in Survivor]: SurvivorData } = {
 			[SurvivorStat.gatheringSpeed]: 6,
 		},
 		boost: {
-			percentage: 1,
+			percentage: 2.5,
 			stat: SurvivorStat.defense,
 			type: null,
 		},
@@ -226,7 +226,7 @@ export const SurvivorDataMap: { [key in Survivor]: SurvivorData } = {
 		upgrades: [Survivor['Crossbow Man']],
 		nextUpgradeCost: tier3UpgradeCost,
 		boost: {
-			percentage: 1,
+			percentage: 2.5,
 			stat: SurvivorStat.damage,
 			type: null,
 		},
@@ -306,7 +306,7 @@ export const SurvivorDataMap: { [key in Survivor]: SurvivorData } = {
 		upgrades: [],
 		nextUpgradeCost: tier4UpgradeCost,
 		boost: {
-			percentage: 1,
+			percentage: 5,
 			stat: SurvivorStat.hp,
 			type: null,
 		},
@@ -326,7 +326,7 @@ export const SurvivorDataMap: { [key in Survivor]: SurvivorData } = {
 		upgrades: [],
 		nextUpgradeCost: tier4UpgradeCost,
 		boost: {
-			percentage: 1,
+			percentage: 5,
 			stat: SurvivorStat.hp,
 			type: null,
 		},
@@ -346,7 +346,7 @@ export const SurvivorDataMap: { [key in Survivor]: SurvivorData } = {
 		upgrades: [],
 		nextUpgradeCost: tier4UpgradeCost,
 		boost: {
-			percentage: 1,
+			percentage: 5,
 			stat: SurvivorStat.hp,
 			type: null,
 		},
@@ -386,7 +386,7 @@ export const SurvivorDataMap: { [key in Survivor]: SurvivorData } = {
 		upgrades: [],
 		nextUpgradeCost: tier4UpgradeCost,
 		boost: {
-			percentage: 2,
+			percentage: 5,
 			stat: SurvivorStat.defense,
 			type: null,
 		},
@@ -406,7 +406,7 @@ export const SurvivorDataMap: { [key in Survivor]: SurvivorData } = {
 		upgrades: [],
 		nextUpgradeCost: tier4UpgradeCost,
 		boost: {
-			percentage: 2,
+			percentage: 5,
 			stat: SurvivorStat.damage,
 			type: null,
 		},

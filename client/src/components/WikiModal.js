@@ -85,10 +85,10 @@ const WikiModal = () => {
                             While on Expeditions you will have a chance to find survivors but more likely just more Zombies. If you do not make it through an expedition alive or your settlement dies with you defending it, you party dies and you must restart.
                         </Typography>
                         <Typography sx={{ p: 0.5 }}   >
-                            Click on the various regions to get a list of potential expedition targets and other settlements to travel to. You can have a maximum of 10 survivors in your party. If you exceed this number, you must first dismiss some before continuing your adventures.
+                            Click on the various regions to get a list of potential expedition targets and other settlements to travel to. You can have a maximum of 10 survivors in your party. If you exceed this number, you must first dismiss some before continuing your adventures. Once you return all your resources will get deposited to your settlements storage for use in upgrades and repairs.
                         </Typography>
                         <Typography sx={{ p: 0.5 }}>
-                            Build the best combination of Survivors and out live the zombie raids longer than the rest!
+                            Build the best combination of Survivors and out live the zombie raids longer than the rest! Though it is adviced to help each other out if needed, otherwise you will face them all alone.
                         </Typography>
                     </Grid>
                     <Grid item xs={4}>
@@ -115,6 +115,13 @@ const WikiModal = () => {
                                 </ListItemText>
                                 <ListItemText secondary="Per Upgraded Level">
                                     1000.
+                                </ListItemText>
+
+
+                            </ListItem>
+                            <ListItem>
+                                <ListItemText secondary="Walls Repair Cost">
+                                    1 Wood / Health repair. (Repairs at combined gather rate of all Survivors in the Settlement)
                                 </ListItemText>
                             </ListItem>
                         </List>
@@ -158,7 +165,7 @@ const WikiModal = () => {
 
                                 </TableRow>
                             })}
-                            
+
                         </TableBody>
                     </Table>
                 </TableContainer>

@@ -207,7 +207,7 @@ const GameProvider = ({ children }) => {
     const currentExpeditionPhaseEndsAt = currentExpedition && DateTime.fromJSDate(new Date(currentExpedition.currentPhaseEndsAt))
     const currentExpeditionPhaseTimeRemaining = currentExpedition ? currentExpeditionPhaseEndsAt.diff(DateTime.fromJSDate(new Date()), 'seconds').toObject() : { seconds: 0 }
     // console.log({ currentExpedition, currentExpeditionPhaseStartedAt })
-    currentExpedition && console.log(currentExpedition.currentPhaseStartedAt)
+    // currentExpedition && console.log(currentExpedition.currentPhaseStartedAt)
 
     const currentVoyagePhaseStartedAt = currentVoyage && DateTime.fromJSDate(new Date(currentVoyage.startedAt))
     const currentVoyagePhaseEndsAt = currentVoyage && DateTime.fromJSDate(new Date(currentVoyage.arrivalAt))

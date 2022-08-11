@@ -139,7 +139,9 @@ const WorldDeathModal = () => {
                                     <ListItemText sx={{ mx: 0.5, textAlign: 'center' }} key={key} primary={party.stats[key] || 0} secondary={label} />
 
                                 ))}
+
                                 <ListItemText primary={party.tierSum} secondary={"Tier Sum"} />
+
                             </ListItem>
                         })}
                     </Scrollbars>

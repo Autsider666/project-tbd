@@ -7,6 +7,7 @@ export const Log = () => {
 
     const { notificationLog } = useGame();
     // console.log(notificationLog)
+    // console.log(notificationLog)
     // const sortedNotifications = notificationLog.sort((a, b) => a.localTimeStamp > b.localTimeStamp)
     // console.log(sortedNotifications)
     return (

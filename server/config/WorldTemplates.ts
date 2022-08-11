@@ -42,7 +42,7 @@ const WorldTemplates: { [key: string]: WorldTemplate } = {
 						type: ResourceNodeType.Ruin,
 					},
 					{
-						name: 'The Forgotten Ruins',
+						name: 'The Destroyed Shed',
 						type: ResourceNodeType.Ruin,
 					},
 					{
@@ -69,11 +69,11 @@ const WorldTemplates: { [key: string]: WorldTemplate } = {
 						type: ResourceNodeType.Ruin,
 					},
 					{
-						name: 'The Forgotten Ruins',
+						name: 'The Destroyed Shed',
 						type: ResourceNodeType.Ruin,
 					},
 					{
-						name: 'The Forgotten Ruins',
+						name: 'The Vacated Market',
 						type: ResourceNodeType.Ruin,
 					},
 					{
@@ -102,7 +102,7 @@ const WorldTemplates: { [key: string]: WorldTemplate } = {
 						type: ResourceNodeType.Ruin,
 					},
 					{
-						name: 'The Forgotten Ruins',
+						name: 'The Destroyed Shed',
 						type: ResourceNodeType.Ruin,
 					},
 					{
@@ -131,11 +131,11 @@ const WorldTemplates: { [key: string]: WorldTemplate } = {
 						type: ResourceNodeType.Ruin,
 					},
 					{
-						name: 'The Forgotten Ruins',
+						name: 'The Destroyed Shed',
 						type: ResourceNodeType.Ruin,
 					},
 					{
-						name: 'The Forgotten Ruins',
+						name: 'The Vacated Market',
 						type: ResourceNodeType.Ruin,
 					},
 					{
@@ -164,7 +164,7 @@ const WorldTemplates: { [key: string]: WorldTemplate } = {
 						type: ResourceNodeType.Ruin,
 					},
 					{
-						name: 'The Forgotten Ruins',
+						name: 'The Destroyed Shed',
 						type: ResourceNodeType.Ruin,
 					},
 					{
@@ -192,7 +192,7 @@ const WorldTemplates: { [key: string]: WorldTemplate } = {
 						type: ResourceNodeType.Ruin,
 					},
 					{
-						name: 'The Forgotten Ruins',
+						name: 'The Destroyed Shed',
 						type: ResourceNodeType.Ruin,
 					},
 					{
@@ -220,11 +220,11 @@ const WorldTemplates: { [key: string]: WorldTemplate } = {
 						type: ResourceNodeType.Ruin,
 					},
 					{
-						name: 'The Forgotten Ruins',
+						name: 'The Destroyed Shed',
 						type: ResourceNodeType.Ruin,
 					},
 					{
-						name: 'The Forgotten Ruins',
+						name: 'The Vacated Market',
 						type: ResourceNodeType.Ruin,
 					},
 					{
@@ -248,7 +248,7 @@ const WorldTemplates: { [key: string]: WorldTemplate } = {
 						type: ResourceNodeType.Ruin,
 					},
 					{
-						name: 'The Forgotten Ruins',
+						name: 'The Destroyed Shed',
 						type: ResourceNodeType.Ruin,
 					},
 					{
@@ -275,7 +275,7 @@ const WorldTemplates: { [key: string]: WorldTemplate } = {
 						type: ResourceNodeType.Ruin,
 					},
 					{
-						name: 'The Forgotten Ruins',
+						name: 'The Destroyed Shed',
 						type: ResourceNodeType.Ruin,
 					},
 					{
@@ -302,7 +302,7 @@ const WorldTemplates: { [key: string]: WorldTemplate } = {
 						type: ResourceNodeType.Ruin,
 					},
 					{
-						name: 'The Forgotten Ruins',
+						name: 'The Destroyed Shed',
 						type: ResourceNodeType.Ruin,
 					},
 					{
@@ -330,11 +330,11 @@ const WorldTemplates: { [key: string]: WorldTemplate } = {
 						type: ResourceNodeType.Ruin,
 					},
 					{
-						name: 'The Forgotten Ruins',
+						name: 'The Destroyed Shed',
 						type: ResourceNodeType.Ruin,
 					},
 					{
-						name: 'The Forgotten Ruins',
+						name: 'The Vacated Market',
 						type: ResourceNodeType.Ruin,
 					},
 					{
@@ -359,11 +359,11 @@ const WorldTemplates: { [key: string]: WorldTemplate } = {
 						type: ResourceNodeType.Ruin,
 					},
 					{
-						name: 'The Forgotten Ruins',
+						name: 'The Destroyed Shed',
 						type: ResourceNodeType.Ruin,
 					},
 					{
-						name: 'The Forgotten Ruins',
+						name: 'The Vacated Market',
 						type: ResourceNodeType.Ruin,
 					},
 					{
@@ -386,7 +386,7 @@ const WorldTemplates: { [key: string]: WorldTemplate } = {
 						type: ResourceNodeType.Ruin,
 					},
 					{
-						name: 'The Forgotten Ruins',
+						name: 'The Destroyed Shed',
 						type: ResourceNodeType.Ruin,
 					},
 					{
@@ -415,7 +415,7 @@ const WorldTemplates: { [key: string]: WorldTemplate } = {
 						type: ResourceNodeType.Ruin,
 					},
 					{
-						name: 'The Forgotten Ruins',
+						name: 'The Destroyed Shed',
 						type: ResourceNodeType.Ruin,
 					},
 					{
@@ -449,7 +449,7 @@ const WorldTemplates: { [key: string]: WorldTemplate } = {
 						type: ResourceNodeType.Ruin,
 					},
 					{
-						name: 'The Forgotten Ruins',
+						name: 'The Destroyed Shed',
 						type: ResourceNodeType.Ruin,
 					},
 					{
@@ -477,11 +477,11 @@ const WorldTemplates: { [key: string]: WorldTemplate } = {
 						type: ResourceNodeType.Ruin,
 					},
 					{
-						name: 'The Forgotten Ruins',
+						name: 'The Destroyed Shed',
 						type: ResourceNodeType.Ruin,
 					},
 					{
-						name: 'The Forgotten Ruins',
+						name: 'The Vacated Market',
 						type: ResourceNodeType.Ruin,
 					},
 					{
@@ -505,7 +505,7 @@ const WorldTemplates: { [key: string]: WorldTemplate } = {
 						type: ResourceNodeType.Ruin,
 					},
 					{
-						name: 'The Forgotten Ruins',
+						name: 'The Destroyed Shed',
 						type: ResourceNodeType.Ruin,
 					},
 					{
@@ -535,11 +535,11 @@ const WorldTemplates: { [key: string]: WorldTemplate } = {
 						type: ResourceNodeType.Ruin,
 					},
 					{
-						name: 'The Forgotten Ruins',
+						name: 'The Destroyed Shed',
 						type: ResourceNodeType.Ruin,
 					},
 					{
-						name: 'The Forgotten Ruins',
+						name: 'The Vacated Market',
 						type: ResourceNodeType.Ruin,
 					},
 					{
@@ -566,7 +566,7 @@ const WorldTemplates: { [key: string]: WorldTemplate } = {
 						type: ResourceNodeType.Ruin,
 					},
 					{
-						name: 'The Forgotten Ruins',
+						name: 'The Destroyed Shed',
 						type: ResourceNodeType.Ruin,
 					},
 					{
@@ -593,7 +593,7 @@ const WorldTemplates: { [key: string]: WorldTemplate } = {
 						type: ResourceNodeType.Ruin,
 					},
 					{
-						name: 'The Forgotten Ruins',
+						name: 'The Destroyed Shed',
 						type: ResourceNodeType.Ruin,
 					},
 					{
@@ -624,7 +624,7 @@ const WorldTemplates: { [key: string]: WorldTemplate } = {
 						type: ResourceNodeType.Ruin,
 					},
 					{
-						name: 'The Forgotten Ruins',
+						name: 'The Destroyed Shed',
 						type: ResourceNodeType.Ruin,
 					},
 					{
