@@ -3,8 +3,8 @@ import { Enemy } from '../entity/CommonTypes/Combat.js';
 export const PartyEnemies: Omit<Enemy, 'damageTaken'>[] = [
 	{
 		name: 'Zombie',
-		hp: 500,
-		damage: 10,
+		hp: 250,
+		damage: 15,
 	},
 ];
 

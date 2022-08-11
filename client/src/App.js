@@ -10,6 +10,7 @@ import { useGame } from './contexts/GameContext';
 import { Box } from "@mui/system";
 import { useApp } from "./contexts/AppContext";
 import WikiModal from "./components/WikiModal"
+import WorldDeathModal from "./components/WorldDeathModal";
 
 
 
@@ -51,6 +52,7 @@ function App() {
 				</Alert>
 			</Snackbar>
 			<WikiModal />
+			<WorldDeathModal />
 		</Box>
 	);
 }
