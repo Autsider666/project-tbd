@@ -21,7 +21,7 @@ export class SettlementCombatSystem implements System {
 		private readonly settlementRepository: SettlementRepository,
 		private readonly config: ServerConfig,
 		private readonly enemyFactory: EnemyFactory,
-		private readonly io: Server,
+		private readonly io: Server
 	) {}
 
 	tick(now: Date): void {
@@ -39,7 +39,10 @@ export class SettlementCombatSystem implements System {
 	}
 
 	private checkForRaid(settlement: Settlement): void {
-		if (this.io.engine.clientsCount < this.config.get('minPlayerCountBeforeRaids')) {
+		if (
+			this.io.engine.clientsCount <
+			this.config.get('minPlayerCountBeforeRaids')
+		) {
 			return;
 		}
 

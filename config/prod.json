@@ -11,5 +11,5 @@
 	"settlementRaidChance": 1,
 	"maxPartyEnergy": 2000,
 	"serverTickTime": 6000,
-  "minPlayerCountBeforeRaids": 1
+	"minPlayerCountBeforeRaids": 1
 }
