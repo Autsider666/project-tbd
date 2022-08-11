@@ -64,7 +64,7 @@ const ResponsiveAppBar = () => {
                   </Tooltip>
                 </Box>
                 <Typography>
-                  {`Health: ${controlledPartyCurrentHealth} / ${controlledPartyHp} (${controlledPartyCurrentHealthPercent}%)`}
+                  {`Health: ${Math.ceil(controlledPartyCurrentHealth)} / ${controlledPartyHp} (${controlledPartyCurrentHealthPercent}%)`}
                 </Typography>
 
               </Box>
@@ -141,7 +141,7 @@ const ResponsiveAppBar = () => {
                     {`Settlement: ${currentSettlement.name}`}
                   </Typography>
                   <Typography>
-                    {`Health: ${currentSettlementCurrentHealth} / ${settlementHp} (${currentSettlementCurrentHealthPercent}%)`}
+                    {`Health: ${Math.ceil(currentSettlementCurrentHealth)} / ${settlementHp} (${currentSettlementCurrentHealthPercent}%)`}
                   </Typography>
                 </Box>
               </Tooltip>
@@ -191,11 +191,11 @@ const ResponsiveAppBar = () => {
                 <ListItem key={settlement.id} sx={{ m: 1 }}>
                   <ListItemText primary={settlement.name} secondary="Name" sx={{ width: '120px' }} />
                   <Divider sx={{ mx: 1, my: 1, width: 2 }} orientation="vertical" flexItem />
-                  <ListItemText primary={`${settlement.hp - settlement.damageTaken} / ${settlement.hp}`} secondary="Settlement HP" />
+                  <ListItemText primary={`${Math.ceil(settlement.hp - settlement.damageTaken)} / ${settlement.hp}`} secondary="Settlement HP" />
                   <Divider sx={{ mx: 1, my: 1, width: 2 }} orientation="vertical" flexItem />
                   <ListItemText primary={survivorCount} secondary="Survivors" />
                   <Divider sx={{ mx: 1, my: 1, width: 2 }} orientation="vertical" flexItem />
-                  <ListItemText primary={`${settlement.raid.hp - settlement.raid.damageTaken} / ${settlement.raid.hp}`} secondary="Enemy HP" />
+                  <ListItemText primary={`${Math.ceil(settlement.raid.hp - settlement.raid.damageTaken)} / ${settlement.raid.hp}`} secondary="Enemy HP" />
                 </ListItem>
               )
             })
