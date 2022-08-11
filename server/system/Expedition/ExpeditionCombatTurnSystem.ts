@@ -73,10 +73,12 @@ export class ExpeditionCombatTurnSystem implements System {
 			}
 
 			//Enemy attacks
-			const damageTaken = enemy.damage;
+			let damageTaken = Math.max(0, enemy.damage - party.getDefense());
 			expedition.damageTaken += damageTaken;
 			ClientNotifier.info(
-				`Party "${party.name}" has taken ${damageTaken} damage from ${enemy.name}.`,
+				damageTaken > 0
+					? `Party "${party.name}" has taken ${damageTaken} damage from ${enemy.name}.`
+					: `Party "${party.name}" has completely negated all the damage from ${enemy.name}.`,
 				party.getUpdateRoomName(),
 				[NotificationCategory.combat]
 			);
