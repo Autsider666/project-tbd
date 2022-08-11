@@ -8,6 +8,6 @@ export class SurvivorFactory {
 	}
 
 	public randomCreate(tier: number, tree?: SurvivorTree): Survivor {
-		return this.create(Survivor.Villager);
+		return this.create(Survivor.Peasant);
 	}
 }

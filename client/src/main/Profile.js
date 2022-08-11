@@ -19,16 +19,12 @@ const Profile = () => {
         { label: 'Settlement', Component: Settlement, tooltip:"Settlement Overview and Upgrades" },
         // { label: 'Region', Component: ExpeditionSites, tooltip:"Expeditions and Voyages" },
 
-
         { label: 'Parties', Component: Parties },
+        { label: 'Log', Component: Log, tabSx: { marginLeft: 'auto' }, show: !matches ? true : false },
         // { label: 'Upgrades', Component: Upgrades },
         // { label: 'RandomTest', Component: RandomTest },
     ]
-    if (!matches) {
-        content.push(
-            { label: 'Log', Component: Log, tabSx: { marginLeft: 'auto' } },
-        )
-    }
+
 
     const handleIndexChange = (event, newValue) => setTabSelected(newValue);
 

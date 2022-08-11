@@ -34,7 +34,7 @@ const TabsWrapper = ({ content = [], tabIndexValue = 0, handleIndexChange }) => 
     <Box sx={{ height: "100%", width: '100%' }}>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
         <Tabs value={tabIndexValue} onChange={handleIndexChange} aria-label="basic tabs example">
-          {content.map((row, index) => (
+          {content.filter(({show = true})=>show).map((row, index) => (
             <Tooltip key={index} title={row.tooltip || ""}>
               <Tab sx={row.tabSx} disabled={!disableFilter(row)} key={index} label={row.label} {...a11yProps(index)} />
             </Tooltip>
@@ -45,7 +45,7 @@ const TabsWrapper = ({ content = [], tabIndexValue = 0, handleIndexChange }) => 
         {({ width, height, targetRef }) =>
         (
           <Box sx={{ height: '100%', width: '100%', overflow: 'hidden' }} ref={targetRef}>
-            {content.map(({ Component, props = {} }, index) => (
+            {content.filter(({show = true})=>show).map(({ Component, props = {} }, index) => (
               <TabPanel sx={{ height, width, overflow: 'hidden' }} key={index} value={tabIndexValue} index={index} >
                 <Component {...props} width={width} height={height - 66} />
               </TabPanel>

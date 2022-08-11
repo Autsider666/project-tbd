@@ -20,11 +20,11 @@ export class PartyFactory {
 
 		settlement.addParty(party);
 
-		party.addSurvivor(this.survivorFactory.create(Survivor.Villager));
-		party.addSurvivor(this.survivorFactory.create(Survivor.Villager));
-		party.addSurvivor(this.survivorFactory.create(Survivor.Villager));
-		party.addSurvivor(this.survivorFactory.create(Survivor.Villager));
-		party.addSurvivor(this.survivorFactory.create(Survivor.Villager));
+		party.addSurvivor(this.survivorFactory.create(Survivor.Peasant));
+		party.addSurvivor(this.survivorFactory.create(Survivor.Peasant));
+		party.addSurvivor(this.survivorFactory.create(Survivor.Peasant));
+		party.addSurvivor(this.survivorFactory.create(Survivor.Peasant));
+		party.addSurvivor(this.survivorFactory.create(Survivor.Peasant));
 
 		return party;
 	}

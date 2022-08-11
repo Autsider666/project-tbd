@@ -72,7 +72,7 @@ const WikiModal = () => {
             <BootstrapDialogTitle id="customized-dialog-title" onClose={handleClose}>
                 Quick Start Guide & Wiki - ( Survivor Overview & Stats, Settlement Information & Upgrades )
             </BootstrapDialogTitle>
-            <DialogContent dividers sx={{ minHeight: '310px' }} >
+            <DialogContent dividers sx={{ minHeight: '150px' }} >
                 <Grid container>
                     <Grid item xs={8} sx={{ borderRight: '1px solid', borderRightColor: 'rgba(0, 0, 0, 0.12)' }}>
                         {/* <Typography variant="h6"> Quick Start Guide: </Typography> */}
@@ -141,7 +141,7 @@ const WikiModal = () => {
                         <TableBody>
                             {survivorTypes && Object.values(survivorTypes).map(survivorType => {
                                 const { stats, name, boost, tier, upgrades } = survivorType
-                                const { percentage, stat } = boost || {}
+                                const { percentage, stat, type } = boost || {}
                                 const { hp, damage, defense, gatheringSpeed, travelSpeed, carryCapacity } = stats
                                 return <TableRow key={name}>
                                     <TableCell>{name}</TableCell>
@@ -152,7 +152,7 @@ const WikiModal = () => {
                                     <TableCell align="right">{gatheringSpeed}</TableCell>
                                     <TableCell align="right">{travelSpeed}</TableCell>
                                     <TableCell align="right">{carryCapacity}</TableCell>
-                                    <TableCell align="right">{boost ? `${percentage}% ${stat}` : ''}</TableCell>
+                                    <TableCell align="right">{boost ? `${percentage}% ${stat} ${type ? `to ${type}` : ''}` : ''}</TableCell>
                                     <TableCell align="right">{upgrades ? `${upgrades.join(" & ")}` : 'none'}</TableCell>
 
 
