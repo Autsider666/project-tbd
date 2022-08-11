@@ -43,11 +43,6 @@ const AuthProvider = ({ children }) => {
     }
 
     const partyCreate = async name => {
-
-        // socket.emit('world:list', worlds => {
-        //     console.log(worlds)
-        // })
-
         const worlds = await getWorlds()
         const selectedWorld = worlds.find(world => world.id !== "a")
         const settlements = await getSettlements({ worldId: selectedWorld.id })
@@ -56,12 +51,6 @@ const AuthProvider = ({ children }) => {
             if (value.parties.length < accum.parties.length) accum = value
             return accum
         })
-
-        // console.log({ selectedWorld, settlements, selectedSettlement })
-
-
-
-        // socket.emit('party:create', { name, settlementId: selectedSettlement.id }, token => setUser({ token }))
         socket.emit('party:create', { name, settlementId: selectedSettlement.id }, token => localStorage.setItem("tbd-token", token))
     }
 
