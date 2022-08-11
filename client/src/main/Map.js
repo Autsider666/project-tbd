@@ -1,4 +1,4 @@
-import { Divider, Popover, Typography } from '@mui/material'
+import { Button, Divider, Popover, Tooltip, Typography } from '@mui/material'
 import { Box } from '@mui/system'
 import React, { useState } from 'react'
 import CountDown from '../components/CountDown'
@@ -7,6 +7,7 @@ import MapPopover from '../components/MapPopover'
 import Water from '../components/worldMap/Map1/water.png'
 import WorldMap from '../components/worldMap/worldMap.js'
 import { useGame } from '../contexts/GameContext.js'
+import { expeditionRetreat } from '../functions/socketCalls'
 import { capitalizeFirstLetter } from '../functions/utils'
 
 const Map = () => {
@@ -60,6 +61,8 @@ const Map = () => {
     // console.log(currentExpedition)
     // console.log(currentExpedition)
 
+    currentExpeditionPhaseTimeRemaining && console.log({ currentExpeditionPhaseTimeRemaining, tickLength })
+
     if (hide) return <img style={{ opacity: 0.3, marginBottom: '-16px' }} src={Water} position="absolute" width="100%" />
     return (
         <Box sx={{ position: 'relative' }}>
@@ -82,9 +85,13 @@ const Map = () => {
                             && <Typography key={tickLength.seconds || 0} color="primary" sx={{ my: 1, mr: 1 }} textAlign={"center"} variant="h6">
                                 (
                                 {
-                                    currentExpedition.currentPhase === 'gather'
-                                        ? <CountDown key={gatherETA} seconds={gatherETA} />
-                                        : currentExpeditionPhaseTimeRemaining && <CountDown seconds={Math.round(currentExpeditionPhaseTimeRemaining.seconds || 0)} />
+
+                                    currentExpeditionPhaseTimeRemaining
+                                    && <CountDown
+                                        key={`${tickLength.seconds || 0} ${currentExpedition.currentPhase}`}
+                                        seconds={Math.round(currentExpeditionPhaseTimeRemaining.seconds || 0)}
+
+                                    />
                                 }
                                 {/* {`(${Math.round(currentExpeditionPhaseTimeRemaining.seconds)})`} */}
                                 )
@@ -103,7 +110,7 @@ const Map = () => {
             </Box>
 
             <WorldMap regionClickHandler={regionClickHandler} world={worldSelected} selectedRegionId={selectedRegionId} regions={regions} />
-            {currentExpedition && <Box sx={{ transition: 'all 1s', position: 'absolute', top: '50px', height: currentExpedition ? 30 : 0, width: '100%', display: 'flex', zIndex: 48, backgroundColor: 'white', alignItems: 'center', justifyContent: 'space-between' }}>
+            {currentExpedition && <Box sx={{ transition: 'all 1s', position: 'absolute', top: '50px', height: currentExpedition ? 36 : 0, width: '100%', display: 'flex', zIndex: 48, backgroundColor: 'white', alignItems: 'center', justifyContent: 'space-between' }}>
                 {
 
                     <>
@@ -116,6 +123,11 @@ const Map = () => {
                                 <Typography sx={{ px: 1 }}>Zombie</Typography>
                             </>
                         }
+                        {currentExpedition.currentPhase !== "combat" && <Tooltip title="Drop all your resources and return to Settlement">
+                            <Button sx={{ height: 24, mr:2 }} variant="contained" onClick={() => expeditionRetreat(controlledParty.id)}>
+                                Retreat!
+                            </Button>
+                        </Tooltip>}
                     </>
                 }
             </Box>}

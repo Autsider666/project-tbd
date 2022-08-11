@@ -14,10 +14,8 @@ const CountDown = ({ seconds = 0 }) => {
             clearInterval(timer)
         }
     }, [seconds, setSecondsDisplay])
-
-
-
-    return secondsDisplay
+    
+    return Math.max(secondsDisplay,0)
 
 }
 

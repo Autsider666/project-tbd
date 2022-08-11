@@ -16,3 +16,7 @@ export const settlementUpgrade = (settlementId, building) => {
     // console.log({settlementId, building})
     socket.emit("settlement:upgrade:start", { settlementId, building })
 }
+
+export const expeditionRetreat = (partyId) => {
+    socket.emit("expedition:retreat", { partyId })
+}

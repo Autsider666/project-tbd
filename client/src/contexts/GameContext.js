@@ -32,10 +32,11 @@ const GameProvider = ({ children }) => {
     const [allEntities, setAllEntities] = useState()
     const [currentTick, setCurrentTick] = useState({})
     const { startedAt, endsAt } = currentTick
-
     const lStartedAt = (startedAt && endsAt) && DateTime.fromISO(startedAt)
     const lEndsAt = (startedAt && endsAt) && DateTime.fromISO(endsAt)
-    const tickLength = (startedAt && endsAt) && lStartedAt.diff(lEndsAt, 'seconds').toObject()
+    const tickLength = Object.values(currentTick).length > 0 ? (startedAt && endsAt) && lEndsAt.diff(lStartedAt, 'seconds').toObject() : { seconds: 6 }
+    console.log(tickLength)
+    // console.log({currentTick, lStartedAt, lEndsAt, tickLength})
 
     const [survivorTypes, setSurvivorTypes] = useState(null)
 
@@ -145,6 +146,8 @@ const GameProvider = ({ children }) => {
         }
     }
 
+    
+
     const loaded = isLoaded()
 
     // const partyRepositoryLength = Object.keys(partyRepository).length
@@ -191,7 +194,7 @@ const GameProvider = ({ children }) => {
     const controlledParty = Object.values(partyRepository).find(party => party.controllable)
     const currentSettlement = controlledParty && Object.keys(settlementRepository).length > 0 && settlementRepository[controlledParty.settlement]
     const currentSettlementId = currentSettlement && currentSettlement.id
-    const currentSettlementParties = currentSettlement && currentSettlement.parties.map(party=>partyRepository[party])
+    const currentSettlementParties = currentSettlement && currentSettlement.parties.map(party => partyRepository[party])
     const currentRegionId = currentSettlement && currentSettlement.region
     const selectedRegion = regionRepository[selectedRegionId]
     const selectedSettlement = selectedRegion && settlementRepository[selectedRegion.settlement]
@@ -200,21 +203,25 @@ const GameProvider = ({ children }) => {
     const selectedResourceNodes = Object.values(resourceNodeRepository).filter(resourceNode => resourceNode.region === selectedRegionId)
     // console.log(expeditionRepository)
     const currentExpedition = Object.values(expeditionRepository).find(expedition => expedition.party === controlledParty.id && expedition.currentPhase !== "finished")
-    const currentExpeditionPhaseStartedAt = currentExpedition && DateTime.fromISO(currentExpedition.currentPhaseStartedAt)
-    const currentExpeditionPhaseEndsAt = currentExpedition && DateTime.fromISO(currentExpedition.currentPhaseEndsAt)
-    const currentExpeditionPhaseTimeRemaining = currentExpedition && currentExpeditionPhaseEndsAt.diff(currentExpeditionPhaseStartedAt,'seconds').toObject()
+    const currentExpeditionPhaseStartedAt = currentExpedition && DateTime.fromJSDate(new Date(currentExpedition.currentPhaseStartedAt))
+    const currentExpeditionPhaseEndsAt = currentExpedition && DateTime.fromJSDate(new Date(currentExpedition.currentPhaseEndsAt))
+    const currentExpeditionPhaseTimeRemaining = currentExpedition ? currentExpeditionPhaseEndsAt.diff(DateTime.fromJSDate(new Date()), 'seconds').toObject() : { seconds: 0 }
+    // console.log({ currentExpedition, currentExpeditionPhaseStartedAt })
+    currentExpedition && console.log(currentExpedition.currentPhaseStartedAt)
+
+    const currentVoyagePhaseStartedAt = currentVoyage && DateTime.fromJSDate(new Date(currentVoyage.startedAt))
+    const currentVoyagePhaseEndsAt = currentVoyage && DateTime.fromJSDate(new Date(currentVoyage.arrivalAt))
+    const currentVoyagePhaseTimeRemaining = currentVoyage && currentVoyagePhaseEndsAt.diff(DateTime.fromJSDate(new Date()), 'seconds').toObject()
+    // currentVoyage && console.log({currentVoyagePhaseEndsAt, currentVoyagePhaseTimeRemaining})
 
 
-    const currentVoyagePhaseStartedAt = currentVoyage && DateTime.fromISO(currentVoyage.startedAt)
-    const currentVoyagePhaseEndsAt = currentVoyage && DateTime.fromISO(currentVoyage.arrivalAt)
-    const currentVoyagePhaseTimeRemaining = currentVoyage && currentVoyagePhaseEndsAt.diff(currentVoyagePhaseStartedAt,'seconds').toObject()
-    
+    console.log({worldRepository, controlledParty})
 
     // con  sole.log(currentExpeditionPhaseTimeRemaining)
 
-    // const currentExpeditionStartedAt = currentExpedition && DateTime.fromISO(currentExpedition.startedAt)
-    
-    
+    // const currentExpeditionStartedAt = currentExpedition && DateTime.fromHTTP(currentExpedition.startedAt)
+
+
     // console.log(currentSettlement)
 
     const partySurvivors = controlledParty && controlledParty.survivors.filter(survivor => survivor)

@@ -36,10 +36,10 @@ const ResponsiveAppBar = () => {
   const controlledPartyCurrentHealthPercent = currentExpedition ? Math.round((controlledPartyHp - currentExpedition.damageTaken) / controlledPartyHp * 100) : 100
 
 
-  currentExpedition && console.log(controlledPartyHp - currentExpedition.damageTaken)
-  currentExpedition && console.log(controlledPartyHp)
+  // currentExpedition && console.log(controlledPartyHp - currentExpedition.damageTaken)
+  // currentExpedition && console.log(controlledPartyHp)
 
-  currentExpedition && console.log(Math.round((controlledPartyHp - currentExpedition.damageTaken) / controlledPartyHp * 100))
+  // currentExpedition && console.log(Math.round((controlledPartyHp - currentExpedition.damageTaken) / controlledPartyHp * 100))
 
   const currentRaidedSettlements = settlementRepository ? Object.values(settlementRepository).filter(settlement => settlement.raid) : []
 

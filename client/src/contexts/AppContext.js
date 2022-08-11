@@ -15,6 +15,7 @@ const AppProvider = ({ children }) => {
     })
 
     const [wikiModal, setWikiModal] = useState(false)
+    const [worldDeathModal, setWorldDeathModal] = useState(false)
 
     // 'success' | 'info' | 'warning' | 'error'
 
@@ -25,6 +26,7 @@ const AppProvider = ({ children }) => {
     const value = {
         snackbar, hideSnackbar, displaySnackbar,
         wikiModal, setWikiModal,
+        worldDeathModal, setWorldDeathModal,
     };
 
     return (
