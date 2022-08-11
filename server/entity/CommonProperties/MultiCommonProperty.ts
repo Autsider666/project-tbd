@@ -28,7 +28,6 @@ export class MultiCommonProperty<
 
 			const value = this.repository.get(id);
 			if (value === null) {
-				console.log(id, entity, this.repository.getAll());
 				throw new Error('.... uhm.....');
 			}
 

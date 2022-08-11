@@ -9,7 +9,7 @@ export class VoyageSystem implements System {
 
 	tick(now: Date): void {
 		this.voyageRepository.getAll().forEach((voyage) => {
-			if (voyage.finished || voyage.arrivalAt > now) {
+			if (voyage.finished || new Date(voyage.arrivalAt) > now) {
 				return;
 			}
 

@@ -13,21 +13,12 @@ export class SettlementUpgradeSystem implements System {
 			.getAll()
 			.filter(
 				(settlement) =>
-					!settlement.destroyed && settlement.upgrade !== null
+					!settlement.destroyed &&
+					settlement.raid === null &&
+					settlement.upgrade !== null
 			)) {
-			const idleSurvivors = settlement.getSurvivors();
-			for (const party of settlement
-				.getParties()
-				.filter(
-					(party) =>
-						party.getVoyage() === null &&
-						party.getExpedition() === null
-				)) {
-				idleSurvivors.push(...party.getSurvivors());
-			}
-
 			let availableWork = 0;
-			for (const survivor of idleSurvivors) {
+			for (const survivor of settlement.getIdleSurvivors()) {
 				availableWork += SurvivorDataMap[survivor].stats.gatheringSpeed;
 			}
 

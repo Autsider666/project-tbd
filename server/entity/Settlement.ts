@@ -199,6 +199,18 @@ export class Settlement
 		return this.partiesProperty.getAll();
 	}
 
+	getIdleSurvivors(): Survivor[] {
+		const idleSurvivors = this.getSurvivors();
+		for (const party of this.getParties().filter(
+			(party) =>
+				party.getVoyage() === null && party.getExpedition() === null
+		)) {
+			idleSurvivors.push(...party.getSurvivors());
+		}
+
+		return idleSurvivors;
+	}
+
 	addSurvivor(survivor: Survivor): void {
 		this.survivors.push(survivor);
 	}

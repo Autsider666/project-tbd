@@ -40,7 +40,6 @@ const io = new Server<
 container.register(Server, { useValue: io });
 container.register(EventEmitter, { useValue: new EventEmitter() });
 
-console.log(config.get('env'));
 if (config.get('env') === 'prod') {
 	const __dirname = path.dirname(fileURLToPath(import.meta.url));
 	app.use(express.static(path.join(__dirname, '..', 'client', 'build')));

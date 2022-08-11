@@ -44,8 +44,8 @@ export class VoyageFactory {
 			party: party.getId(),
 			origin: party.getSettlement().getId(),
 			target: target.getId(),
-			startedAt,
-			arrivalAt,
+			startedAt: startedAt.toString(),
+			arrivalAt: arrivalAt.toString(),
 			finished: false,
 		});
 

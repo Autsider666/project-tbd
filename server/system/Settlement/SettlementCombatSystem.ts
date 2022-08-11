@@ -1,5 +1,6 @@
 import { singleton } from 'tsyringe';
 import { SettlementEnemies } from '../../config/EnemyData.js';
+import { SurvivorDataMap } from '../../config/SurvivorData.js';
 import { Settlement } from '../../entity/Settlement.js';
 import { EnemyFactory } from '../../factory/EnemyFactory.js';
 import {
@@ -49,8 +50,6 @@ export class SettlementCombatSystem implements System {
 			settlement.getRegion().getWorld()
 		);
 
-		console.log(settlement.raid);
-
 		ClientNotifier.warning(
 			`Settlement "${settlement.name}" is under attack by ${settlement.raid.name}!`,
 			settlement.getUpdateRoomName()
@@ -85,7 +84,10 @@ export class SettlementCombatSystem implements System {
 		}
 
 		//Settlement attacks
-		const damageDealt = settlement.damage;
+		let damageDealt = settlement.damage;
+		for (const survivor of settlement.getIdleSurvivors()) {
+			damageDealt += SurvivorDataMap[survivor].stats.damage;
+		}
 		raid.damageTaken += damageDealt;
 
 		ClientNotifier.info(
