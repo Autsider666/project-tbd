@@ -73,7 +73,10 @@ export class ExpeditionCombatTurnSystem implements System {
 			}
 
 			//Enemy attacks
-			let damageTaken = Math.max(0, enemy.damage - party.getDefense());
+			let damageTaken = Math.max(
+				0,
+				enemy.damage - Math.sqrt(party.getDefense())
+			);
 			expedition.damageTaken += damageTaken;
 			ClientNotifier.info(
 				damageTaken > 0
