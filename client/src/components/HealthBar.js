@@ -14,4 +14,5 @@ const HealthBar = ({ maxValue = 100, currentValue = 50, flip = false }) => {
     </>
 }
 
+
 export default HealthBar
